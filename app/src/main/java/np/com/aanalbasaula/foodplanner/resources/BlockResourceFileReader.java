@@ -7,9 +7,12 @@ import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class BlockFileReader implements ResourceFileReader {
+/**
+ * A Resource file reader that accesses the file in blocks of defined sizes
+ */
+public class BlockResourceFileReader implements ResourceFileReader {
 
-    private static final String TAG = BlockFileReader.class.getSimpleName();
+    private static final String TAG = BlockResourceFileReader.class.getSimpleName();
     /**
      * The size of the block in the file to read
      */
@@ -20,7 +23,7 @@ public class BlockFileReader implements ResourceFileReader {
     private BufferedInputStream mStream;
     private long mFileSize;
 
-    BlockFileReader(int blockSize) {
+    BlockResourceFileReader(int blockSize) {
         this.mBlockSize = blockSize;
     }
 
@@ -59,19 +62,37 @@ public class BlockFileReader implements ResourceFileReader {
     }
 
     @Override
-    public Entry nextEntry() throws IOException {
+    public int count() {
+        return (int) (mFileSize / mBlockSize);
+    }
+
+    @Override
+    public Entry nextEntry() {
         Entry raw = new Entry();
-        if (mStream.available() >= mBlockSize) {
-            byte[] buffer = new byte[mBlockSize];
-            //if the read is less than expected, then return a null
-            if (mStream.read(buffer) < mBlockSize) {
+        try {
+            if (mStream.available() >= mBlockSize) {
+                byte[] buffer = new byte[mBlockSize];
+                //if the read is less than expected, then return a null
+                if (mStream.read(buffer) < mBlockSize) {
+                    return null;
+                }
+                raw.setData(buffer);
+                return raw;
+            } else {
                 return null;
             }
-            raw.setData(buffer);
-            return raw;
-        } else {
-            return null;
+        } catch (IOException e) {
+            if (mStream != null) {
+                try {
+                    mStream.close();
+                } catch (IOException ex) {
+                    Log.e(TAG, "open: The stream could not be closed after facing exception", ex);
+                    Log.e(TAG, "open: Cause of initial failure", e);
+                }
+                mStream = null;
+            }
         }
+        return null;
     }
 
     @Override
