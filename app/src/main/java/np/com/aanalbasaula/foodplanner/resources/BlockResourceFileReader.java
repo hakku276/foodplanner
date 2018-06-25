@@ -70,7 +70,7 @@ public class BlockResourceFileReader implements ResourceFileReader {
     public Entry nextEntry() {
         Entry raw = new Entry();
         try {
-            if (mStream.available() >= mBlockSize) {
+            if (mStream != null && mStream.available() >= mBlockSize) {
                 byte[] buffer = new byte[mBlockSize];
                 //if the read is less than expected, then return a null
                 if (mStream.read(buffer) < mBlockSize) {
@@ -102,11 +102,10 @@ public class BlockResourceFileReader implements ResourceFileReader {
                 return mStream.available() >= mBlockSize;
             } catch (IOException e) {
                 Log.e(TAG, "hasNextEntry: Could not check available size in stream", e);
-            } finally {
                 try {
                     mStream.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "hasNextEntry: Failed to close stream after error", e);
+                } catch (IOException ex) {
+                    Log.e(TAG, "hasNextEntry: Failed to close stream after error", ex);
                 }
                 mStream = null;
             }

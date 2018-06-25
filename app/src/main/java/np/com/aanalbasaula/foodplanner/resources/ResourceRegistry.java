@@ -5,6 +5,8 @@ import android.util.Log;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -15,15 +17,13 @@ import java.util.List;
 class ResourceRegistry<T extends Resource> {
     private static final String TAG = ResourceRegistry.class.getSimpleName();
 
+    private List<T> resources;
 
-    private final List<T> resources;
-
-    private ResourceRegistry(Context context, ResourceType type) {
+    ResourceRegistry(Context context, ResourceType type) {
         EntryConverter<T> converter = (EntryConverter<T>) type.getConverter();
         ResourceFileReader resourceReader = type.getFileReader();
         String filename = type.getFilename();
         List<T> resources = new ArrayList<>(0);
-        ;
         try {
             if (resourceReader.open(context, filename)) {
                 resources = new ArrayList<>(resourceReader.count());
@@ -56,9 +56,29 @@ class ResourceRegistry<T extends Resource> {
             T object = converter.convert(entry);
             resources.add(object);
         }
+        this.resources = Collections.unmodifiableList(resources);
     }
 
-    T get(int index) {
-        return (T) resources.get(index).duplicate();
+    /**
+     * Get the resource defined by the identifier
+     *
+     * @param id the integer identifier for the resource, requires: the index to be present in the resources
+     * @return the Resource
+     */
+    T get(int id) {
+        int index = Collections.binarySearch(resources, new Resource(id), new Comparator<Resource>() {
+            @Override
+            public int compare(Resource o1, Resource o2) {
+                return o1.getId() - o2.getId();
+            }
+        });
+        if (index < 0) {
+            throw new AssertionError(String.format("The resource id: %d could not be found in the registry", id));
+        }
+        return resources.get(index);
+    }
+
+    int count() {
+        return resources.size();
     }
 }

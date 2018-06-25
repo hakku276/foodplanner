@@ -1,22 +1,19 @@
 package np.com.aanalbasaula.foodplanner.model;
 
-public class IngredientType {
-    private int id;
-    private String name;
+import np.com.aanalbasaula.foodplanner.resources.Resource;
 
-    public int getId() {
-        return id;
-    }
+/**
+ * Represents an Ingredient Type
+ */
+public class IngredientType extends Resource{
+    private final String name;
 
-    public void setId(int id) {
-        this.id = id;
+    public IngredientType(int id, String name) {
+        super(id);
+        this.name = name.trim();
     }
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

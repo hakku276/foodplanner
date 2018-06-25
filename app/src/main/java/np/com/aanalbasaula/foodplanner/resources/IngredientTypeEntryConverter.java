@@ -14,9 +14,9 @@ public class IngredientTypeEntryConverter implements EntryConverter<IngredientTy
 
     @Override
     public IngredientType convert(Entry entry) {
-        IngredientType type = new IngredientType();
-        type.setId(NumberUtils.byteArrayToInt(entry.getData(), 0));
-        type.setName(new String(entry.getData(), INDEX_SIZE, DATA_SIZE));
+        int id = NumberUtils.byteArrayToInt(entry.getData(), 0);
+        String name = new String(entry.getData(), INDEX_SIZE, DATA_SIZE);
+        IngredientType type = new IngredientType(id, name);
         return type;
     }
 

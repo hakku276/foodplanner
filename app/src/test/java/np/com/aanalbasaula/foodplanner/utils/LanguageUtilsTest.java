@@ -1,4 +1,4 @@
-package np.com.aanalbasaula.foodplanner;
+package np.com.aanalbasaula.foodplanner.utils;
 
 import org.junit.Test;
 
