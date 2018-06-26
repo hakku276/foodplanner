@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * A Resource file reader that accesses the file in blocks of defined sizes
  */
-public class BlockResourceFileReader implements ResourceFileReader {
+class BlockResourceFileReader implements ResourceFileReader {
 
     private static final String TAG = BlockResourceFileReader.class.getSimpleName();
     /**
@@ -21,6 +21,10 @@ public class BlockResourceFileReader implements ResourceFileReader {
      * The buffered input stream to read from
      */
     private BufferedInputStream mStream;
+
+    /**
+     * The file size of the open file
+     */
     private long mFileSize;
 
     BlockResourceFileReader(int blockSize) {
@@ -29,6 +33,10 @@ public class BlockResourceFileReader implements ResourceFileReader {
 
     @Override
     public boolean open(Context context, String filename) throws FileNotFoundException {
+        if (mStream != null) {
+            Log.i(TAG, "open: The previous file stream has not been closed before opening a new one");
+            throw new IllegalAccessError("The previous open access has not been closed");
+        }
         boolean success = false;
         try {
             mStream = new BufferedInputStream(context.getAssets().open(filename));
@@ -53,6 +61,14 @@ public class BlockResourceFileReader implements ResourceFileReader {
 
     @Override
     public boolean close() {
+        this.mFileSize = 0;
+        try {
+            mStream.close();
+        } catch (IOException e) {
+            Log.e(TAG, "close: Could not close file", e);
+        } finally {
+            this.mStream = null;
+        }
         return false;
     }
 

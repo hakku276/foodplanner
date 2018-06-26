@@ -26,13 +26,13 @@ public class ResourceRegistryTest {
         Context context = Mockito.mock(Context.class);
         AssetManager manager = Mockito.mock(AssetManager.class);
         try {
-            fileStream = new FileInputStream("./src/main/assets/test_ingredients.dat");
+            fileStream = new FileInputStream("./src/main/assets/test_ingredient_types.dat");
         } catch (IOException e) {
             e.printStackTrace();
         }
         when(manager.open(anyString())).thenReturn(fileStream);
         when(context.getAssets()).thenReturn(manager);
-        registry = new ResourceRegistry<>(context, ResourceType.INGREDIENTS);
+        registry = new ResourceRegistry<>(context, ResourceType.INGREDIENT_TYPE);
     }
 
     @Test

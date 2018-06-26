@@ -6,7 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * The file reader interface to load the raw entries from the file into the memory
+ * The file reader interface to load the raw entries from the file into the memory. Use the
+ * {@link ResourceFileReader#open(Context, String)} to open a file and the close method to
+ * close the opened file.
+ * <p>
+ * The same ResourceFileReader can be reused after closing the previous file. The ResourceFileReader
+ * can be used in an Iterator fashion, by checking the {@link ResourceFileReader#hasNextEntry()} to
+ * query whether new entries are remaining to be read, an then {@link ResourceFileReader#nextEntry()}
+ * to get the next entry.
  */
 interface ResourceFileReader {
     /**

@@ -1,19 +1,30 @@
 package np.com.aanalbasaula.foodplanner.resources;
 
-import java.nio.ByteBuffer;
-
 /**
  * Represents a raw resource entry
  */
-public class Entry {
+class Entry {
 
+    /**
+     * The raw stored data
+     */
     private byte[] data;
 
-    public byte[] getData() {
+    /**
+     * Get the data held by the resource entry
+     *
+     * @return the data this entry represents
+     */
+    byte[] getData() {
         return data;
     }
 
-    public void setData(byte[] data) {
+    /**
+     * Set the data parameter of the entry
+     *
+     * @param data the data that this entry represents
+     */
+    void setData(byte[] data) {
         this.data = data;
     }
 }

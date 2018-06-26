@@ -17,9 +17,12 @@ import java.util.List;
 class ResourceRegistry<T extends Resource> {
     private static final String TAG = ResourceRegistry.class.getSimpleName();
 
-    private List<T> resources;
+    /**
+     * Holds the resources as a list
+     */
+    private final List<T> resources;
 
-    ResourceRegistry(Context context, ResourceType type) {
+    ResourceRegistry(final Context context, final ResourceType type) {
         EntryConverter<T> converter = (EntryConverter<T>) type.getConverter();
         ResourceFileReader resourceReader = type.getFileReader();
         String filename = type.getFilename();
@@ -50,13 +53,12 @@ class ResourceRegistry<T extends Resource> {
      * @param reader    the reader, opened and untouched
      * @param converter the entry to type converter
      */
-    private void loadResources(ResourceFileReader reader, EntryConverter<T> converter) {
+    private void loadResources(final ResourceFileReader reader, final EntryConverter<T> converter) {
         while (reader.hasNextEntry()) {
             Entry entry = reader.nextEntry();
             T object = converter.convert(entry);
             resources.add(object);
         }
-        this.resources = Collections.unmodifiableList(resources);
     }
 
     /**
@@ -65,7 +67,7 @@ class ResourceRegistry<T extends Resource> {
      * @param id the integer identifier for the resource, requires: the index to be present in the resources
      * @return the Resource
      */
-    T get(int id) {
+    T get(final int id) {
         int index = Collections.binarySearch(resources, new Resource(id), new Comparator<Resource>() {
             @Override
             public int compare(Resource o1, Resource o2) {
@@ -78,6 +80,11 @@ class ResourceRegistry<T extends Resource> {
         return resources.get(index);
     }
 
+    /**
+     * Get the available number of resources of a type
+     *
+     * @return the number of resources
+     */
     int count() {
         return resources.size();
     }
