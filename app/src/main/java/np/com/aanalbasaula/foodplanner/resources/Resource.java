@@ -11,7 +11,7 @@ public class Resource {
      */
     protected final int id;
 
-    protected Resource(int id) {
+    protected Resource(final int id) {
         this.id = id;
     }
 

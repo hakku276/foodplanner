@@ -1,12 +1,11 @@
 package np.com.aanalbasaula.foodplanner.resources;
 
-import np.com.aanalbasaula.foodplanner.model.IngredientType;
 import np.com.aanalbasaula.foodplanner.utils.NumberUtils;
 
 /**
  * Converts the ingredient type raw {@link Entry} into {@link IngredientType} stored in a block resource file
  */
-class BlockFileIngredientTypeEntryConverter implements EntryConverter<IngredientType> {
+class BlockFileIngredientTypeEntryConverter implements EntryConverter<Resource> {
 
     /**
      * The size of the block in the file
@@ -27,10 +26,10 @@ class BlockFileIngredientTypeEntryConverter implements EntryConverter<Ingredient
     }
 
     @Override
-    public IngredientType convert(Entry entry) {
+    public Resource convert(Entry entry) {
         int id = NumberUtils.byteArrayToInt(entry.getData(), 0);
         String name = new String(entry.getData(), INDEX_SIZE, DATA_SIZE);
-        return new IngredientType(id, name);
+        return new Resource(id);
     }
 
 }

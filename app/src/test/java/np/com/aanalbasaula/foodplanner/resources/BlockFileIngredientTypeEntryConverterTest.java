@@ -3,10 +3,6 @@ package np.com.aanalbasaula.foodplanner.resources;
 import org.junit.Before;
 import org.junit.Test;
 
-import np.com.aanalbasaula.foodplanner.model.IngredientType;
-
-import static org.junit.Assert.*;
-
 /**
  * Target: {@linkplain BlockFileIngredientTypeEntryConverter}
  */
