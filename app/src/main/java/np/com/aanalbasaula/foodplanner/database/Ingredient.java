@@ -5,7 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
 /**
- * Represents an Ingredient Resource that can be used in a recipe, with all the details.
+ * Represents an Ingredient that can be used in a recipe
  */
 @Entity
 public class Ingredient {
@@ -14,7 +14,7 @@ public class Ingredient {
      * The identifier of the ingredient when on a database
      */
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
 
     /**
      * Defines the name of the Ingredient
@@ -22,11 +22,11 @@ public class Ingredient {
     @ColumnInfo(name = "name")
     private String name;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
