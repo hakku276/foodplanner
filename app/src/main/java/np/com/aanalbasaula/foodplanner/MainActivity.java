@@ -2,6 +2,7 @@ package np.com.aanalbasaula.foodplanner;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import np.com.aanalbasaula.foodplanner.database.AppDatabase;
@@ -20,6 +23,7 @@ import np.com.aanalbasaula.foodplanner.views.recipe.ShowRecipeFragment;
 
 public class MainActivity extends AppCompatActivity implements ShowRecipeFragment.OnListFragmentInteractionListener, LoadRecipesAsync.LoadRecipesListener {
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int REQUEST_NEW_RECIPE = 100;
 
     // The fragment which shows the list of recipes available
     private ShowRecipeFragment showRecipeFragment;
@@ -76,7 +80,19 @@ public class MainActivity extends AppCompatActivity implements ShowRecipeFragmen
 
     private void startNewRecipeCreation(){
         Intent intent = new Intent(this, NewRecipeActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_NEW_RECIPE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_NEW_RECIPE && resultCode == NewRecipeActivity.RESULT_RECIPE_ADDED){
+            Log.i(TAG, "onActivityResult: Recipe was added");
+            Recipe recipe = data.getParcelableExtra(NewRecipeActivity.EXTRA_RECIPE);
+            showRecipeFragment.onNewRecipeAdded(recipe);
+        } else {
+            Log.i(TAG, "onActivityResult: Request code: " + requestCode + " result code: " + resultCode);
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override

@@ -26,6 +26,8 @@ public class ShowRecipeFragment extends Fragment {
 
     private List<Recipe> recipes;
 
+    private RecyclerView recyclerView;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -61,7 +63,7 @@ public class ShowRecipeFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             recyclerView.setAdapter(new RecipeRecyclerViewAdapter(recipes, mListener));
         }
@@ -84,6 +86,15 @@ public class ShowRecipeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    /**
+     * Notify the fragment that a new recipe was added
+     * @param recipe the added recipe
+     */
+    public void onNewRecipeAdded(Recipe recipe){
+        this.recipes.add(recipe);
+        this.recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     /**

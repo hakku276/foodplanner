@@ -10,6 +10,7 @@ import np.com.aanalbasaula.foodplanner.database.RecipeDao;
 public class CreateRecipeEntryAsync extends AsyncTask<Recipe, Void, Void> {
 
     private static final String TAG = CreateRecipeEntryAsync.class.getSimpleName();
+    private Recipe[] recipes;
 
     @NonNull
     private RecipeDao dao;
@@ -25,6 +26,7 @@ public class CreateRecipeEntryAsync extends AsyncTask<Recipe, Void, Void> {
     @Override
     protected Void doInBackground(Recipe... recipes) {
         Log.i(TAG, "doInBackground: Creating entries: " + recipes.length);
+        this.recipes =recipes;
         try {
             dao.insert(recipes);
         }catch (Exception e){
@@ -35,7 +37,7 @@ public class CreateRecipeEntryAsync extends AsyncTask<Recipe, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        listener.onRecipeEntriesCreated();
+        listener.onRecipeEntriesCreated(recipes);
     }
 
     public interface CreateRecipeEntryListener{
@@ -43,6 +45,6 @@ public class CreateRecipeEntryAsync extends AsyncTask<Recipe, Void, Void> {
         /**
          * Called when the recipe entries have been created
          */
-        void onRecipeEntriesCreated();
+        void onRecipeEntriesCreated(Recipe[] recipes);
     }
 }

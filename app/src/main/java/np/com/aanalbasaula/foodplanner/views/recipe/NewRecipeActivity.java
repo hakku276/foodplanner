@@ -1,8 +1,10 @@
 package np.com.aanalbasaula.foodplanner.views.recipe;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
@@ -14,6 +16,16 @@ import np.com.aanalbasaula.foodplanner.database.utils.CreateRecipeEntryAsync;
 public class NewRecipeActivity extends AppCompatActivity implements CreateRecipeEntryAsync.CreateRecipeEntryListener {
 
     private static final String TAG = NewRecipeActivity.class.getSimpleName();
+    /**
+     * Activity Result Code denoting that a new recipe was added. When this result is returned to
+     * the calling activity {@link NewRecipeActivity#EXTRA_RECIPE} is set with the added recipe
+     */
+    public static final int RESULT_RECIPE_ADDED = 100;
+
+    /**
+     * The optional result field which has just been added
+     */
+    public static final String EXTRA_RECIPE = "recipe";
 
     // the edit text with the recipe name
     private EditText editRecipeName;
@@ -60,8 +72,11 @@ public class NewRecipeActivity extends AppCompatActivity implements CreateRecipe
     }
 
     @Override
-    public void onRecipeEntriesCreated() {
+    public void onRecipeEntriesCreated(Recipe[] recipes) {
         Log.i(TAG, "onRecipeEntriesCreated: The recipe entry has been created");
+        Intent result = new Intent();
+        result.putExtra(EXTRA_RECIPE, recipes[0]);
+        this.setResult(RESULT_RECIPE_ADDED, result);
         this.finish();
     }
 }
