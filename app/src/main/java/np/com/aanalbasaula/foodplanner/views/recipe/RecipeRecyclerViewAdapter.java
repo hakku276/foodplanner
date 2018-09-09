@@ -25,7 +25,7 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecipeRecycl
     private final List<Recipe> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public RecipeRecyclerViewAdapter(@Nullable List<Recipe> items, OnListFragmentInteractionListener listener) {
+    RecipeRecyclerViewAdapter(@Nullable List<Recipe> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }

@@ -11,4 +11,8 @@
     <string name="button_save">Save</string>
     <string name="hint_recipe_name">Name</string>
     <string name="error_text_required_empty">Required text is empty</string>
+    <string name="title_ingredients">Ingredients</string>
+    <string name="hint_ingredient_name">Ingredient Name</string>
+    <string name="img_desc_add">Add Entry</string>
+    <string name="error_empty_input">Required</string>
 </resources>
