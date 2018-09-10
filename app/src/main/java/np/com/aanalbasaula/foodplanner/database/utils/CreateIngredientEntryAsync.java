@@ -25,7 +25,12 @@ public class CreateIngredientEntryAsync extends AsyncTask<Ingredient, Void, Ingr
     protected Ingredient[] doInBackground(Ingredient... ingredients) {
         Log.i(TAG, "doInBackground: Creating entries: " + ingredients.length);
         try {
-            dao.insert(ingredients);
+            long[] ids= dao.insert(ingredients);
+            Log.i(TAG, "doInBackground: Ingredients Added: " + ids.length);
+            for (int i = 0; i < ids.length; i++) {
+                Log.i(TAG, "doInBackground: New Ingredient ID: " + ids[0]);
+                ingredients[i].setId(ids[i]);
+            }
         }catch (Exception e){
             Log.e(TAG, "doInBackground: Could not create recipe entries", e);
         }
