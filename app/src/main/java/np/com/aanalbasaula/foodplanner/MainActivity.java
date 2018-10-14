@@ -2,7 +2,6 @@ package np.com.aanalbasaula.foodplanner;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -10,8 +9,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import np.com.aanalbasaula.foodplanner.database.AppDatabase;
@@ -19,14 +16,15 @@ import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.utils.LoadRecipesAsync;
 import np.com.aanalbasaula.foodplanner.views.recipe.NewRecipeActivity;
 import np.com.aanalbasaula.foodplanner.views.recipe.LoadScreenFragment;
-import np.com.aanalbasaula.foodplanner.views.recipe.ShowRecipeFragment;
+import np.com.aanalbasaula.foodplanner.views.recipe.ShowAllRecipesFragment;
+import np.com.aanalbasaula.foodplanner.views.recipe.ViewRecipeActivity;
 
-public class MainActivity extends AppCompatActivity implements ShowRecipeFragment.OnListFragmentInteractionListener, LoadRecipesAsync.LoadRecipesListener {
+public class MainActivity extends AppCompatActivity implements ShowAllRecipesFragment.ShowAllRecipesFragmentListener, LoadRecipesAsync.LoadRecipesListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_NEW_RECIPE = 100;
 
     // The fragment which shows the list of recipes available
-    private ShowRecipeFragment showRecipeFragment;
+    private ShowAllRecipesFragment showAllRecipesFragment;
 
     // The fragment which shows that the device is currently busy and will show a fragment there sometime soon
     private LoadScreenFragment loadScreenFragment;
@@ -88,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements ShowRecipeFragmen
         if (requestCode == REQUEST_NEW_RECIPE && resultCode == NewRecipeActivity.RESULT_RECIPE_ADDED){
             Log.i(TAG, "onActivityResult: Recipe was added");
             Recipe recipe = data.getParcelableExtra(NewRecipeActivity.EXTRA_RECIPE);
-            showRecipeFragment.onNewRecipeAdded(recipe);
+            showAllRecipesFragment.onNewRecipeAdded(recipe);
         } else {
             Log.i(TAG, "onActivityResult: Request code: " + requestCode + " result code: " + resultCode);
             super.onActivityResult(requestCode, resultCode, data);
@@ -98,13 +96,16 @@ public class MainActivity extends AppCompatActivity implements ShowRecipeFragmen
     @Override
     public void onListFragmentInteraction(Recipe item) {
         Log.i(TAG, "onListFragmentInteraction: User interacted with item: " + item.toString());
+        Intent intent = new Intent(this, ViewRecipeActivity.class);
+        intent.putExtra(ViewRecipeActivity.EXTRA_RECIPE, item);
+        startActivity(intent);
     }
 
     @Override
     public void onRecipeLoaded(@NonNull List<Recipe> recipes) {
         Log.i(TAG, "onRecipeLoaded: The recipes have been loaded: Total Count = " + recipes.size());
-        showRecipeFragment = ShowRecipeFragment.newInstance(recipes);
+        showAllRecipesFragment = ShowAllRecipesFragment.newInstance(recipes);
         FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction().replace(R.id.fragment_container, showRecipeFragment).commit();
+        fm.beginTransaction().replace(R.id.fragment_container, showAllRecipesFragment).commit();
     }
 }

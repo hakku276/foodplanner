@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_margin">16dp</dimen>
+    <dimen name="margin_text_text">16dp</dimen>
+    <dimen name="margin_text_border">8dp</dimen>
     <dimen name="padding_screen_to_content">8dp</dimen>
 </resources>

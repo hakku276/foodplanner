@@ -2,9 +2,13 @@ package np.com.aanalbasaula.foodplanner.database;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Represents a recipe created by the user
@@ -34,8 +38,15 @@ public class Recipe implements Parcelable {
     @ColumnInfo(name = "name")
     private String name;
 
-    public Recipe() {
+    /**
+     * The list of ingredients to be ignored from the database, since this is maintained by
+     * {@linkplain RecipeIngredient}
+     */
+    @Ignore
+    private List<Ingredient> ingredients;
 
+    public Recipe() {
+        ingredients = new LinkedList<>();
     }
 
     public Recipe(String name) {
@@ -61,6 +72,20 @@ public class Recipe implements Parcelable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public void addIngredient(Ingredient ingredient){
+        if(ingredients.contains(ingredient)) {
+            this.ingredients.add(ingredient);
+        }
     }
 
     @Override

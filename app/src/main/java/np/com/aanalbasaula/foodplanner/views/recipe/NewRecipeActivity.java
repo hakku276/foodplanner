@@ -35,7 +35,7 @@ public class NewRecipeActivity extends AppCompatActivity implements CreateRecipe
     public static final String EXTRA_RECIPE = "recipe";
     private static final String TAG = NewRecipeActivity.class.getSimpleName();
 
-    List<Ingredient> ingredients;
+    private List<Ingredient> ingredients;
 
     // the edit text with the recipe name
     private EditText editRecipeName;
@@ -81,7 +81,8 @@ public class NewRecipeActivity extends AppCompatActivity implements CreateRecipe
         if (isInputValid()) {
             //create the recipe entry into the database
             Recipe recipe = new Recipe(editRecipeName.getText().toString());
-            CreateRecipeEntryAsync async = new CreateRecipeEntryAsync(db.getRecipeDao(), this);
+            recipe.setIngredients(ingredients);
+            CreateRecipeEntryAsync async = new CreateRecipeEntryAsync(db, this);
             async.execute(recipe);
         }
     }

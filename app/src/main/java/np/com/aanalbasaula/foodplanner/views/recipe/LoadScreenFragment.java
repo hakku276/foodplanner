@@ -25,7 +25,6 @@ public class LoadScreenFragment extends Fragment {
      *
      * @return A new instance of fragment LoadScreenFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static LoadScreenFragment newInstance() {
         return new LoadScreenFragment();
     }

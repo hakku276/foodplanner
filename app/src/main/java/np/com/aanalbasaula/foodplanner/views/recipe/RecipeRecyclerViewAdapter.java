@@ -10,22 +10,21 @@ import android.widget.TextView;
 
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
-import np.com.aanalbasaula.foodplanner.views.recipe.ShowRecipeFragment.OnListFragmentInteractionListener;
+import np.com.aanalbasaula.foodplanner.views.recipe.ShowAllRecipesFragment.ShowAllRecipesFragmentListener;
 
 import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link np.com.aanalbasaula.foodplanner.database.Recipe} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
+ * specified {@link ShowAllRecipesFragmentListener}.
  */
 public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecipeRecyclerViewAdapter.ViewHolder> {
 
     @Nullable
     private final List<Recipe> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final ShowAllRecipesFragment.ShowAllRecipesFragmentListener mListener;
 
-    RecipeRecyclerViewAdapter(@Nullable List<Recipe> items, OnListFragmentInteractionListener listener) {
+    RecipeRecyclerViewAdapter(@Nullable List<Recipe> items, ShowAllRecipesFragmentListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -34,7 +33,7 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecipeRecycl
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_recipe, parent, false);
+                .inflate(R.layout.layout_list_item_recipe, parent, false);
         return new ViewHolder(view);
     }
 
@@ -66,11 +65,11 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecipeRecycl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mContentView;
-        public Recipe mItem;
+        final View mView;
+        final TextView mContentView;
+        Recipe mItem;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
             mContentView = (TextView) view.findViewById(R.id.content);

@@ -1,114 +1,67 @@
 package np.com.aanalbasaula.foodplanner.views.recipe;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.util.List;
+import android.widget.TextView;
 
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
 
 /**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
+ * A simple {@link Fragment} subclass.
+ * Use the {@link ShowRecipeFragment#newInstance} factory method to
+ * create an instance of this fragment.
  */
 public class ShowRecipeFragment extends Fragment {
 
-    private OnListFragmentInteractionListener mListener;
+    private Recipe recipe;
 
-    private List<Recipe> recipes;
-
-    private RecyclerView recyclerView;
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public ShowRecipeFragment() {
+        // Required empty public constructor
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static ShowRecipeFragment newInstance(List<Recipe> recipes) {
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param recipe The recipe to show on the fragment
+     * @return A new instance of fragment ShowRecipeFragment.
+     */
+    public static ShowRecipeFragment newInstance(Recipe recipe) {
         ShowRecipeFragment fragment = new ShowRecipeFragment();
-        fragment.recipes = recipes;
-        Bundle args = new Bundle();
-        //add your arguments here
-        fragment.setArguments(args);
+        fragment.recipe = recipe;
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            //extract your arguments here
-        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recipe_list, container, false);
+        // Inflate the layout for this fragment
+        View v =  inflater.inflate(R.layout.fragment_show_recipe, container, false);
+        TextView tvRecipeName = v.findViewById(R.id.tv_recipe_name);
+        tvRecipeName.setText(recipe.getName());
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new RecipeRecyclerViewAdapter(recipes, mListener));
-        }
-        return view;
-    }
+        RecyclerView rvIngredients = v.findViewById(R.id.rv_ingredients);
+        IngredientRecyclerViewAdapter adapter = new IngredientRecyclerViewAdapter(recipe.getIngredients());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        rvIngredients.setLayoutManager(layoutManager);
+        rvIngredients.setItemAnimator(new DefaultItemAnimator());
+        rvIngredients.setAdapter(adapter);
 
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * Notify the fragment that a new recipe was added
-     * @param recipe the added recipe
-     */
-    public void onNewRecipeAdded(Recipe recipe){
-        this.recipes.add(recipe);
-        this.recyclerView.getAdapter().notifyDataSetChanged();
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(Recipe item);
+        return v;
     }
 }
