@@ -1,4 +1,4 @@
-package np.com.aanalbasaula.foodplanner.views.recipe;
+package np.com.aanalbasaula.foodplanner.views.ingredients;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;

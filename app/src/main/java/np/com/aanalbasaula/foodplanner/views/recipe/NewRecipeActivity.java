@@ -46,6 +46,8 @@ public class NewRecipeActivity extends AppCompatActivity implements CreateRecipe
     // the database instance
     private AppDatabase db;
 
+    private Recipe recipe;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +56,7 @@ public class NewRecipeActivity extends AppCompatActivity implements CreateRecipe
         editRecipeName = findViewById(R.id.edit_recipe_name);
         layoutIngredients = findViewById(R.id.layout_ingredients);
         db = AppDatabase.getInstance(this);
-
+        recipe = new Recipe();
     }
 
     @Override
@@ -80,8 +82,7 @@ public class NewRecipeActivity extends AppCompatActivity implements CreateRecipe
     public void requestSaveRecipe(View view) {
         if (isInputValid()) {
             //create the recipe entry into the database
-            Recipe recipe = new Recipe(editRecipeName.getText().toString());
-            recipe.setIngredients(ingredients);
+            recipe.setName(editRecipeName.getText().toString());
             CreateRecipeEntryAsync async = new CreateRecipeEntryAsync(db, this);
             async.execute(recipe);
         }
@@ -158,7 +159,8 @@ public class NewRecipeActivity extends AppCompatActivity implements CreateRecipe
          */
         private void addIngredient() {
             String name = input.getText().toString();
-            if (!ingredientInDatabase(name)) {
+            Ingredient dbIngredient = ingredientInDatabase(name);
+            if (dbIngredient == null) {
                 Log.i(TAG, "addIngredient: New ingredient input");
                 final Ingredient ingredient = new Ingredient();
                 ingredient.setName(name);
@@ -169,9 +171,12 @@ public class NewRecipeActivity extends AppCompatActivity implements CreateRecipe
                         if (ingredients.length > 0) {
                             Log.i(TAG, "onIngredientEntriesCreated: Database Entry created");
                             NewRecipeActivity.this.ingredients.add(ingredients[0]);
+                            NewRecipeActivity.this.recipe.addIngredient(ingredients[0]);
                         }
                     }
                 }).execute(ingredient);
+            } else {
+                recipe.addIngredient(dbIngredient);
             }
         }
 
@@ -181,14 +186,14 @@ public class NewRecipeActivity extends AppCompatActivity implements CreateRecipe
          * @param name the name of the ingredient
          * @return true if already present
          */
-        private boolean ingredientInDatabase(String name) {
+        private Ingredient ingredientInDatabase(String name) {
             for (Ingredient ingredient :
                     ingredients) {
                 if (ingredient.getName().equals(name)) {
-                    return true;
+                    return ingredient;
                 }
             }
-            return false;
+            return null;
         }
     }
 }
