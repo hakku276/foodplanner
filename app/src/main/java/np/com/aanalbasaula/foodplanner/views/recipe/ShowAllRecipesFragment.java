@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,9 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import np.com.aanalbasaula.foodplanner.R;
+import np.com.aanalbasaula.foodplanner.database.AppDatabase;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
+import np.com.aanalbasaula.foodplanner.database.utils.LoadRecipesAsync;
 
 /**
  * A fragment representing a list of Items.
@@ -21,13 +24,17 @@ import np.com.aanalbasaula.foodplanner.database.Recipe;
  * Activities containing this fragment MUST implement the {@link ShowAllRecipesFragmentListener}
  * interface.
  */
-public class ShowAllRecipesFragment extends Fragment {
+public class ShowAllRecipesFragment extends Fragment implements LoadRecipesAsync.LoadRecipesListener{
+
+    private static final String TAG = ShowAllRecipesFragment.class.getSimpleName();
 
     private ShowAllRecipesFragmentListener mListener;
 
     private List<Recipe> recipes;
 
     private RecyclerView recyclerView;
+
+    private AppDatabase db;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,21 +43,17 @@ public class ShowAllRecipesFragment extends Fragment {
     public ShowAllRecipesFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static ShowAllRecipesFragment newInstance(List<Recipe> recipes) {
-        ShowAllRecipesFragment fragment = new ShowAllRecipesFragment();
-        fragment.recipes = recipes;
-        return fragment;
+    public static ShowAllRecipesFragment newInstance() {
+        return new ShowAllRecipesFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            //extract your arguments here
-        }
+        db = AppDatabase.getInstance(getContext());
+        LoadRecipesAsync asyncTask = new LoadRecipesAsync(this.db.getRecipeDao(), this);
+        asyncTask.execute();
     }
 
     @Override
@@ -64,7 +67,6 @@ public class ShowAllRecipesFragment extends Fragment {
             recyclerView = (RecyclerView) view;
             LinearLayoutManager layoutManager = new LinearLayoutManager(context);
             recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setAdapter(new RecipeRecyclerViewAdapter(recipes, mListener));
         }
         return view;
     }
@@ -94,6 +96,13 @@ public class ShowAllRecipesFragment extends Fragment {
     public void onNewRecipeAdded(Recipe recipe){
         this.recipes.add(recipe);
         this.recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRecipeLoaded(@NonNull List<Recipe> recipes) {
+        Log.i(TAG, "onRecipeLoaded: Recipes have been loaded");
+        this.recipes = recipes;
+        recyclerView.setAdapter(new RecipeRecyclerViewAdapter(this.recipes, mListener));
     }
 
     /**
