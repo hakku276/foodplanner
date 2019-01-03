@@ -16,4 +16,7 @@
     <string name="img_desc_add">Add Entry</string>
     <string name="error_empty_input">Required</string>
     <string name="activity_title_view_recipe">View Recipe</string>
+    <string name="title_dialog_add_cart_item">New Item</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="message_dialog_add_cart_item">Please type the item that you want to purchase:</string>
 </resources>

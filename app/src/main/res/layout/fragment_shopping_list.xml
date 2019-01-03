@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".views.shoppinglist.ShoppingListFragment"
     android:padding="@dimen/padding_screen_to_content">
 
@@ -13,4 +14,14 @@
         android:id="@+id/recycler_view"
         tools:listitem="@layout/layout_list_item_shopping_list" />
 
-</FrameLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="@dimen/padding_screen_to_content"
+        android:layout_marginBottom="@dimen/padding_screen_to_content"
+        android:id="@+id/button_add"/>
+
+</android.support.constraint.ConstraintLayout>
