@@ -4,4 +4,5 @@
     <dimen name="margin_text_border">8dp</dimen>
     <dimen name="padding_screen_to_content">8dp</dimen>
     <dimen name="padding_dialog_to_content">20dp</dimen>
+    <dimen name="text_size_body">16sp</dimen>
 </resources>

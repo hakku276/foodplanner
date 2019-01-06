@@ -1,6 +1,7 @@
 package np.com.aanalbasaula.foodplanner.views.shoppinglist;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import java.util.List;
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.AppDatabase;
 import np.com.aanalbasaula.foodplanner.database.CartItem;
+import np.com.aanalbasaula.foodplanner.database.utils.CreateShoppingCartItemAsync;
 import np.com.aanalbasaula.foodplanner.database.utils.LoadShoppingCartItemsAsync;
 
 /**
@@ -30,7 +33,7 @@ import np.com.aanalbasaula.foodplanner.database.utils.LoadShoppingCartItemsAsync
  * Use the {@link ShoppingListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ShoppingListFragment extends Fragment implements LoadShoppingCartItemsAsync.Listener {
+public class ShoppingListFragment extends Fragment implements LoadShoppingCartItemsAsync.Listener, CreateShoppingCartItemAsync.Listener {
 
     private static final String TAG = ShoppingListFragment.class.getSimpleName();
 
@@ -43,6 +46,8 @@ public class ShoppingListFragment extends Fragment implements LoadShoppingCartIt
      * The recycler view that is responsible for showing the list items on the screen
      */
     private RecyclerView mRecyclerView;
+
+    private AppDatabase db;
 
     public ShoppingListFragment() {
         // Required empty public constructor
@@ -61,7 +66,7 @@ public class ShoppingListFragment extends Fragment implements LoadShoppingCartIt
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppDatabase db = AppDatabase.getInstance(getContext());
+        db = AppDatabase.getInstance(getContext());
         LoadShoppingCartItemsAsync async = new LoadShoppingCartItemsAsync(db.getShoppingCartDao(), this);
         async.execute();
     }
@@ -100,35 +105,66 @@ public class ShoppingListFragment extends Fragment implements LoadShoppingCartIt
      */
     private void onAddItemRequested() {
         Log.i(TAG, "onClickAddItem: Add cart item requested by user");
+        if (getActivity() != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            //create the body to be added into the dialog
+            LinearLayout layout = new LinearLayout(getActivity());
+            layout.setOrientation(LinearLayout.VERTICAL);
+            int paddingDialogToContent = (int) getResources().getDimension(R.dimen.padding_dialog_to_content);
+            layout.setPadding(paddingDialogToContent, paddingDialogToContent, paddingDialogToContent, paddingDialogToContent);
 
-        //create the body to be added into the dialog
-        LinearLayout layout = new LinearLayout(getActivity());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        int paddingDialogToContent = (int) getResources().getDimension(R.dimen.padding_dialog_to_content);
-        layout.setPadding(paddingDialogToContent, paddingDialogToContent, paddingDialogToContent, paddingDialogToContent);
+            TextView message = new TextView(getActivity());
+            message.setText(R.string.message_dialog_add_cart_item);
+            message.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            final EditText editText = new EditText(getActivity());
+            editText.setLayoutParams(new LinearLayoutCompat.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            editText.setSingleLine();
+            editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
-        TextView message = new TextView(getActivity());
-        message.setText(R.string.message_dialog_add_cart_item);
-        message.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        EditText editText = new EditText(getActivity());
-        editText.setLayoutParams(new LinearLayoutCompat.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        editText.setLines(1);
-        editText.setSingleLine();
-        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        editText.requestFocus();
+            layout.addView(message);
+            layout.addView(editText);
 
-        layout.addView(message);
-        layout.addView(editText);
+            builder.setTitle(R.string.title_dialog_add_cart_item);
+            builder.setView(layout);
+            builder.setPositiveButton(R.string.button_save, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Log.i(TAG, "onClick: User clicked Save button");
+                    CartItem item = new CartItem();
+                    item.setName(editText.getText().toString());
+                    addToCart(item);
+                }
+            });
+            builder.setNegativeButton(R.string.button_cancel, null);
 
-        builder.setTitle(R.string.title_dialog_add_cart_item);
-        builder.setView(layout);
-        builder.setPositiveButton(R.string.button_save, null);
-        builder.setNegativeButton(R.string.button_cancel, null);
+            AlertDialog dialog = builder.create();
 
-        AlertDialog dialog = builder.create();
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        dialog.show();
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            }
+            dialog.show();
+        }
+    }
+
+    /**
+     * Adds the specific item to the cart
+     *
+     * @param item the string item to be added into the cart
+     */
+    private void addToCart(CartItem item) {
+        Log.i(TAG, "addToCart: Adding Item to cart: " + item.getName());
+        cartItems.add(item);
+        mRecyclerView.getAdapter().notifyDataSetChanged();
+
+        Log.i(TAG, "addToCart: Saving items to the database");
+        CreateShoppingCartItemAsync task = new CreateShoppingCartItemAsync(db.getShoppingCartDao(), this);
+        task.execute(item);
+    }
+
+    @Override
+    public void onCartItemsCreated(CartItem[] cartItems) {
+        Log.i(TAG, "onCartItemsCreated: Cart Item added successfully into database");
     }
 }

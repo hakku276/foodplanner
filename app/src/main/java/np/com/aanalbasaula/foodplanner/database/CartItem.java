@@ -22,6 +22,12 @@ public class CartItem {
     @ColumnInfo(name = "name")
     private String name;
 
+    /**
+     * The current state of the Item, has it been disabled
+     */
+    @ColumnInfo(name = "active")
+    private boolean active;
+
     public long getId() {
         return id;
     }
@@ -30,11 +36,19 @@ public class CartItem {
         this.id = id;
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }

@@ -8,7 +8,7 @@ import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-@Database(entities = {Recipe.class, Ingredient.class, RecipeIngredient.class, CartItem.class}, version = 3)
+@Database(entities = {Recipe.class, Ingredient.class, RecipeIngredient.class, CartItem.class}, version = 4)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
@@ -30,15 +30,22 @@ public abstract class AppDatabase extends RoomDatabase {
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             database.execSQL("CREATE TABLE CartItem(" +
                     "`id` INTEGER NOT NULL, " +
-                    "`name` VARCHAR(255), " +
+                    "`name` TEXT, " +
                     "PRIMARY KEY(`id`))");
+        }
+    };
+
+    private static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE CartItem ADD COLUMN `active` INTEGER DEFAULT 0");
         }
     };
     private static AppDatabase instance;
 
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
-            instance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "recipes.db").addMigrations(MIGRATION_1_2, MIGRATION_2_3).build();
+            instance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "recipes.db").addMigrations(MIGRATION_3_4).build();
         }
         return instance;
     }
