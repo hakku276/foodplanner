@@ -19,4 +19,7 @@
     <string name="title_dialog_add_cart_item">New Item</string>
     <string name="button_cancel">Cancel</string>
     <string name="message_dialog_add_cart_item">Please type the item that you want to purchase:</string>
+    <string name="button_add">Add</string>
+    <string name="hint_add_to_cart">Item to buy or Recipe name</string>
+    <string name="title_recipes">Recipes</string>
 </resources>

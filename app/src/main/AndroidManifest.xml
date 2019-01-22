@@ -3,13 +3,14 @@
     package="np.com.aanalbasaula.foodplanner">
 
     <application
+        android:name=".FoodPlanner"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".FoodPlanner">
+        android:theme="@style/AppTheme">
+        <activity android:name=".views.shoppinglist.AddToCartActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -24,9 +25,10 @@
             android:name=".views.recipe.NewRecipeActivity"
             android:label="@string/activity_new_recipe_title"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".views.recipe.ViewRecipeActivity"
+        <activity
+            android:name=".views.recipe.ViewRecipeActivity"
             android:label="@string/activity_title_view_recipe"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

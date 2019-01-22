@@ -26,14 +26,16 @@ import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.AppDatabase;
 import np.com.aanalbasaula.foodplanner.database.CartItem;
 import np.com.aanalbasaula.foodplanner.database.utils.CreateShoppingCartItemAsync;
-import np.com.aanalbasaula.foodplanner.database.utils.LoadShoppingCartItemsAsync;
+import np.com.aanalbasaula.foodplanner.database.utils.LoadActiveShoppingCartItemsAsync;
+import np.com.aanalbasaula.foodplanner.database.utils.UpdateCartItemAsync;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ShoppingListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ShoppingListFragment extends Fragment implements LoadShoppingCartItemsAsync.Listener, CreateShoppingCartItemAsync.Listener {
+public class ShoppingListFragment extends Fragment implements LoadActiveShoppingCartItemsAsync.Listener,
+        CreateShoppingCartItemAsync.Listener, ShoppingListRecyclerViewAdapter.ShoppingListStatusListener {
 
     private static final String TAG = ShoppingListFragment.class.getSimpleName();
 
@@ -67,7 +69,7 @@ public class ShoppingListFragment extends Fragment implements LoadShoppingCartIt
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = AppDatabase.getInstance(getContext());
-        LoadShoppingCartItemsAsync async = new LoadShoppingCartItemsAsync(db.getShoppingCartDao(), this);
+        LoadActiveShoppingCartItemsAsync async = new LoadActiveShoppingCartItemsAsync(db.getShoppingCartDao(), this);
         async.execute();
     }
 
@@ -97,7 +99,7 @@ public class ShoppingListFragment extends Fragment implements LoadShoppingCartIt
     public void onCartItemsLoaded(List<CartItem> items) {
         Log.i(TAG, "onCartItemsLoaded: The shopping cart items have been loaded");
         this.cartItems = items;
-        mRecyclerView.setAdapter(new ShoppingListRecyclerViewAdapter(this.cartItems));
+        mRecyclerView.setAdapter(new ShoppingListRecyclerViewAdapter(this.cartItems, this));
     }
 
     /**
@@ -134,6 +136,7 @@ public class ShoppingListFragment extends Fragment implements LoadShoppingCartIt
                     Log.i(TAG, "onClick: User clicked Save button");
                     CartItem item = new CartItem();
                     item.setName(editText.getText().toString());
+                    item.setActive(true);
                     addToCart(item);
                 }
             });
@@ -146,6 +149,24 @@ public class ShoppingListFragment extends Fragment implements LoadShoppingCartIt
             }
             dialog.show();
         }
+    }
+
+    @Override
+    public void onItemRemoveRequested(int position) {
+        Log.i(TAG, "onItemRemoveRequested: Item remove has been requested by the user at position: " + position);
+        CartItem item = cartItems.get(position);
+        item.setActive(false);
+        UpdateCartItemAsync updateCartItemAsync = new UpdateCartItemAsync(db.getShoppingCartDao(), null);
+        updateCartItemAsync.execute(item);
+    }
+
+    @Override
+    public void onItemRestoreRequested(int position) {
+        Log.i(TAG, "onItemRestoreRequested: Item restore state has been requested by the user at position: " + position);
+        CartItem item = cartItems.get(position);
+        item.setActive(true);
+        UpdateCartItemAsync updateCartItemAsync = new UpdateCartItemAsync(db.getShoppingCartDao(), null);
+        updateCartItemAsync.execute(item);
     }
 
     /**

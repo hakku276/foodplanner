@@ -22,4 +22,7 @@ public interface ShoppingCartDao {
 
     @Query("SELECT * FROM CartItem")
     List<CartItem> getAllCartItems();
+
+    @Query("SELECT * FROM CartItem WHERE CartItem.active=1")
+    List<CartItem> getActiveCartItems();
 }

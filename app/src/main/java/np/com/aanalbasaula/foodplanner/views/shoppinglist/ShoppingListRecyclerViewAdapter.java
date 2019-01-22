@@ -24,8 +24,12 @@ class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListR
     @Nullable
     private List<CartItem> items;
 
-    ShoppingListRecyclerViewAdapter(@Nullable List<CartItem> cartItems) {
+    @Nullable
+    private ShoppingListStatusListener listener;
+
+    ShoppingListRecyclerViewAdapter(@Nullable List<CartItem> cartItems, @Nullable ShoppingListStatusListener listener) {
         this.items = cartItems;
+        this.listener = listener;
     }
 
     @NonNull
@@ -43,13 +47,32 @@ class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListR
             holder.mContentView.setText(items.get(position).getName());
 
             //setup the on click listener
-            holder.mCheckbox.setOnCheckedChangeListener(new CartItemCheckStateListener(holder.mContentView));
+            holder.mCheckbox.setOnCheckedChangeListener(new CartItemCheckStateListener(position, holder.mContentView));
         }
     }
 
     @Override
     public int getItemCount() {
         return (items == null) ? 0 : items.size();
+    }
+
+    /**
+     * The listener which is notified when the list status has changed, example a remove has been requested by the user
+     */
+    interface ShoppingListStatusListener {
+        /**
+         * The item has been requested to be removed by the user
+         *
+         * @param position the position of the item
+         */
+        void onItemRemoveRequested(int position);
+
+        /**
+         * The user has requested the removed item to be restored
+         *
+         * @param position the position of the item in the list
+         */
+        void onItemRestoreRequested(int position);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -77,10 +100,12 @@ class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListR
      */
     private class CartItemCheckStateListener implements CompoundButton.OnCheckedChangeListener {
 
+        private int position;
         private TextView mTextView;
 
-        private CartItemCheckStateListener(TextView textView) {
+        private CartItemCheckStateListener(int position, TextView textView) {
             this.mTextView = textView;
+            this.position = position;
         }
 
         @Override
@@ -89,6 +114,14 @@ class ShoppingListRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListR
             int paintFlags = mTextView.getPaintFlags();
             paintFlags = b ? (paintFlags | Paint.STRIKE_THRU_TEXT_FLAG) : (paintFlags & (~Paint.STRIKE_THRU_TEXT_FLAG));
             mTextView.setPaintFlags(paintFlags);
+
+            if (listener != null) {
+                if (b) {
+                    listener.onItemRemoveRequested(position);
+                } else {
+                    listener.onItemRestoreRequested(position);
+                }
+            }
         }
     }
 }
