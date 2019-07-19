@@ -10,7 +10,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".views.shoppinglist.AddToCartActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -21,14 +20,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".views.recipe.NewRecipeActivity"
-            android:label="@string/activity_new_recipe_title"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".views.recipe.ViewRecipeActivity"
-            android:label="@string/activity_title_view_recipe"
-            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

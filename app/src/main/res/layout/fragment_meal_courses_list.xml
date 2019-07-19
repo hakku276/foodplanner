@@ -7,5 +7,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/padding_screen_to_content"
-    tools:context=".views.recipe.ShowAllRecipesFragment"
+    tools:context=".views.meal_courses.ShowAllMealCoursesFragment"
     tools:listitem="@layout/layout_list_item_recipe" />

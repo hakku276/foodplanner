@@ -1,4 +1,4 @@
-package np.com.aanalbasaula.foodplanner.views.recipe;
+package np.com.aanalbasaula.foodplanner.views.meal_courses;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,22 +9,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import np.com.aanalbasaula.foodplanner.R;
-import np.com.aanalbasaula.foodplanner.database.Recipe;
-import np.com.aanalbasaula.foodplanner.views.recipe.ShowAllRecipesFragment.ShowAllRecipesFragmentListener;
+import np.com.aanalbasaula.foodplanner.database.MealCourse;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link np.com.aanalbasaula.foodplanner.database.Recipe} and makes a call to the
- * specified {@link ShowAllRecipesFragmentListener}.
+ * {@link RecyclerView.Adapter} that can display a {@link np.com.aanalbasaula.foodplanner.database.MealCourse} and makes a call to the
+ * specified {@link ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener}.
  */
-public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecipeRecyclerViewAdapter.ViewHolder> {
+public class MealCourseViewAdapter extends RecyclerView.Adapter<MealCourseViewAdapter.ViewHolder> {
 
     @Nullable
-    private final List<Recipe> mValues;
-    private final ShowAllRecipesFragment.ShowAllRecipesFragmentListener mListener;
+    private final List<MealCourse> mValues;
+    private final ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener mListener;
 
-    RecipeRecyclerViewAdapter(@Nullable List<Recipe> items, ShowAllRecipesFragmentListener listener) {
+    MealCourseViewAdapter(@Nullable List<MealCourse> items, ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -64,10 +63,10 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecipeRecycl
         return 0;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         final View mView;
         final TextView mContentView;
-        Recipe mItem;
+        MealCourse mItem;
 
         ViewHolder(View view) {
             super(view);

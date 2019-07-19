@@ -1,4 +1,4 @@
-package np.com.aanalbasaula.foodplanner.views.recipe;
+package np.com.aanalbasaula.foodplanner.views;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

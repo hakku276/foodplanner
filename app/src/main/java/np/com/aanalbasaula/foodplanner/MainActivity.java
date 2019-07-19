@@ -1,13 +1,18 @@
 package np.com.aanalbasaula.foodplanner;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,18 +20,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.List;
+import np.com.aanalbasaula.foodplanner.database.MealCourse;
+import np.com.aanalbasaula.foodplanner.views.meal_courses.CreateMealDialogFragment;
+import np.com.aanalbasaula.foodplanner.views.meal_courses.ShowAllMealCoursesFragment;
 
-import np.com.aanalbasaula.foodplanner.database.AppDatabase;
-import np.com.aanalbasaula.foodplanner.database.Recipe;
-import np.com.aanalbasaula.foodplanner.database.utils.LoadRecipesAsync;
-import np.com.aanalbasaula.foodplanner.views.recipe.LoadScreenFragment;
-import np.com.aanalbasaula.foodplanner.views.recipe.NewRecipeActivity;
-import np.com.aanalbasaula.foodplanner.views.recipe.ShowAllRecipesFragment;
-import np.com.aanalbasaula.foodplanner.views.recipe.ViewRecipeActivity;
-import np.com.aanalbasaula.foodplanner.views.shoppinglist.ShoppingListFragment;
-
-public class MainActivity extends AppCompatActivity implements ShowAllRecipesFragment.ShowAllRecipesFragmentListener {
+public class MainActivity extends AppCompatActivity implements ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_NEW_RECIPE = 100;
 
@@ -52,8 +50,8 @@ public class MainActivity extends AppCompatActivity implements ShowAllRecipesFra
 
         Log.i(TAG, "onCreate: Creating the Pager View");
         mFeaturePager = new FeaturePagerAdapter(getSupportFragmentManager(),
-                new Fragment[]{ShowAllRecipesFragment.newInstance(), ShoppingListFragment.newInstance()},
-                new String[] {getString(R.string.feature_recipes), getString(R.string.feature_shopping_list)});
+                new Fragment[]{ShowAllMealCoursesFragment.newInstance()},
+                new String[] {getString(R.string.feature_meals)});
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(mFeaturePager);
 
@@ -77,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements ShowAllRecipesFra
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_new_recipe:
-                Log.i(TAG, "onOptionsItemSelected: New recipe option menu clicked");
-                startNewRecipeCreation();
+                Log.i(TAG, "onOptionsItemSelected: New meal option menu clicked");
+                startNewMealCreation();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -86,30 +84,20 @@ public class MainActivity extends AppCompatActivity implements ShowAllRecipesFra
         return true;
     }
 
-    private void startNewRecipeCreation() {
-        Intent intent = new Intent(this, NewRecipeActivity.class);
-        startActivityForResult(intent, REQUEST_NEW_RECIPE);
+    private void startNewMealCreation() {
+        DialogFragment fragment = new CreateMealDialogFragment();
+        fragment.show(getSupportFragmentManager(), "meal");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_NEW_RECIPE && resultCode == NewRecipeActivity.RESULT_RECIPE_ADDED) {
-            Log.i(TAG, "onActivityResult: Recipe was added");
-            Recipe recipe = data.getParcelableExtra(NewRecipeActivity.EXTRA_RECIPE);
-            //showAllRecipesFragment.onNewRecipeAdded(recipe);
-        } else {
-            Log.i(TAG, "onActivityResult: Request code: " + requestCode + " result code: " + resultCode);
-            super.onActivityResult(requestCode, resultCode, data);
-        }
+
     }
 
     @Override
-    public void onListFragmentInteraction(Recipe item) {
-        Log.i(TAG, "onListFragmentInteraction: User interacted with item: " + item.toString());
-        Intent intent = new Intent(this, ViewRecipeActivity.class);
-        intent.putExtra(ViewRecipeActivity.EXTRA_RECIPE, item);
-        startActivity(intent);
+    public void onListFragmentInteraction(MealCourse item) {
     }
+
 }
 
 /**
@@ -171,4 +159,5 @@ class FeaturePagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return fragments.length;
     }
+
 }
