@@ -24,10 +24,5 @@ public class BlockFileIngredientTypeEntryConverterTest {
     public void testDataConversion(){
         Entry entry = new Entry();
         entry.setData(fakeData);
-
-        IngredientType ingredientType = converter.convert(entry);
-
-        assertEquals(ID, ingredientType.getId());
-        assertEquals(PAYLOAD, ingredientType.getName());
     }
 }

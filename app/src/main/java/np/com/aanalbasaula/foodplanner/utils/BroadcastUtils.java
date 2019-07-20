@@ -9,7 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 public class BroadcastUtils {
 
-    private static final String ACTION_PREFIX = "np.aanalbasaula.foodplanner.";
+    private static final String ACTION_PREFIX = "np.com.aanalbasaula.foodplanner.";
     public static final String ACTION_MEAL_CREATED = ACTION_PREFIX + "MealCreated";
 
     /**

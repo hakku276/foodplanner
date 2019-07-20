@@ -32,13 +32,12 @@ public class ShowAllMealCoursesFragment extends Fragment {
 
     private static final String TAG = ShowAllMealCoursesFragment.class.getSimpleName();
 
-    private ShowAllMealCoursesFragmentListener mListener;
-
-    private List<MealCourse> mealCourses;
-
-    private RecyclerView recyclerView;
-
+    // database related
     private AppDatabase db;
+
+    // ui related
+    private RecyclerView recyclerView;
+    private ShowAllMealCoursesFragmentListener mListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -107,12 +106,15 @@ public class ShowAllMealCoursesFragment extends Fragment {
         BroadcastUtils.unregisterLocalBroadcastListener(getContext(), mealCreationBroadcastListener);
     }
 
+    /**
+     * A callback listener for database load event. This listener is triggered when the async task
+     * completes database load.
+     */
     DatabaseLoader.DatabaseLoadListener<MealCourse> databaseLoadListener = new DatabaseLoader.DatabaseLoadListener<MealCourse>() {
         @Override
         public void onItemsLoaded(@NonNull List<MealCourse> items) {
             Log.i(TAG, "onItemsLoaded: Items have been successfully loaded");
-            mealCourses = items;
-            recyclerView.setAdapter(new MealCourseViewAdapter(mealCourses, mListener));
+            recyclerView.setAdapter(new MealCourseViewAdapter(items, mListener));
         }
     };
 

@@ -2,11 +2,9 @@ package np.com.aanalbasaula.foodplanner.views.meal_courses;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,9 +24,13 @@ import np.com.aanalbasaula.foodplanner.database.utils.CreateMealCourseEntryAsync
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 import np.com.aanalbasaula.foodplanner.utils.DateUtils;
 
-public class CreateMealDialogFragment extends DialogFragment {
 
-    private static final String TAG = CreateMealDialogFragment.class.getSimpleName();
+/**
+ * A Dialog box that is displayed when the user wants to plan a meal.
+ */
+public class PlanMealDialogFragment extends DialogFragment {
+
+    private static final String TAG = PlanMealDialogFragment.class.getSimpleName();
 
     // View related properties
     private EditText textMealName;
@@ -72,7 +74,7 @@ public class CreateMealDialogFragment extends DialogFragment {
      */
     private View inflateLayout() {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_add_meal, null);
+        View view = inflater.inflate(R.layout.dialog_plan_meal, null);
 
         // setup the enumMealType with the appropriate data
         enumMealType =  view.findViewById(R.id.enum_meal_type);
