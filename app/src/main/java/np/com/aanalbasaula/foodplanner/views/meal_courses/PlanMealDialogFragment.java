@@ -20,7 +20,8 @@ import np.com.aanalbasaula.foodplanner.database.AppDatabase;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.database.MealCourseDao;
 import np.com.aanalbasaula.foodplanner.database.MealType;
-import np.com.aanalbasaula.foodplanner.database.utils.CreateMealCourseEntryAsync;
+import np.com.aanalbasaula.foodplanner.database.utils.EntryCreationStrategies;
+import np.com.aanalbasaula.foodplanner.database.utils.EntryCreator;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 import np.com.aanalbasaula.foodplanner.utils.DateUtils;
 
@@ -129,18 +130,19 @@ public class PlanMealDialogFragment extends DialogFragment {
                 Log.d(TAG, "onClick: Extracted meal information : " + mealCourse.toString());
 
                 // start creation async task
-                CreateMealCourseEntryAsync creationTask = new CreateMealCourseEntryAsync(mealCourseDao, new CreateMealCourseEntryAsync.CreateMealCourseEntryListener() {
-                    @Override
-                    public void onMealCourseEntriesCreated(MealCourse[] ingredients) {
-                        Log.i(TAG, "onMealCourseEntriesCreated: Meal Course Entry was successfully created.");
-
-                        // send out broadcast that a meal was created
-                        BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_MEAL_CREATED);
-                        dialog.dismiss();
-                    }
-                });
-                creationTask.execute(mealCourse);
+                EntryCreator<MealCourseDao, MealCourse> entryCreator = new EntryCreator<>(mealCourseDao, EntryCreationStrategies.mealCourseCreationStrategy, mealCourseCreationListener);
+                entryCreator.execute(mealCourse);
             }
         }
     }
+
+    private EntryCreator.EntryCreationListener<MealCourse> mealCourseCreationListener = new EntryCreator.EntryCreationListener<MealCourse>() {
+        @Override
+        public void onEntriesCreated(MealCourse[] items) {
+            Log.i(TAG, "onEntriesCreated: Meal Course Entry was successfully created.");
+            // send out broadcast that a meal was created
+            BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_MEAL_CREATED);
+            dialog.dismiss();
+        }
+    };
 }

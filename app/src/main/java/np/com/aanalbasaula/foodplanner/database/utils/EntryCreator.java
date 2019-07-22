@@ -42,7 +42,7 @@ public class EntryCreator<D, T> extends AsyncTask<T, Void, T[]>{
 
     @Override
     protected void onPostExecute(T[] ingredients) {
-        listener.onMealCourseEntriesCreated(ingredients);
+        listener.onEntriesCreated(ingredients);
     }
 
     /**
@@ -57,7 +57,7 @@ public class EntryCreator<D, T> extends AsyncTask<T, Void, T[]>{
          *
          * @param items created items
          */
-        void onMealCourseEntriesCreated(T[] items);
+        void onEntriesCreated(T[] items);
     }
 
     /**
@@ -78,4 +78,5 @@ public class EntryCreator<D, T> extends AsyncTask<T, Void, T[]>{
          */
         void createEntries(D dao, T[] entries);
     }
+
 }
