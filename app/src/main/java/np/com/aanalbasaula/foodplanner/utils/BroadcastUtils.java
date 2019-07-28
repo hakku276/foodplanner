@@ -11,6 +11,7 @@ public class BroadcastUtils {
 
     private static final String ACTION_PREFIX = "np.com.aanalbasaula.foodplanner.";
     public static final String ACTION_MEAL_CREATED = ACTION_PREFIX + "MealCreated";
+    public static final String ACTION_RECIPE_CREATED = ACTION_PREFIX + "RecipeCreated";
 
     /**
      * Send a local broadcast using the provided context for the defined action.

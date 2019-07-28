@@ -39,11 +39,8 @@ public class ShowAllMealCoursesFragment extends Fragment {
     private RecyclerView recyclerView;
     private ShowAllMealCoursesFragmentListener mListener;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public ShowAllMealCoursesFragment() {
+        // Required empty public constructor
     }
 
     public static ShowAllMealCoursesFragment newInstance() {
@@ -113,7 +110,7 @@ public class ShowAllMealCoursesFragment extends Fragment {
     DatabaseLoader.DatabaseLoadListener<MealCourse> databaseLoadListener = new DatabaseLoader.DatabaseLoadListener<MealCourse>() {
         @Override
         public void onItemsLoaded(@NonNull List<MealCourse> items) {
-            Log.i(TAG, "onItemsLoaded: Items have been successfully loaded");
+            Log.i(TAG, "onItemsLoaded: Meal Courses have been successfully loaded");
             recyclerView.setAdapter(new MealCourseViewAdapter(items, mListener));
         }
     };

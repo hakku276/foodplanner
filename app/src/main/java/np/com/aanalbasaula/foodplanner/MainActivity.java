@@ -1,6 +1,7 @@
 package np.com.aanalbasaula.foodplanner;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,12 +18,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
+import np.com.aanalbasaula.foodplanner.views.cookbook.CookBookFragment;
 import np.com.aanalbasaula.foodplanner.views.meal_courses.PlanMealDialogFragment;
 import np.com.aanalbasaula.foodplanner.views.meal_courses.ShowAllMealCoursesFragment;
 
-public class MainActivity extends AppCompatActivity implements ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener {
+public class MainActivity extends AppCompatActivity implements ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener, CookBookFragment.OnFragmentInteractionListener {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int REQUEST_NEW_RECIPE = 100;
 
     /**
      * The pager view which is responsible for showing the different major features of the application
@@ -46,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements ShowAllMealCourse
 
         Log.i(TAG, "onCreate: Creating the Pager View");
         mFeaturePager = new FeaturePagerAdapter(getSupportFragmentManager(),
-                new Fragment[]{ShowAllMealCoursesFragment.newInstance()},
-                new String[] {getString(R.string.feature_meals)});
+                new Fragment[]{ShowAllMealCoursesFragment.newInstance(), CookBookFragment.newInstance()},
+                new String[] {getString(R.string.feature_meals), getString(R.string.feature_cookbook)});
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(mFeaturePager);
 
@@ -92,6 +93,11 @@ public class MainActivity extends AppCompatActivity implements ShowAllMealCourse
 
     @Override
     public void onListFragmentInteraction(MealCourse item) {
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
 }
