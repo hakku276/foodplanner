@@ -3,6 +3,8 @@ package np.com.aanalbasaula.foodplanner.views.meal_courses;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +28,8 @@ import java.util.Map;
  * specified {@link ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener}.
  */
 public class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final String TAG = MealCourseViewAdapter.class.getSimpleName();
 
     // Static definitions
 
@@ -207,15 +211,6 @@ public class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     MealCourseViewHolder mealCourseViewHolder = (MealCourseViewHolder) holder;
                     mealCourseViewHolder.mItem = (MealCourse) item.getItem();
                     mealCourseViewHolder.mContentView.setText(mealCourseViewHolder.mItem.getName());
-                    mealCourseViewHolder.mView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (null != mListener) {
-                                // Notify the active callbacks interface (the activity, if the
-                                // fragment is attached to one) that an item has been selected.
-                            }
-                        }
-                    });
                     break;
             }
         }
@@ -280,7 +275,7 @@ public class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     /**
      * A View holder class to handle the list Item showing the Meal information
      */
-    class MealCourseViewHolder extends RecyclerView.ViewHolder {
+    class MealCourseViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         final View mView;
         final TextView mContentView;
         MealCourse mItem;
@@ -289,11 +284,22 @@ public class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             super(view);
             mView = view;
             mContentView = (TextView) view.findViewById(R.id.content);
+            view.setOnCreateContextMenuListener(this);
         }
 
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            Log.i(TAG, "onCreateContextMenu: Context menu requested");
+
+            contextMenu.setHeaderTitle(view.getContext().getString(R.string.meal_plan_context_menu_title));
+            contextMenu.add(getAdapterPosition(), R.id.action_edit, 0, R.string.action_edit);
+            contextMenu.add(getAdapterPosition(), R.id.action_delete, 0, R.string.action_delete);
+
         }
     }
 }

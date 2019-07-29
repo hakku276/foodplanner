@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -61,6 +62,13 @@ public class ShowAllMealCoursesFragment extends Fragment {
                 MealCourseDao::getAllMealCoursesInFuture,
                 databaseLoadListener);
         asyncTask.execute();
+        registerForContextMenu(recyclerView);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        unregisterForContextMenu(recyclerView);
     }
 
     @Override
@@ -131,6 +139,13 @@ public class ShowAllMealCoursesFragment extends Fragment {
             Log.i(TAG, "onReceive: Started async task to load meal courses");
         }
     };
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Log.i(TAG, "onContextItemSelected: A Context Item was selected");
+        Log.i(TAG, "onContextItemSelected: " + item.getMenuInfo().getClass().getSimpleName());
+        return true;
+    }
 
     /**
      * This interface must be implemented by activities that contain this
