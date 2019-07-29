@@ -1,6 +1,7 @@
 package np.com.aanalbasaula.foodplanner.views.cookbook;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +10,8 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -19,6 +22,7 @@ import np.com.aanalbasaula.foodplanner.database.RecipeDao;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreationStrategies;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreator;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
+import np.com.aanalbasaula.foodplanner.utils.UIUtils;
 
 /**
  * A simple dialog box to create a recipe.
@@ -47,7 +51,7 @@ public class CreateRecipeDialogFragment extends DialogFragment {
         builder.setView(bodyView)
                 .setTitle(R.string.title_dialog_create_recipe)
                 .setPositiveButton(R.string.button_create, null)
-                .setNegativeButton(R.string.button_cancel, null);
+                .setNegativeButton(R.string.button_cancel, dialogCancelListener);
 
         dialog = builder.create();
 
@@ -57,6 +61,7 @@ public class CreateRecipeDialogFragment extends DialogFragment {
             public void onShow(DialogInterface dialogInterface) {
                 Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(addRecipeButtonListener);
+                UIUtils.forceShowKeyboard(getActivity(), textRecipeName);
             }
         });
 
@@ -78,6 +83,13 @@ public class CreateRecipeDialogFragment extends DialogFragment {
 
         return view;
     }
+
+    private DialogInterface.OnClickListener dialogCancelListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+            UIUtils.forceHideKeyboardFromView(getActivity(), textRecipeName);
+        }
+    };
 
     /**
      * Validates whether the form input was correct or not.
@@ -103,6 +115,8 @@ public class CreateRecipeDialogFragment extends DialogFragment {
                 textRecipeName.setError(getString(R.string.error_required));
                 return;
             }
+
+            UIUtils.forceHideKeyboardFromView(getActivity(), textRecipeName);
 
             // construct recipe object to save
             Recipe recipe = new Recipe();
