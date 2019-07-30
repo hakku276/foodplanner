@@ -61,11 +61,19 @@ public class CreateRecipeDialogFragment extends DialogFragment {
             public void onShow(DialogInterface dialogInterface) {
                 Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(addRecipeButtonListener);
-                UIUtils.forceShowKeyboard(getActivity(), textRecipeName);
+                UIUtils.forceShowKeyboard(getActivity());
             }
         });
 
         return dialog;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        // since the dialog is going out of scope.. use another view
+        Log.i(TAG, "onDismiss: Dialog has been dismissed. Hiding keyboard");
+        View view = requireActivity().findViewById(R.id.content);
+        UIUtils.forceHideKeyboardFromView(getContext(), view);
     }
 
     /**

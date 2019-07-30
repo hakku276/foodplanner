@@ -17,10 +17,16 @@ public class UIUtils {
      * Force the keyboard to open on the defined view
      *
      * @param context the context in which this interaction is to be performed
-     * @param view    the view to show the keyboard for
      */
-    public static void forceShowKeyboard(Context context, View view) {
-        ((InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(view, InputMethodManager.SHOW_FORCED);
+    public static void forceShowKeyboard(Context context) {
+        if (context != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            if (inputMethodManager != null){
+                inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.RESULT_UNCHANGED_SHOWN);
+            }
+
+        }
     }
 
     /**
@@ -30,7 +36,14 @@ public class UIUtils {
      * @param view    the view to hide the keyboard
      */
     public static void forceHideKeyboardFromView(Context context, View view) {
-        ((InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+        if (context != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            if (inputMethodManager != null){
+                inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+            }
+
+        }
     }
 
 }
