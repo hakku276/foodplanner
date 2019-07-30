@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 public class BroadcastUtils {
 
     private static final String ACTION_PREFIX = "np.com.aanalbasaula.foodplanner.";
+    public static final String ACTION_MEAL_UPDATED = ACTION_PREFIX + "MealUpdated";
     public static final String ACTION_MEAL_CREATED = ACTION_PREFIX + "MealCreated";
     public static final String ACTION_RECIPE_CREATED = ACTION_PREFIX + "RecipeCreated";
 
@@ -35,17 +36,21 @@ public class BroadcastUtils {
      *
      * @param context  the context of the application
      * @param receiver the receiver of the broadcast
-     * @param action   the action to filter using
+     * @param actions   the actions to filter using
      */
-    public static void registerLocalBroadcastListener(@NonNull final Context context, @NonNull final BroadcastReceiver receiver, @NonNull final String action) {
+    public static void registerLocalBroadcastListener(@NonNull final Context context, @NonNull final BroadcastReceiver receiver, @NonNull final String... actions) {
         LocalBroadcastManager manager = LocalBroadcastManager.getInstance(context);
-        IntentFilter filter = new IntentFilter(action);
+        IntentFilter filter = new IntentFilter();
+        for (String action :
+                actions) {
+            filter.addAction(action);
+        }
         manager.registerReceiver(receiver, filter);
     }
 
     /**
      * A simple helper function to unregister a broadcast receiver previously registered.
-     * To register a broadcast listener, please refer {@link #registerLocalBroadcastListener(Context, BroadcastReceiver, String)}
+     * To register a broadcast listener, please refer {@link #registerLocalBroadcastListener(Context, BroadcastReceiver, String...)}
      *
      * @param context the app context
      * @param receiver the receiver that should be unregistered

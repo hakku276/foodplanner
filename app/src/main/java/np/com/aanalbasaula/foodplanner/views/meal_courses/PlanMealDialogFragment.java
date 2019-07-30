@@ -235,7 +235,7 @@ public class PlanMealDialogFragment extends DialogFragment {
             Log.i(TAG, "onItemsUpdated: Entry successfully updated");
 
             // send out the broadcast that meal database has changed
-            BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_MEAL_CREATED);
+            BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_MEAL_UPDATED);
             dialog.dismiss();
         }
     };

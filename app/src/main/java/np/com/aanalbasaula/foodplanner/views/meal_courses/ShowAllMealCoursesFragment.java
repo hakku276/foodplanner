@@ -91,10 +91,11 @@ public class ShowAllMealCoursesFragment extends Fragment {
         if (context instanceof ShowAllMealCoursesFragmentListener) {
             mListener = (ShowAllMealCoursesFragmentListener) context;
 
-            // register for meal creation broadcast
+            // register for meal creation as well as update broadcast
             BroadcastUtils.registerLocalBroadcastListener(context,
-                    mealCreationBroadcastListener,
-                    BroadcastUtils.ACTION_MEAL_CREATED);
+                    mealDBChangedBroadcastListener,
+                    BroadcastUtils.ACTION_MEAL_CREATED,
+                    BroadcastUtils.ACTION_MEAL_UPDATED);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement ShowAllMealCoursesFragmentListener");
@@ -106,7 +107,7 @@ public class ShowAllMealCoursesFragment extends Fragment {
         super.onDetach();
         mListener = null;
 
-        BroadcastUtils.unregisterLocalBroadcastListener(getContext(), mealCreationBroadcastListener);
+        BroadcastUtils.unregisterLocalBroadcastListener(getContext(), mealDBChangedBroadcastListener);
     }
 
     /**
@@ -140,7 +141,7 @@ public class ShowAllMealCoursesFragment extends Fragment {
      * Broadcast listener to any meal creation that has recently happened.
      * To reload the view as required
      */
-    BroadcastReceiver mealCreationBroadcastListener = new BroadcastReceiver() {
+    BroadcastReceiver mealDBChangedBroadcastListener = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
