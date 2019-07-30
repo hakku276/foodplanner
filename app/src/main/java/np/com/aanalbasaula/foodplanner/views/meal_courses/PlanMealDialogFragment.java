@@ -35,7 +35,8 @@ import np.com.aanalbasaula.foodplanner.utils.DateUtils;
 public class PlanMealDialogFragment extends DialogFragment {
 
     private static final String TAG = PlanMealDialogFragment.class.getSimpleName();
-    private static final String ARG_MEAL_COURSE = "meal";
+    private static final String ARG_MEAL_COURSE = "meal_course";
+    private static final String ARG_MEAL_NAME = "meal_name";
 
     // View related properties
     private EditText textMealName;
@@ -59,6 +60,17 @@ public class PlanMealDialogFragment extends DialogFragment {
         return mealDialogFragment;
     }
 
+    public static PlanMealDialogFragment build(String mealName) {
+        PlanMealDialogFragment mealDialogFragment = new PlanMealDialogFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_MEAL_NAME, mealName);
+
+        mealDialogFragment.setArguments(bundle);
+
+        return mealDialogFragment;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -66,6 +78,8 @@ public class PlanMealDialogFragment extends DialogFragment {
         View bodyView = inflateLayout();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
+        // try and setup modes
+        setupCreateWithArgs(getArguments());
         setupEditMode(getArguments());
 
         // initialization of DAO
@@ -93,6 +107,23 @@ public class PlanMealDialogFragment extends DialogFragment {
         });
 
         return dialog;
+    }
+
+    /**
+     * Sets up the dialog to initialize with the provided arguments in create mode.
+     *
+     * @param arguments the arguments provided to the fragment
+     */
+    private void setupCreateWithArgs(Bundle arguments) {
+        Log.i(TAG, "setupCreateWithArgs: Setting up create mode with the provided arguments");
+        if (arguments != null && arguments.containsKey(ARG_MEAL_NAME)) {
+            Log.d(TAG, "setupCreateWithArgs: Arguments available for use");
+            String mealName = arguments.getString(ARG_MEAL_NAME);
+            isEditMode = false;
+
+            // set the meal name to the edit text
+            textMealName.setText(mealName);
+        }
     }
 
     /**

@@ -23,6 +23,7 @@ import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
+import np.com.aanalbasaula.foodplanner.views.meal_courses.PlanMealDialogFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -142,8 +143,17 @@ public class CookBookFragment extends Fragment {
         public void onItemsLoaded(@NonNull List<Recipe> items) {
             Log.i(TAG, "onItemsLoaded: Successfully loaded recipes");
 
-            CookbookViewAdapter adapter = new CookbookViewAdapter(items);
+            CookbookViewAdapter adapter = new CookbookViewAdapter(items, recipeClickListener);
             recyclerView.setAdapter(adapter);
+        }
+    };
+
+    private CookbookViewAdapter.RecipeClickListener recipeClickListener = new CookbookViewAdapter.RecipeClickListener() {
+        @Override
+        public void onRecipeItemClicked(Recipe recipe) {
+            Log.i(TAG, "onRecipeItemClicked: Recipe Item Clicked by user");
+            PlanMealDialogFragment fragment = PlanMealDialogFragment.build(recipe.getName());
+            fragment.show(getFragmentManager(), "meal-plan");
         }
     };
 
