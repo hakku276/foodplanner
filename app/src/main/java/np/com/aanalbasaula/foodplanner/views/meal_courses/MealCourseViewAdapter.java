@@ -27,7 +27,7 @@ import java.util.Map;
  * {@link RecyclerView.Adapter} that can display a {@link np.com.aanalbasaula.foodplanner.database.MealCourse} and makes a call to the
  * specified {@link ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener}.
  */
-public class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = MealCourseViewAdapter.class.getSimpleName();
 
@@ -230,6 +230,35 @@ public class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             return items.size();
         }
         return 0;
+    }
+
+    /**
+     * Get a meal course at a specific position within the adapter
+     *
+     * @param position the position to retrieve the item at
+     * @return the meal course if available else null
+     */
+    @Nullable MealCourse getMealCourseAtPosition(int position) {
+        if (items != null) {
+            MultiLevelViewSupport.Node node = items.get(position);
+
+            if (node.getItem() instanceof MealCourse) {
+                return (MealCourse) node.getItem();
+            }
+
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets a new list of meal items into adapter
+     *
+     * @param meals the new list of meals to be added into the view
+     */
+    public void setItems(List<MealCourse> meals) {
+        prepareDataset(meals);
+        notifyDataSetChanged();
     }
 
     /**

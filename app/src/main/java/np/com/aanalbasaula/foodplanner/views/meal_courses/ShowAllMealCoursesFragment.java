@@ -39,6 +39,7 @@ public class ShowAllMealCoursesFragment extends Fragment {
     // ui related
     private RecyclerView recyclerView;
     private ShowAllMealCoursesFragmentListener mListener;
+    private MealCourseViewAdapter mealCourseViewAdapter;
 
     public ShowAllMealCoursesFragment() {
         // Required empty public constructor
@@ -58,10 +59,7 @@ public class ShowAllMealCoursesFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        DatabaseLoader<MealCourseDao, MealCourse> asyncTask = new DatabaseLoader<>(this.db.getMealCourseDao(),
-                MealCourseDao::getAllMealCoursesInFuture,
-                databaseLoadListener);
-        asyncTask.execute();
+        loadItemsFromDatabaseAsync();
         registerForContextMenu(recyclerView);
     }
 
@@ -119,9 +117,24 @@ public class ShowAllMealCoursesFragment extends Fragment {
         @Override
         public void onItemsLoaded(@NonNull List<MealCourse> items) {
             Log.i(TAG, "onItemsLoaded: Meal Courses have been successfully loaded");
-            recyclerView.setAdapter(new MealCourseViewAdapter(items, mListener));
+            if (mealCourseViewAdapter == null) {
+                mealCourseViewAdapter = new MealCourseViewAdapter(items, mListener);
+                recyclerView.setAdapter(mealCourseViewAdapter);
+            } else {
+                mealCourseViewAdapter.setItems(items);
+            }
         }
     };
+
+    /**
+     * Initiate load for all the items within the database
+     */
+    private void loadItemsFromDatabaseAsync() {
+        DatabaseLoader<MealCourseDao, MealCourse> asyncTask = new DatabaseLoader<>(db.getMealCourseDao(),
+                MealCourseDao::getAllMealCoursesInFuture,
+                databaseLoadListener);
+        asyncTask.execute();
+    }
 
     /**
      * Broadcast listener to any meal creation that has recently happened.
@@ -132,18 +145,27 @@ public class ShowAllMealCoursesFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "onReceive: Meal Creation broadcast received. Reloading data");
-            DatabaseLoader<MealCourseDao, MealCourse> asyncTask = new DatabaseLoader<>(db.getMealCourseDao(),
-                    MealCourseDao::getAllMealCoursesInFuture,
-                    databaseLoadListener);
-            asyncTask.execute();
+            loadItemsFromDatabaseAsync();
             Log.i(TAG, "onReceive: Started async task to load meal courses");
         }
     };
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Log.i(TAG, "onContextItemSelected: A Context Item was selected");
-        Log.i(TAG, "onContextItemSelected: " + item.getMenuInfo().getClass().getSimpleName());
+        Log.i(TAG, "onContextItemSelected: A Context Item was selected. At Position: " + item.getGroupId());
+        // item group id has been set to position within the adapter
+        MealCourse mealCourse = mealCourseViewAdapter.getMealCourseAtPosition(item.getGroupId());
+        if (mealCourse != null) {
+            switch (item.getItemId()) {
+                case R.id.action_delete:
+                    break;
+                case R.id.action_edit:
+                    Log.d(TAG, "onContextItemSelected: Context Menu Edit selected for item at position: " + item.getGroupId());
+                    PlanMealDialogFragment planMealDialog = new PlanMealDialogFragment();
+                    planMealDialog.show(requireFragmentManager(), "plan-meal");
+                    break;
+            }
+        }
         return true;
     }
 
