@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 public class BroadcastUtilsTest {
 
     private static final String TEST_ACTION = "np.com.aanalbasaula.foodplanner.TEST_ACTION";
+    private static final String SECOND_TEST_ACTION = "np.com.aanalbasaula.foodplanner.SECOND_TEST_ACTION";
 
     /**
      * Test that the broadcast receiver is triggered when a broadcast is made
@@ -37,6 +38,42 @@ public class BroadcastUtilsTest {
         // check if the receiver was triggered
         Assert.assertTrue(receiver.triggered);
         Assert.assertEquals(TEST_ACTION, receiver.triggerAction);
+    }
+
+    /**
+     * Test that the broadcast receiver is triggered when a broadcast is made
+     * and a receiver is registered to multiple different actions.
+     */
+    @Test
+    public void testBroadcastReceiverWithMultipleFilters() throws InterruptedException {
+        Context context = InstrumentationRegistry.getTargetContext();
+        TestReceiver receiver = new TestReceiver();
+
+        // register broadcast
+        BroadcastUtils.registerLocalBroadcastListener(context, receiver, TEST_ACTION, SECOND_TEST_ACTION);
+
+        // trigger broadcast
+        BroadcastUtils.sendLocalBroadcast(context, TEST_ACTION);
+
+        // wait for some time
+        Thread.sleep(1000);
+
+        // check if the receiver was triggered
+        Assert.assertTrue(receiver.triggered);
+        Assert.assertEquals(TEST_ACTION, receiver.triggerAction);
+
+        //reset
+        receiver.reset();
+
+        // trigger again second broadcast
+        BroadcastUtils.sendLocalBroadcast(context, SECOND_TEST_ACTION);
+
+        // wait for some time
+        Thread.sleep(1000);
+
+        // check if the receiver was triggered
+        Assert.assertTrue(receiver.triggered);
+        Assert.assertEquals(SECOND_TEST_ACTION, receiver.triggerAction);
     }
 
     /**
