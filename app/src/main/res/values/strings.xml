@@ -11,11 +11,13 @@
     <string name="button_cancel">Cancel</string>
     <string name="button_create">Create</string>
     <string name="button_add">Add</string>
+    <string name="button_update">Update</string>
     <string name="menu_new_meal">New Meal</string>
 
     <!--Dialog Titles-->
     <string name="title_dialog_create_recipe">New Recipe</string>
     <string name="title_dialog_add_meal">New Meal</string>
+    <string name="title_dialog_update_meal">Edit</string>
 
     <!--Text Views-->
     <string name="text_date">Date</string>

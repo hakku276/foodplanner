@@ -161,7 +161,7 @@ public class ShowAllMealCoursesFragment extends Fragment {
                     break;
                 case R.id.action_edit:
                     Log.d(TAG, "onContextItemSelected: Context Menu Edit selected for item at position: " + item.getGroupId());
-                    PlanMealDialogFragment planMealDialog = new PlanMealDialogFragment();
+                    PlanMealDialogFragment planMealDialog = PlanMealDialogFragment.build(mealCourse);
                     planMealDialog.show(requireFragmentManager(), "plan-meal");
                     break;
             }

@@ -15,6 +15,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import java.util.Calendar;
+
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.AppDatabase;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
@@ -22,6 +24,7 @@ import np.com.aanalbasaula.foodplanner.database.MealCourseDao;
 import np.com.aanalbasaula.foodplanner.database.MealType;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreationStrategies;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreator;
+import np.com.aanalbasaula.foodplanner.database.utils.EntryUpdater;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 import np.com.aanalbasaula.foodplanner.utils.DateUtils;
 
@@ -32,6 +35,7 @@ import np.com.aanalbasaula.foodplanner.utils.DateUtils;
 public class PlanMealDialogFragment extends DialogFragment {
 
     private static final String TAG = PlanMealDialogFragment.class.getSimpleName();
+    private static final String ARG_MEAL_COURSE = "meal";
 
     // View related properties
     private EditText textMealName;
@@ -40,21 +44,43 @@ public class PlanMealDialogFragment extends DialogFragment {
     private AlertDialog dialog;
 
     // Data access related properties
+    private boolean isEditMode;
+    private MealCourse mealCourse; // edit mode meal course
     private MealCourseDao mealCourseDao;
+
+    public static PlanMealDialogFragment build(MealCourse mealCourse) {
+        PlanMealDialogFragment mealDialogFragment = new PlanMealDialogFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(ARG_MEAL_COURSE, mealCourse);
+
+        mealDialogFragment.setArguments(bundle);
+
+        return mealDialogFragment;
+    }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateDialog: Creating Dialog. Inflating views");
         View bodyView = inflateLayout();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        setupEditMode(getArguments());
 
         // initialization of DAO
         mealCourseDao = AppDatabase.getInstance(getActivity()).getMealCourseDao();
 
         builder.setView(bodyView)
-                .setTitle(R.string.title_dialog_add_meal)
-                .setPositiveButton(R.string.button_add, null)
                 .setNegativeButton(R.string.button_cancel, null);
+
+        if (isEditMode){
+            builder.setTitle(R.string.title_dialog_update_meal)
+                    .setPositiveButton(R.string.button_update, null);
+        } else {
+            builder.setTitle(R.string.title_dialog_add_meal)
+                    .setPositiveButton(R.string.button_add, null);
+        }
 
         dialog = builder.create();
 
@@ -62,11 +88,38 @@ public class PlanMealDialogFragment extends DialogFragment {
             @Override
             public void onShow(DialogInterface dialogInterface) {
                 Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new AddMealButtonListener());
+                button.setOnClickListener(new DialogPositiveButtonListener());
             }
         });
 
         return dialog;
+    }
+
+    /**
+     * Sets up the edit mode if possible using the argument provided to the fragment. Else
+     * the Create mode is enabled by default
+     *
+     * @param arguments the argument provided to the fragment
+     */
+    private void setupEditMode(Bundle arguments) {
+        Log.i(TAG, "setupEditMode: Setting up edit mode in case Arguments available");
+        if (arguments != null && arguments.containsKey(ARG_MEAL_COURSE)) {
+            Log.d(TAG, "setupEditMode: Arguments available");
+            mealCourse = arguments.getParcelable(ARG_MEAL_COURSE);
+
+            if (mealCourse != null) {
+                Log.d(TAG, "setupEditMode: Meal course not empty");
+                isEditMode = true;
+
+                // initialize the views
+                textMealName.setText(mealCourse.getName());
+                enumMealType.setSelection(getPositionForMealType(mealCourse.getType()));
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(mealCourse.getDate());
+                datePicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+            }
+        }
     }
 
     /**
@@ -114,24 +167,54 @@ public class PlanMealDialogFragment extends DialogFragment {
     }
 
     /**
-     * A button click listener to listen to
+     * Get the position of the meal type within the enum
+     * @param type the type of meal
+     * @return the int position
      */
-    private class AddMealButtonListener implements View.OnClickListener {
+    private int getPositionForMealType(MealType type) {
+        MealType[] types = MealType.values();
+        for (int i = 0; i < types.length; i++) {
+            if (types[i] == type) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("Invalid Meal Type");
+    }
+
+    /**
+     * Update the provided meal course object with the values from the UI
+     * @param mealCourse the provided meal course
+     */
+    private void updateMealCourseFromUi(MealCourse mealCourse) {
+        mealCourse.setDate(DateUtils.extractDateFromPicker(datePicker));
+        mealCourse.setName(textMealName.getText().toString());
+        mealCourse.setType(extractMealType());
+    }
+
+    /**
+     * A button click listener to listen to positive actions. Either create or update
+     */
+    private class DialogPositiveButtonListener implements View.OnClickListener {
 
         @Override
         public void onClick(View view) {
             Log.i(TAG, "onClick: Add meal button clicked");
             if(isInputValid()) {
-                Log.i(TAG, "onClick: The input was valid. Proceeding with meal entry creation");
-                MealCourse mealCourse = new MealCourse();
-                mealCourse.setDate(DateUtils.extractDateFromPicker(datePicker));
-                mealCourse.setName(textMealName.getText().toString());
-                mealCourse.setType(extractMealType());
-                Log.d(TAG, "onClick: Extracted meal information : " + mealCourse.toString());
+                Log.d(TAG, "onClick: The input was valid.");
+                if (isEditMode) {
+                    Log.i(TAG, "onClick: Edit mode detected. Updating meal course entry in database");
+                    updateMealCourseFromUi(mealCourse);
+                    EntryUpdater<MealCourseDao, MealCourse> entryUpdater = new EntryUpdater<>(mealCourseDao, MealCourseDao::update, mealCourseUpdateListener);
+                    entryUpdater.execute(mealCourse);
+                } else {
+                    mealCourse = new MealCourse();
+                    updateMealCourseFromUi(mealCourse);
+                    Log.d(TAG, "onClick: Extracted meal information : " + mealCourse.toString());
 
-                // start creation async task
-                EntryCreator<MealCourseDao, MealCourse> entryCreator = new EntryCreator<>(mealCourseDao, EntryCreationStrategies.mealCourseCreationStrategy, mealCourseCreationListener);
-                entryCreator.execute(mealCourse);
+                    // start creation async task
+                    EntryCreator<MealCourseDao, MealCourse> entryCreator = new EntryCreator<>(mealCourseDao, EntryCreationStrategies.mealCourseCreationStrategy, mealCourseCreationListener);
+                    entryCreator.execute(mealCourse);
+                }
             }
         }
     }
@@ -141,6 +224,17 @@ public class PlanMealDialogFragment extends DialogFragment {
         public void onEntriesCreated(MealCourse[] items) {
             Log.i(TAG, "onEntriesCreated: Meal Course Entry was successfully created.");
             // send out broadcast that a meal was created
+            BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_MEAL_CREATED);
+            dialog.dismiss();
+        }
+    };
+
+    private EntryUpdater.DatabaseUpdateListener<MealCourse> mealCourseUpdateListener = new EntryUpdater.DatabaseUpdateListener<MealCourse>() {
+        @Override
+        public void onItemsUpdated() {
+            Log.i(TAG, "onItemsUpdated: Entry successfully updated");
+
+            // send out the broadcast that meal database has changed
             BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_MEAL_CREATED);
             dialog.dismiss();
         }
