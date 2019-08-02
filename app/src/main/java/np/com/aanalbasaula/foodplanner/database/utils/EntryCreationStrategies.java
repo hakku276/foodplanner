@@ -6,6 +6,8 @@ import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.database.MealCourseDao;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeDao;
+import np.com.aanalbasaula.foodplanner.database.ShoppingListDao;
+import np.com.aanalbasaula.foodplanner.database.ShoppingListEntry;
 
 /**
  * A collection of predefined Database Entry Creation strategies, that can be used with
@@ -33,6 +35,17 @@ public class EntryCreationStrategies {
      * Entry creation Strategy to insert Recipe using a RecipeDAO
      */
     public static EntryCreator.CreationStrategy<RecipeDao, Recipe> recipeCreationStrategy = (dao, entries) -> {
+        long[] ids = dao.insert(entries);
+        for (int i = 0; i < ids.length; i++) {
+            Log.i(TAG, "doInBackground: New Meal Courses ID: " + ids[0]);
+            entries[i].setId(ids[i]);
+        }
+    };
+
+    /**
+     * Entry creation Strategy to insert Shopping List entry using a Shopping List DAO
+     */
+    public static EntryCreator.CreationStrategy<ShoppingListDao, ShoppingListEntry> shoppingListEntryCreationStrategy = (dao, entries) -> {
         long[] ids = dao.insert(entries);
         for (int i = 0; i < ids.length; i++) {
             Log.i(TAG, "doInBackground: New Meal Courses ID: " + ids[0]);

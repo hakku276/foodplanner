@@ -39,7 +39,7 @@ public class CookBookFragment extends Fragment {
 
     // ui related
     private RecyclerView recyclerView;
-    private FloatingActionButton createRecipeButton;
+    private FloatingActionButton btnCreateRecipe;
     private OnFragmentInteractionListener mListener;
 
     // Database related
@@ -78,7 +78,7 @@ public class CookBookFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cook_book, container, false);
 
         recyclerView = view.findViewById(R.id.list_cookbook);
-        createRecipeButton = view.findViewById(R.id.btn_create_recipe);
+        btnCreateRecipe = view.findViewById(R.id.btn_create_recipe);
 
         // setup the recycler view
         Context context = view.getContext();
@@ -86,7 +86,7 @@ public class CookBookFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         // setup the floating action button
-        createRecipeButton.setOnClickListener(createButtonClickListener);
+        btnCreateRecipe.setOnClickListener(createButtonClickListener);
 
         return view;
     }
