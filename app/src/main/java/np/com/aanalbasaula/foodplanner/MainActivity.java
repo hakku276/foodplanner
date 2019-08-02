@@ -21,6 +21,7 @@ import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.views.cookbook.CookBookFragment;
 import np.com.aanalbasaula.foodplanner.views.meal_courses.PlanMealDialogFragment;
 import np.com.aanalbasaula.foodplanner.views.meal_courses.ShowAllMealCoursesFragment;
+import np.com.aanalbasaula.foodplanner.views.shopping_list.ShoppingListFragment;
 
 public class MainActivity extends AppCompatActivity implements ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener, CookBookFragment.OnFragmentInteractionListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -47,8 +48,14 @@ public class MainActivity extends AppCompatActivity implements ShowAllMealCourse
 
         Log.i(TAG, "onCreate: Creating the Pager View");
         mFeaturePager = new FeaturePagerAdapter(getSupportFragmentManager(),
-                new Fragment[]{ShowAllMealCoursesFragment.newInstance(), CookBookFragment.newInstance()},
-                new String[] {getString(R.string.feature_meals), getString(R.string.feature_cookbook)});
+                new Fragment[]{
+                        ShowAllMealCoursesFragment.newInstance(),
+                        CookBookFragment.newInstance(),
+                        ShoppingListFragment.newInstance()},
+                new String[] {
+                        getString(R.string.feature_meals),
+                        getString(R.string.feature_cookbook),
+                        getString(R.string.feature_shopping_list)});
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(mFeaturePager);
 

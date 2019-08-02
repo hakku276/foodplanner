@@ -41,6 +41,7 @@ public class CreateRecipeDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateDialog: Creating Recipe Dialog Fragment");
         View bodyView = inflateLayout();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -51,29 +52,22 @@ public class CreateRecipeDialogFragment extends DialogFragment {
         builder.setView(bodyView)
                 .setTitle(R.string.title_dialog_create_recipe)
                 .setPositiveButton(R.string.button_create, null)
-                .setNegativeButton(R.string.button_cancel, dialogCancelListener);
+                .setNegativeButton(R.string.button_cancel, null);
 
         dialog = builder.create();
 
+        dialog.setCanceledOnTouchOutside(true);
         // add button listener on the dialog to listen to button press
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
+                Log.d(TAG, "onShow: Showing Dialog Box");
                 Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(addRecipeButtonListener);
-                UIUtils.forceShowKeyboard(getActivity());
             }
         });
 
         return dialog;
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        // since the dialog is going out of scope.. use another view
-        Log.i(TAG, "onDismiss: Dialog has been dismissed. Hiding keyboard");
-        View view = requireActivity().findViewById(R.id.content);
-        UIUtils.forceHideKeyboardFromView(getContext(), view);
     }
 
     /**
@@ -91,13 +85,6 @@ public class CreateRecipeDialogFragment extends DialogFragment {
 
         return view;
     }
-
-    private DialogInterface.OnClickListener dialogCancelListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialogInterface, int i) {
-            UIUtils.forceHideKeyboardFromView(getActivity(), textRecipeName);
-        }
-    };
 
     /**
      * Validates whether the form input was correct or not.
@@ -123,8 +110,6 @@ public class CreateRecipeDialogFragment extends DialogFragment {
                 textRecipeName.setError(getString(R.string.error_required));
                 return;
             }
-
-            UIUtils.forceHideKeyboardFromView(getActivity(), textRecipeName);
 
             // construct recipe object to save
             Recipe recipe = new Recipe();

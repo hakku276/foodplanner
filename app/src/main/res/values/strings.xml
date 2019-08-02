@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">FoodPlanner</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+    <!--App features-->
+    <string name="feature_cookbook">Cookbook</string>
+    <string name="feature_shopping_list">Shopping List</string>
+    <string name="feature_meals">Meals</string>
+
     <string name="img_desc_add">Add Entry</string>
 
     <!--Edit Text Hints-->
@@ -44,8 +48,5 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="feature_cookbook">Cookbook</string>
     <string name="meal_plan_context_menu_title">Select The Action</string>
-
-
 </resources>
