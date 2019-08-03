@@ -16,6 +16,9 @@ public class ShoppingListEntry {
     @ColumnInfo(name = "name")
     private String name;
 
+    @ColumnInfo(name = "selected")
+    private boolean selected;
+
     public ShoppingListEntry() {
         // empty constructor
     }

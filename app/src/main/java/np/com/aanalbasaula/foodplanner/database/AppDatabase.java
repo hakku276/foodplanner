@@ -11,21 +11,21 @@ import android.support.annotation.NonNull;
 
 import np.com.aanalbasaula.foodplanner.database.utils.Converters;
 
-@Database(entities = {MealCourse.class, Recipe.class, ShoppingListEntry.class}, version = 3)
+@Database(entities = {MealCourse.class, Recipe.class, ShoppingListEntry.class}, version = 4)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
-
-    private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
-        @Override
-        public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE `Recipe` (`id` INTEGER NOT NULL, `name` TEXT, PRIMARY KEY(`id`))");
-        }
-    };
 
     private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE `ShippingListEntry` (`id` INTEGER NOT NULL, `name` TEXT, PRIMARY KEY(`id`))");
+            database.execSQL("CREATE TABLE `ShoppingListEntry` (`id` INTEGER NOT NULL, `name` TEXT, PRIMARY KEY(`id`))");
+        }
+    };
+
+    private static final Migration MIGRATION_3_4 = new Migration(3,4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE `ShoppingListEntry` ADD COLUMN `selected` INTEGER NOT NULL DEFAULT 0");
         }
     };
 
@@ -34,7 +34,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "recipes.db")
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
                     .build();
         }
         return instance;

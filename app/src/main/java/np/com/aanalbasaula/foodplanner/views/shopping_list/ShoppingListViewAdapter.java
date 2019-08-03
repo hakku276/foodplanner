@@ -50,6 +50,19 @@ public class ShoppingListViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         this.items = items;
         this.mListener = listener;
         this.selectedItems = new HashSet<>(items.size());
+
+        // prepare already selected list
+        for (ShoppingListEntry entry :
+                items) {
+            if (entry.isSelected()) {
+                selectedItems.add(entry);
+            }
+        }
+
+        // notify that the shopping list selection entries have changed
+        if (listener != null) {
+            listener.onShoppingListSelectionChanged(selectedItems);
+        }
     }
 
     @NonNull
@@ -64,9 +77,10 @@ public class ShoppingListViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         if (items != null) {
             ShoppingListEntry item = getItem(position);
-            ShoppingListEntryViewHolder dateViewHolder = (ShoppingListEntryViewHolder) holder;
-            dateViewHolder.mItem = item;
-            dateViewHolder.mContentView.setText(dateViewHolder.mItem.getName());
+            ShoppingListEntryViewHolder viewHolder = (ShoppingListEntryViewHolder) holder;
+            viewHolder.mItem = item;
+            viewHolder.mContentView.setText(viewHolder.mItem.getName());
+            viewHolder.mCheckBox.setChecked(item.isSelected());
         }
     }
 
@@ -88,7 +102,7 @@ public class ShoppingListViewAdapter extends RecyclerView.Adapter<RecyclerView.V
      */
     private ShoppingListEntry getItem(int position) {
         if (items == null || items.size() == 0) {
-            return null;
+            throw new RuntimeException("The items should not be retrieved when there are not items");
         }
         // return items in reverse order so that the items are shown in reverse
         int reversePosition = items.size() - 1 - position;
@@ -125,6 +139,7 @@ public class ShoppingListViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean newState) {
             Log.i(TAG, "onCheckedChanged: Shopping list item state changed to: " + newState);
+            mItem.setSelected(newState);
             if (newState) {
                 // the text view should be struck out
                 UIUtils.addPaintFlagToTextView(mContentView, Paint.STRIKE_THRU_TEXT_FLAG);
@@ -136,6 +151,7 @@ public class ShoppingListViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             }
 
             if (mListener != null) {
+                mListener.onShoppingListEntrySelectionChanged(mItem);
                 mListener.onShoppingListSelectionChanged(selectedItems);
             }
         }
@@ -147,7 +163,15 @@ public class ShoppingListViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     public interface ShoppingListSelectionChangeListener {
 
         /**
+         * The shopping list entry selection that was changed by the user.
+         *
+         * @param entry the entry changed
+         */
+        void onShoppingListEntrySelectionChanged(ShoppingListEntry entry);
+
+        /**
          * The user has changed the selection.
+         *
          * @param entries the selected entries
          */
         void onShoppingListSelectionChanged(Set<ShoppingListEntry> entries);

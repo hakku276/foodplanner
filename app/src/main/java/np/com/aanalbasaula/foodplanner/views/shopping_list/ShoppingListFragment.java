@@ -27,6 +27,7 @@ import np.com.aanalbasaula.foodplanner.database.ShoppingListEntry;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreationStrategies;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreator;
+import np.com.aanalbasaula.foodplanner.database.utils.EntryUpdater;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 
 /**
@@ -173,6 +174,15 @@ public class ShoppingListFragment extends Fragment {
     };
 
     private ShoppingListViewAdapter.ShoppingListSelectionChangeListener shoppingListSelectionChangeListener = new ShoppingListViewAdapter.ShoppingListSelectionChangeListener() {
+        @Override
+        public void onShoppingListEntrySelectionChanged(ShoppingListEntry entry) {
+            Log.i(TAG, "onShoppingListEntrySelectionChanged: A Single shopping list entry has been changed. ");
+
+            // TODO update the entry on the database
+            EntryUpdater<ShoppingListDao, ShoppingListEntry> updater = new EntryUpdater<>(shoppingListDao, ShoppingListDao::update, null);
+            updater.execute(entry);
+        }
+
         @Override
         public void onShoppingListSelectionChanged(Set<ShoppingListEntry> entries) {
             Log.i(TAG, "onShoppingListSelectionChanged: User has change shopping list selection. Now Selected: " + entries.size());

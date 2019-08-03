@@ -3,6 +3,7 @@ package np.com.aanalbasaula.foodplanner.database.utils;
 import android.arch.core.util.Function;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.Arrays;
@@ -24,6 +25,7 @@ public class EntryUpdater<D, T> extends AsyncTask<T, Void, Void> {
     private UpdateStrategy<D, T> updateStrategy;
 
     // listener
+    @Nullable
     private DatabaseUpdateListener<T> listener;
 
     /**
@@ -37,7 +39,7 @@ public class EntryUpdater<D, T> extends AsyncTask<T, Void, Void> {
      */
     public EntryUpdater(D dao,
                         UpdateStrategy<D, T> updateStrategy,
-                        DatabaseUpdateListener<T> listener) {
+                        @Nullable DatabaseUpdateListener<T> listener) {
         this.dao = dao;
         this.updateStrategy = updateStrategy;
         this.listener = listener;
@@ -49,15 +51,17 @@ public class EntryUpdater<D, T> extends AsyncTask<T, Void, Void> {
         try {
             updateStrategy.updateEntries(dao, items);
         } catch (Exception e) {
-            Log.e(TAG, "doInBackground: Could not load the items from the database", e);
+            Log.e(TAG, "doInBackground: Could not update the items into the database", e);
         }
         return null;
     }
 
     @Override
     protected void onPostExecute(Void args) {
-        Log.i(TAG, "onPostExecute: Items have been loaded, notifying the listener");
-        this.listener.onItemsUpdated();
+        Log.i(TAG, "onPostExecute: Items have been udpated, notifying the listener");
+        if(listener != null) {
+            this.listener.onItemsUpdated();
+        }
     }
 
     /**
