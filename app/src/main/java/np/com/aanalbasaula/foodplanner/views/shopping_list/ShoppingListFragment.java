@@ -123,6 +123,9 @@ public class ShoppingListFragment extends Fragment {
         loader.execute();
     }
 
+    /**
+     * A database generic listener to listen to database loads. It refreshes the adapter on database load
+     */
     private DatabaseLoader.DatabaseLoadListener<ShoppingListEntry> shoppingListLoadListener = new DatabaseLoader.DatabaseLoadListener<ShoppingListEntry>() {
         @Override
         public void onItemsLoaded(@NonNull List<ShoppingListEntry> items) {
@@ -132,6 +135,9 @@ public class ShoppingListFragment extends Fragment {
         }
     };
 
+    /**
+     * A database generic listener, to listen to database Shopping list entry creation events.
+     */
     private EntryCreator.EntryCreationListener<ShoppingListEntry> shoppingListEntryCreationListener = new EntryCreator.EntryCreationListener<ShoppingListEntry>() {
         @Override
         public void onEntriesCreated(ShoppingListEntry[] items) {
@@ -141,6 +147,9 @@ public class ShoppingListFragment extends Fragment {
         }
     };
 
+    /**
+     * A click listener to the add shopping list item.
+     */
     private View.OnClickListener addShoppingListEntryButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -165,6 +174,10 @@ public class ShoppingListFragment extends Fragment {
         }
     };
 
+    /**
+     * A broadcast receiver that waits for changes on the shopping list within the database.
+     * Note: Listening to updates is not particularly necessary.
+     */
     private BroadcastReceiver shoppingListChangeBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -173,6 +186,11 @@ public class ShoppingListFragment extends Fragment {
         }
     };
 
+    /**
+     * The listener to events within the Shopping list. For instance the user selected an item after buying it.
+     * NOTE: This could have been done without the listener on the View Adapter, but to separate the concern of
+     * Database access to the fragment. A listener has been used.
+     */
     private ShoppingListViewAdapter.ShoppingListSelectionChangeListener shoppingListSelectionChangeListener = new ShoppingListViewAdapter.ShoppingListSelectionChangeListener() {
         @Override
         public void onShoppingListEntrySelectionChanged(ShoppingListEntry entry) {
