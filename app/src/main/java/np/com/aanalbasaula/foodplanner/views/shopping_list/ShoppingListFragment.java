@@ -27,6 +27,7 @@ import np.com.aanalbasaula.foodplanner.database.ShoppingListEntry;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreationStrategies;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreator;
+import np.com.aanalbasaula.foodplanner.database.utils.EntryDeleter;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryUpdater;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 
@@ -44,6 +45,7 @@ public class ShoppingListFragment extends Fragment {
     private ImageButton btnAddListEntry;
     private EditText textListItemName;
     private Button btnClearAllSelected;
+    private ShoppingListViewAdapter adapter;
 
     // Database related
     private ShoppingListDao shoppingListDao;
@@ -95,6 +97,9 @@ public class ShoppingListFragment extends Fragment {
         // setup the add list entry button
         btnAddListEntry.setOnClickListener(addShoppingListEntryButtonListener);
 
+        // setup the clear all selected button listener
+        btnClearAllSelected.setOnClickListener(clearAllButtonListener);
+
         return view;
     }
 
@@ -103,7 +108,9 @@ public class ShoppingListFragment extends Fragment {
         super.onAttach(context);
 
         // register shopping list entry creation broadcast listener
-        BroadcastUtils.registerLocalBroadcastListener(context, shoppingListChangeBroadcastReceiver, BroadcastUtils.ACTION_SHOPPING_LIST_ENTRY_CREATED);
+        BroadcastUtils.registerLocalBroadcastListener(context, shoppingListChangeBroadcastReceiver,
+                BroadcastUtils.ACTION_SHOPPING_LIST_ENTRY_CREATED,
+                BroadcastUtils.ACTION_SHOPPING_LIST_ENTRY_DELETED);
     }
 
     @Override
@@ -130,7 +137,7 @@ public class ShoppingListFragment extends Fragment {
         @Override
         public void onItemsLoaded(@NonNull List<ShoppingListEntry> items) {
             Log.i(TAG, "onItemsLoaded: Shopping List Entries have been successfully loaded");
-            ShoppingListViewAdapter adapter = new ShoppingListViewAdapter(items, shoppingListSelectionChangeListener);
+            adapter = new ShoppingListViewAdapter(items, shoppingListSelectionChangeListener);
             recyclerView.setAdapter(adapter);
         }
     };
@@ -144,6 +151,31 @@ public class ShoppingListFragment extends Fragment {
             // broadcast that the shopping list entry was created
             Log.i(TAG, "onEntriesCreated: Shopping List Entry successfully created");
             BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_SHOPPING_LIST_ENTRY_CREATED);
+        }
+    };
+
+    private EntryDeleter.DatabaseDeletionListener<ShoppingListEntry> shoppingListEntryDeletionListener = new EntryDeleter.DatabaseDeletionListener<ShoppingListEntry>() {
+        @Override
+        public void onItemsDeleted() {
+            Log.i(TAG, "onItemsDeleted: Successfully deleted database entries");
+            BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_SHOPPING_LIST_ENTRY_DELETED);
+        }
+    };
+
+    /**
+     * A click listener for the clear all items in the shopping list button
+     */
+    private View.OnClickListener clearAllButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Log.i(TAG, "onClick: Clear all selected items requested");
+            Set<ShoppingListEntry> selectedEntries = adapter.getSelectedItems();
+
+            if (!selectedEntries.isEmpty()) {
+                Log.d(TAG, "onClick: There are selected items to be deleted");
+                EntryDeleter<ShoppingListDao, ShoppingListEntry> entryDeleter = new EntryDeleter<>(shoppingListDao, ShoppingListDao::delete, shoppingListEntryDeletionListener);
+                entryDeleter.execute(selectedEntries.toArray(new ShoppingListEntry[0]));
+            }
         }
     };
 

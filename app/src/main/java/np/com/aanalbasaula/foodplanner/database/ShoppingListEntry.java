@@ -5,9 +5,11 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
+@EqualsAndHashCode(of = {"name"})
 public class ShoppingListEntry {
 
     @PrimaryKey(autoGenerate = true)

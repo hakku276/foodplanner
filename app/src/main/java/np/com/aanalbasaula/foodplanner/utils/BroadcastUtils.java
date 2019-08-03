@@ -14,6 +14,7 @@ public class BroadcastUtils {
     public static final String ACTION_MEAL_CREATED = ACTION_PREFIX + "MealCreated";
     public static final String ACTION_RECIPE_CREATED = ACTION_PREFIX + "RecipeCreated";
     public static final String ACTION_SHOPPING_LIST_ENTRY_CREATED = ACTION_PREFIX + "ShoppingListEntryCreated";
+    public static final String ACTION_SHOPPING_LIST_ENTRY_DELETED = ACTION_PREFIX + "ShoppingListEntryDeleted";
 
     /**
      * Send a local broadcast using the provided context for the defined action.

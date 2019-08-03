@@ -14,7 +14,7 @@ import java.util.List;
  * proper information.
  *
  * @param <D> The dao class
- * @param <T> The Type of data being loaded
+ * @param <T> The Type of data being updated
  */
 public class EntryUpdater<D, T> extends AsyncTask<T, Void, Void> {
 
@@ -58,7 +58,7 @@ public class EntryUpdater<D, T> extends AsyncTask<T, Void, Void> {
 
     @Override
     protected void onPostExecute(Void args) {
-        Log.i(TAG, "onPostExecute: Items have been udpated, notifying the listener");
+        Log.i(TAG, "onPostExecute: Items have been updated, notifying the listener");
         if(listener != null) {
             this.listener.onItemsUpdated();
         }
