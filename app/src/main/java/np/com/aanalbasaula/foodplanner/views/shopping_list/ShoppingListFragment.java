@@ -13,10 +13,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
 import java.util.List;
+import java.util.Set;
 
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.AppDatabase;
@@ -40,6 +42,7 @@ public class ShoppingListFragment extends Fragment {
     private RecyclerView recyclerView;
     private ImageButton btnAddListEntry;
     private EditText textListItemName;
+    private Button btnClearAllSelected;
 
     // Database related
     private ShoppingListDao shoppingListDao;
@@ -82,6 +85,7 @@ public class ShoppingListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.content);
         btnAddListEntry = view.findViewById(R.id.btn_add);
         textListItemName = view.findViewById(R.id.text_name);
+        btnClearAllSelected = view.findViewById(R.id.btn_clear_all_selected);
 
         // setup the recycler view
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -122,7 +126,7 @@ public class ShoppingListFragment extends Fragment {
         @Override
         public void onItemsLoaded(@NonNull List<ShoppingListEntry> items) {
             Log.i(TAG, "onItemsLoaded: Shopping List Entries have been successfully loaded");
-            ShoppingListViewAdapter adapter = new ShoppingListViewAdapter(items);
+            ShoppingListViewAdapter adapter = new ShoppingListViewAdapter(items, shoppingListSelectionChangeListener);
             recyclerView.setAdapter(adapter);
         }
     };
@@ -165,6 +169,18 @@ public class ShoppingListFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "onReceive: Shopping list database has been changed.");
             loadItemsFromDatabaseAsync();
+        }
+    };
+
+    private ShoppingListViewAdapter.ShoppingListSelectionChangeListener shoppingListSelectionChangeListener = new ShoppingListViewAdapter.ShoppingListSelectionChangeListener() {
+        @Override
+        public void onShoppingListSelectionChanged(Set<ShoppingListEntry> entries) {
+            Log.i(TAG, "onShoppingListSelectionChanged: User has change shopping list selection. Now Selected: " + entries.size());
+            if (entries.size() == 0) {
+                btnClearAllSelected.setVisibility(View.GONE);
+            } else {
+                btnClearAllSelected.setVisibility(View.VISIBLE);
+            }
         }
     };
 }
