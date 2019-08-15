@@ -175,5 +175,7 @@ public class ShoppingListViewAdapter extends RecyclerView.Adapter<RecyclerView.V
          * @param entries the selected entries
          */
         void onShoppingListSelectionChanged(Set<ShoppingListEntry> entries);
+
     }
+
 }

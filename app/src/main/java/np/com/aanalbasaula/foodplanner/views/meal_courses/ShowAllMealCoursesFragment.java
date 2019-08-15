@@ -59,6 +59,7 @@ public class ShowAllMealCoursesFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Log.i(TAG, "onStart: Fragment started");
         loadItemsFromDatabaseAsync();
         registerForContextMenu(recyclerView);
     }
@@ -118,12 +119,8 @@ public class ShowAllMealCoursesFragment extends Fragment {
         @Override
         public void onItemsLoaded(@NonNull List<MealCourse> items) {
             Log.i(TAG, "onItemsLoaded: Meal Courses have been successfully loaded");
-            if (mealCourseViewAdapter == null) {
-                mealCourseViewAdapter = new MealCourseViewAdapter(items, mListener);
-                recyclerView.setAdapter(mealCourseViewAdapter);
-            } else {
-                mealCourseViewAdapter.setItems(items);
-            }
+            mealCourseViewAdapter = new MealCourseViewAdapter(items, mListener);
+            recyclerView.setAdapter(mealCourseViewAdapter);
         }
     };
 
@@ -131,6 +128,7 @@ public class ShowAllMealCoursesFragment extends Fragment {
      * Initiate load for all the items within the database
      */
     private void loadItemsFromDatabaseAsync() {
+        Log.i(TAG, "loadItemsFromDatabaseAsync: Loading Items from database");
         DatabaseLoader<MealCourseDao, MealCourse> asyncTask = new DatabaseLoader<>(db.getMealCourseDao(),
                 MealCourseDao::getAllMealCoursesInFuture,
                 databaseLoadListener);
