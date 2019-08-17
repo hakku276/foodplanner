@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">FoodPlanner</string>
+    <string name="title_activity_recipe_creator">Recipe Creator</string>
 
     <!--App features-->
     <string name="feature_cookbook">Cookbook</string>
@@ -11,6 +12,8 @@
     <!--Edit Text Hints-->
     <string name="hint_name">Name</string>
     <string name="hint_shopping_list_item_name">Item Name</string>
+    <string name="hint_recipe_name">Recipe Name</string>
+    <string name="hint_recipe_ingredient_item_name">Ingredient Name</string>
 
     <!--Button Titles-->
     <string name="button_cancel">Cancel</string>
@@ -25,6 +28,9 @@
     <string name="title_dialog_add_meal">New Meal</string>
     <string name="title_dialog_update_meal">Edit</string>
 
+    <!--Screen/Frame Titles-->
+    <string name="title_add_ingredient">Add Ingredients</string>
+
     <!--Text Views-->
     <string name="text_date">Date</string>
     <string name="text_meal_type">Meal Type</string>
@@ -32,10 +38,13 @@
     <!--Menu Related Items-->
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
+    <string name="action_save">Save</string>
+    <string name="action_add">Add</string>
     <string name="meal_plan_context_menu_title">Select The Action</string>
 
     <!--Error messages-->
     <string name="error_required">Required Field</string>
+    <string name="error_already_exists">Already Exists</string>
 
     <!--CUSTOM VALUES-->
     <!--MEAL TYPES-->

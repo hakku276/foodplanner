@@ -4,17 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="@dimen/padding_screen_to_content"
-    tools:context=".views.shopping_list.ShoppingListFragment">
+    tools:context=".views.cookbook.AddIngredientFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_add_ingredients_title"
+        android:text="@string/title_add_ingredient"
+        style="?android:textAppearanceMedium"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_add_ingredients_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/layout_shopping_list_input">
+        android:layout_marginTop="@dimen/margin_content_to_content"
+        android:id="@+id/layout_ingredient_list_input">
 
         <EditText
             android:id="@+id/text_name"
@@ -23,8 +31,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_add"
-            android:hint="@string/hint_shopping_list_item_name"
-            android:inputType="textCapWords" />
+            android:hint="@string/hint_recipe_ingredient_item_name"
+            android:inputType="textCapWords"
+            android:imeOptions="actionDone"
+            android:imeActionLabel="@string/action_add"/>
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -48,15 +58,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/content"
-        app:layout_constraintTop_toBottomOf="@+id/layout_shopping_list_input"
-        app:layout_constraintBottom_toTopOf="@+id/btn_clear_all_selected"
-        tools:listitem="@layout/layout_list_item_shopping_list"/>
-
-    <Button
+        app:layout_constraintTop_toBottomOf="@+id/layout_ingredient_list_input"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:id="@+id/btn_clear_all_selected"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/button_clear_all_selected"/>
+        tools:listitem="@layout/layout_list_item_ingredient"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -164,8 +164,8 @@ public class CookBookFragment extends Fragment {
         @Override
         public void onClick(View view) {
             Log.i(TAG, "onClick: Create Recipe button clicked");
-            CreateRecipeDialogFragment dialogFragment = new CreateRecipeDialogFragment();
-            dialogFragment.show(getFragmentManager(), "recipe");
+            Intent intent = new Intent(getContext(), RecipeCreatorActivity.class);
+            startActivity(intent);
         }
     };
 

@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Optional;
 
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
@@ -33,7 +32,7 @@ public class CookbookViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     /**
      * Create a view adapter, provided the items to be displayed
      *
-     * @param items    the items to be displayed
+     * @param items the items to be displayed
      */
     CookbookViewAdapter(@NonNull List<Recipe> items, @Nullable RecipeClickListener listener) {
         this.items = items;
@@ -52,9 +51,9 @@ public class CookbookViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         if (items != null) {
             Recipe item = items.get(position);
-            RecipeViewHolder dateViewHolder = (RecipeViewHolder) holder;
-            dateViewHolder.mItem = item;
-            dateViewHolder.mContentView.setText(dateViewHolder.mItem.getName());
+            RecipeViewHolder recipeViewHolder = (RecipeViewHolder) holder;
+            recipeViewHolder.mItem = item;
+            recipeViewHolder.mContentView.setText(recipeViewHolder.mItem.getName());
         }
     }
 
@@ -79,7 +78,7 @@ public class CookbookViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /**
-     * A View holder class to handle the list Item showing the Dates
+     * A View holder class to handle the list Item showing the Recipe
      */
     class RecipeViewHolder extends RecyclerView.ViewHolder {
         final View mView;

@@ -7,4 +7,5 @@
     <dimen name="text_size_body">16sp</dimen>
     <dimen name="text_to_border">8dp</dimen>
     <dimen name="margin_fab">16dp</dimen>
+    <dimen name="margin_content_to_content">8dp</dimen>
 </resources>
