@@ -136,6 +136,31 @@ public class ShoppingListFragment extends Fragment {
     }
 
     /**
+     * Validate whether the shopping list items input is correct or not. If not, appropriate error
+     * notices are displayed to the user.
+     * @return true if the input is valid, else false
+     */
+    private boolean isInputValid() {
+        String itemName = textListItemName.getText().toString();
+        // initially validate the entry
+        if (itemName.isEmpty()) {
+            Log.d(TAG, "onClick: The input length is zero. Cannot proceed with shopping list creation");
+            textListItemName.setError(getString(R.string.error_required));
+            return false;
+        }
+
+        for (ShoppingListEntry entry :
+                adapter.getItems()) {
+            if (itemName.equals(entry.getName())) {
+                textListItemName.setError(getString(R.string.error_already_exists));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * A database generic listener to listen to database loads. It refreshes the adapter on database load
      */
     private DatabaseLoader.DatabaseLoadListener<ShoppingListEntry> shoppingListLoadListener = new DatabaseLoader.DatabaseLoadListener<ShoppingListEntry>() {
@@ -192,10 +217,8 @@ public class ShoppingListFragment extends Fragment {
         public void onClick(View view) {
             Log.i(TAG, "onClick: Add shopping list button clicked");
 
-            // initially validate the entry
-            if (textListItemName.getText().length() == 0) {
-                Log.d(TAG, "onClick: The input length is zero. Cannot proceed with shopping list creation");
-                textListItemName.setError(getString(R.string.error_required));
+            if (!isInputValid()) {
+                Log.i(TAG, "onClick: The user input is invalid");
                 return;
             }
 

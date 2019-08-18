@@ -36,9 +36,9 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      *
      * @param items the items to be displayed
      */
-    IngredientsViewAdapter(List<Ingredient> items, @Nullable IngredientListChangedListener listener) {
+    IngredientsViewAdapter(@Nullable List<Ingredient> items, @Nullable IngredientListChangedListener listener) {
         if (items == null) {
-            this.items = new LinkedList<>();
+            items = new LinkedList<>();
         }
         this.items = items;
         this.listener = listener;

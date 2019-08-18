@@ -13,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -90,6 +91,17 @@ public class ShoppingListViewAdapter extends RecyclerView.Adapter<RecyclerView.V
             return items.size();
         }
         return 0;
+    }
+
+    /**
+     * Get all the shopping list items being handled by this adapter
+     * @return the complete list of shopping list entries
+     */
+    public List<ShoppingListEntry> getItems() {
+        if (items == null) {
+            return new LinkedList<>();
+        }
+        return items;
     }
 
     /**

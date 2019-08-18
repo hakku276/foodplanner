@@ -75,6 +75,7 @@ public class CookbookViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          * @param recipe the recipe object that was clicked
          */
         void onRecipeItemClicked(Recipe recipe);
+
     }
 
     /**
@@ -105,4 +106,5 @@ public class CookbookViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return super.toString() + " '" + mContentView.getText() + "'";
         }
     }
+
 }
