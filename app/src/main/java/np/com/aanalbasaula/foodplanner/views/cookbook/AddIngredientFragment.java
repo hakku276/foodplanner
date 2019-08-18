@@ -68,16 +68,20 @@ public class AddIngredientFragment extends Fragment {
         Log.i(TAG, "onCreateView: Inflating fragment view");
         View view = inflater.inflate(R.layout.fragment_add_ingredient, container, false);
 
-        // setup the recycler view
+        // gather views
         recyclerView = view.findViewById(R.id.content);
+        buttonAdd = view.findViewById(R.id.btn_add);
+        textIngredientName = view.findViewById(R.id.text_name);
+
+        // setup the recycler view
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         ingredientsViewAdapter = new IngredientsViewAdapter(new LinkedList<>(), ingredientsChangedListener);
         recyclerView.setAdapter(ingredientsViewAdapter);
 
         // setup the add button
-        buttonAdd = view.findViewById(R.id.btn_add);
         buttonAdd.setOnClickListener(addButtonClickListener);
-        textIngredientName = view.findViewById(R.id.text_name);
+
+        // setup edit text
         textIngredientName.setOnEditorActionListener(editorDoneActionListener);
 
         return view;

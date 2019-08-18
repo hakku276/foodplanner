@@ -10,12 +10,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import java.util.List;
 import java.util.Set;
@@ -99,6 +101,9 @@ public class ShoppingListFragment extends Fragment {
 
         // setup the clear all selected button listener
         btnClearAllSelected.setOnClickListener(clearAllButtonListener);
+
+        // setup the text view
+        textListItemName.setOnEditorActionListener(editorActionListener);
 
         return view;
     }
@@ -203,6 +208,28 @@ public class ShoppingListFragment extends Fragment {
                     shoppingListEntryCreationListener);
             creator.execute(entry);
             textListItemName.setText(""); // clear the successfully adding
+        }
+    };
+
+    /**
+     * Listen to events on the keyboard specially the done button, to enable users to add items
+     * with the done button
+     */
+    private EditText.OnEditorActionListener editorActionListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+            Log.i(TAG, "onEditorAction: Keyboard button action triggered");
+
+            if (textListItemName.getText().length() == 0) {
+                Log.i(TAG, "onEditorAction: User input is empty. Hiding keyboard");
+                // enable the system to handle the event thereby closing the keyboard
+                return false;
+            }
+
+            addShoppingListEntryButtonListener.onClick(textView);
+
+            // disable the system to handle the event. does not close the keyboard
+            return true;
         }
     };
 

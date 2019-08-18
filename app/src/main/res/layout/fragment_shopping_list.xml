@@ -24,6 +24,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_add"
             android:hint="@string/hint_shopping_list_item_name"
+            android:imeOptions="actionDone"
             android:inputType="textCapWords" />
 
         <ImageButton
