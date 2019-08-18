@@ -2,6 +2,8 @@ package np.com.aanalbasaula.foodplanner.database.utils;
 
 import android.util.Log;
 
+import np.com.aanalbasaula.foodplanner.database.Ingredient;
+import np.com.aanalbasaula.foodplanner.database.IngredientDao;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.database.MealCourseDao;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
@@ -26,7 +28,6 @@ public class EntryCreationStrategies {
     public static EntryCreator.CreationStrategy<MealCourseDao, MealCourse> mealCourseCreationStrategy = (dao, entries) -> {
         long[] ids = dao.insert(entries);
         for (int i = 0; i < ids.length; i++) {
-            Log.i(TAG, "doInBackground: New Meal Courses ID: " + ids[0]);
             entries[i].setId(ids[i]);
         }
     };
@@ -37,7 +38,6 @@ public class EntryCreationStrategies {
     public static EntryCreator.CreationStrategy<RecipeDao, Recipe> recipeCreationStrategy = (dao, entries) -> {
         long[] ids = dao.insert(entries);
         for (int i = 0; i < ids.length; i++) {
-            Log.i(TAG, "doInBackground: New Meal Courses ID: " + ids[0]);
             entries[i].setId(ids[i]);
         }
     };
@@ -48,7 +48,16 @@ public class EntryCreationStrategies {
     public static EntryCreator.CreationStrategy<ShoppingListDao, ShoppingListEntry> shoppingListEntryCreationStrategy = (dao, entries) -> {
         long[] ids = dao.insert(entries);
         for (int i = 0; i < ids.length; i++) {
-            Log.i(TAG, "doInBackground: New Meal Courses ID: " + ids[0]);
+            entries[i].setId(ids[i]);
+        }
+    };
+
+    /**
+     * Entry creation Strategy to insert Ingredient entry using a Ingredient DAO
+     */
+    public static EntryCreator.CreationStrategy<IngredientDao, Ingredient> ingredientEntryCreationStrategy = (dao, entries) -> {
+        long[] ids = dao.insert(entries);
+        for (int i = 0; i < ids.length; i++) {
             entries[i].setId(ids[i]);
         }
     };

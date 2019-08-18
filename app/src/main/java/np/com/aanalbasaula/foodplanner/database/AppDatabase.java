@@ -46,4 +46,6 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ShoppingListDao getShoppingListDao();
 
+    public abstract  IngredientDao getIngredientDao();
+
 }
