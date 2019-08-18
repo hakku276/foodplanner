@@ -163,6 +163,11 @@ public class AddIngredientFragment extends Fragment {
         @Override
         public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
             Log.i(TAG, "onEditorAction: Editor has a key event" + keyEvent);
+            if (textIngredientName.getText().length() == 0) {
+                Log.i(TAG, "onEditorAction: The user has no input on the text. Closing the keyboard");
+                // return false to let the system handle this action. Closes the keyboard
+                return false;
+            }
             // redirect calls to item add
             addButtonClickListener.onClick(textView);
             // return true to keep the keyboard open
