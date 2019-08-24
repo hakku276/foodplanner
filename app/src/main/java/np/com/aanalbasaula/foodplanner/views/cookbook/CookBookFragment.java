@@ -24,12 +24,11 @@ import np.com.aanalbasaula.foodplanner.database.RecipeDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 import np.com.aanalbasaula.foodplanner.views.meal_courses.PlanMealDialogFragment;
+import np.com.aanalbasaula.foodplanner.views.utils.GenericRecyclerViewAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CookBookFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link CookBookFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
@@ -40,7 +39,6 @@ public class CookBookFragment extends Fragment {
     // ui related
     private RecyclerView recyclerView;
     private FloatingActionButton btnCreateRecipe;
-    private OnFragmentInteractionListener mListener;
 
     // Database related
     private RecipeDao recipeDao;
@@ -94,21 +92,14 @@ public class CookBookFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
 
-            // register recipe creation broadcast listener
-            BroadcastUtils.registerLocalBroadcastListener(context, recipeCreationBroadcastReceiver, BroadcastUtils.ACTION_RECIPE_CREATED);
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+        // register recipe creation broadcast listener
+        BroadcastUtils.registerLocalBroadcastListener(context, recipeCreationBroadcastReceiver, BroadcastUtils.ACTION_RECIPE_CREATED);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
 
         // unregister broadcast listener
         BroadcastUtils.unregisterLocalBroadcastListener(getContext(), recipeCreationBroadcastReceiver);
@@ -143,12 +134,12 @@ public class CookBookFragment extends Fragment {
         public void onItemsLoaded(@NonNull List<Recipe> items) {
             Log.i(TAG, "onItemsLoaded: Successfully loaded recipes");
 
-            CookbookViewAdapter adapter = new CookbookViewAdapter(items, recipeClickListener);
+            CookbookRecipeViewAdapter adapter = new CookbookRecipeViewAdapter(items, recipeClickListener);
             recyclerView.setAdapter(adapter);
         }
     };
 
-    private CookbookViewAdapter.RecipeClickListener recipeClickListener = new CookbookViewAdapter.RecipeClickListener() {
+    private CookbookRecipeViewAdapter.RecipeClickListener recipeClickListener = new CookbookRecipeViewAdapter.RecipeClickListener() {
         @Override
         public void onRecipeItemClicked(Recipe recipe) {
             Log.i(TAG, "onRecipeItemClicked: Recipe Item Clicked by user");
@@ -169,17 +160,4 @@ public class CookBookFragment extends Fragment {
         }
     };
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
 }

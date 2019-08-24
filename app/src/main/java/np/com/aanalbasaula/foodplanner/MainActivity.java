@@ -23,7 +23,7 @@ import np.com.aanalbasaula.foodplanner.views.meal_courses.PlanMealDialogFragment
 import np.com.aanalbasaula.foodplanner.views.meal_courses.ShowAllMealCoursesFragment;
 import np.com.aanalbasaula.foodplanner.views.shopping_list.ShoppingListFragment;
 
-public class MainActivity extends AppCompatActivity implements ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener, CookBookFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     /**
@@ -100,11 +100,6 @@ public class MainActivity extends AppCompatActivity implements ShowAllMealCourse
 
     @Override
     public void onListFragmentInteraction(MealCourse item) {
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 
 }

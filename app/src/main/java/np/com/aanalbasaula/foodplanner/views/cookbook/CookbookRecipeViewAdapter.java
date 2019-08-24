@@ -17,9 +17,9 @@ import np.com.aanalbasaula.foodplanner.database.Recipe;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link np.com.aanalbasaula.foodplanner.database.Recipe}.
  */
-public class CookbookViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CookbookRecipeViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = CookbookViewAdapter.class.getSimpleName();
+    private static final String TAG = CookbookRecipeViewAdapter.class.getSimpleName();
 
     // the items to be shown on the view
     @Nullable
@@ -34,7 +34,7 @@ public class CookbookViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      *
      * @param items the items to be displayed
      */
-    CookbookViewAdapter(@NonNull List<Recipe> items, @Nullable RecipeClickListener listener) {
+    CookbookRecipeViewAdapter(@NonNull List<Recipe> items, @Nullable RecipeClickListener listener) {
         this.items = items;
         this.listener = listener;
     }
