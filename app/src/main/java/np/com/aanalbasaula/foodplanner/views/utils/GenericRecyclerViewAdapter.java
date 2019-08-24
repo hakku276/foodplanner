@@ -1,6 +1,5 @@
 package np.com.aanalbasaula.foodplanner.views.utils;
 
-import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,10 +55,16 @@ public class GenericRecyclerViewAdapter<I, T extends GenericRecyclerViewAdapter.
          * @return the newly created view holder
          */
         T newInstance(View view);
-    }
 
-    @LayoutRes
-    private final int layoutResourceId;
+        /**
+         * Create a new View that should be displayed on the screen for the specific View Holder.
+         *
+         * @param inflater the inflater that can be used to inflate new views
+         * @param parent   the parent of the to be created view
+         * @return the newly created view. (Can be not attached to parent)
+         */
+        View createView(LayoutInflater inflater, ViewGroup parent);
+    }
 
     @NonNull
     private final GenericViewHolderFactory<T> viewHolderFactory;
@@ -67,8 +72,7 @@ public class GenericRecyclerViewAdapter<I, T extends GenericRecyclerViewAdapter.
     @NonNull
     private final List<I> items;
 
-    public GenericRecyclerViewAdapter(@LayoutRes int layoutId, @Nullable List<I> items, @NonNull GenericViewHolderFactory<T> factory) {
-        this.layoutResourceId = layoutId;
+    public GenericRecyclerViewAdapter(@Nullable List<I> items, @NonNull GenericViewHolderFactory<T> factory) {
         this.viewHolderFactory = factory;
 
         // to prevent null lists
@@ -81,7 +85,7 @@ public class GenericRecyclerViewAdapter<I, T extends GenericRecyclerViewAdapter.
     @NonNull
     @Override
     public T onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(layoutResourceId, parent, false);
+        View view = viewHolderFactory.createView(LayoutInflater.from(parent.getContext()), parent);
         return viewHolderFactory.newInstance(view);
     }
 

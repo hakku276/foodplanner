@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -119,7 +120,7 @@ public class CookBookFragment extends Fragment {
      * A broadcast listener that listens to events on creation of new recipes. This is generally used
      * to reload the database once items have been inserted into the database
      */
-    private BroadcastReceiver recipeCreationBroadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver recipeCreationBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "onReceive: New recipe has been created");
@@ -130,12 +131,12 @@ public class CookBookFragment extends Fragment {
     /**
      * The listener to database load events. The load is initiated by the {@linkplain #loadItemsFromDatabaseAsync()}
      */
-    private DatabaseLoader.DatabaseLoadListener<Recipe> databaseLoadListener = new DatabaseLoader.DatabaseLoadListener<Recipe>() {
+    private final DatabaseLoader.DatabaseLoadListener<Recipe> databaseLoadListener = new DatabaseLoader.DatabaseLoadListener<Recipe>() {
         @Override
         public void onItemsLoaded(@NonNull List<Recipe> items) {
             Log.i(TAG, "onItemsLoaded: Successfully loaded recipes");
 
-            GenericRecyclerViewAdapter<Recipe, DisplayRecipeViewHolder> adapter = new GenericRecyclerViewAdapter<>(R.layout.layout_list_item_recipe, items, DisplayRecipeViewHolder::new);
+            GenericRecyclerViewAdapter<Recipe, DisplayRecipeViewHolder> adapter = new GenericRecyclerViewAdapter<>(items, displayViewHolderFactory);
             recyclerView.setAdapter(adapter);
         }
     };
@@ -143,7 +144,7 @@ public class CookBookFragment extends Fragment {
     /**
      * A create recipe button listener to initiate create recipe workflow.
      */
-    private View.OnClickListener createButtonClickListener = new View.OnClickListener() {
+    private final View.OnClickListener createButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             Log.i(TAG, "onClick: Create Recipe button clicked");
@@ -152,6 +153,26 @@ public class CookBookFragment extends Fragment {
         }
     };
 
+    /**
+     * The factory that creates the view holder used to display content on screen
+     */
+    private final GenericRecyclerViewAdapter.GenericViewHolderFactory<DisplayRecipeViewHolder> displayViewHolderFactory =
+            new GenericRecyclerViewAdapter.GenericViewHolderFactory<DisplayRecipeViewHolder>() {
+                @Override
+                public DisplayRecipeViewHolder newInstance(View view) {
+                    return new DisplayRecipeViewHolder(view);
+                }
+
+                @Override
+                public View createView(LayoutInflater inflater, ViewGroup parent) {
+                    return inflater.inflate(R.layout.layout_list_item_recipe, parent, false);
+                }
+            };
+
+    /**
+     * A view holder that can be used to display Recipes on a Recycler View. Depends on the
+     * {@link GenericRecyclerViewAdapter} and a layout that contains the
+     */
     private class DisplayRecipeViewHolder extends GenericRecyclerViewAdapter.GenericViewHolder<Recipe> {
 
         private final View mView;
