@@ -37,10 +37,12 @@
 
     <!--Menu Related Items-->
     <string name="action_edit">Edit</string>
+    <string name="action_view">View</string>
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
-    <string name="meal_plan_context_menu_title">Select The Action</string>
+    <string name="title_meal_plan_context_menu">Select The Action</string>
+    <string name="title_recipe_context_menu">Select The Action</string>
 
     <!--Error messages-->
     <string name="error_required">Required Field</string>

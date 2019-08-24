@@ -325,7 +325,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
             Log.i(TAG, "onCreateContextMenu: Context menu requested");
 
-            contextMenu.setHeaderTitle(view.getContext().getString(R.string.meal_plan_context_menu_title));
+            contextMenu.setHeaderTitle(view.getContext().getString(R.string.title_meal_plan_context_menu));
             contextMenu.add(getAdapterPosition(), R.id.action_edit, 0, R.string.action_edit);
             contextMenu.add(getAdapterPosition(), R.id.action_delete, 0, R.string.action_delete);
 

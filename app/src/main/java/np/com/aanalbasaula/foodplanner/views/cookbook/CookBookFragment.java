@@ -11,8 +11,10 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -89,6 +91,12 @@ public class CookBookFragment extends Fragment {
         btnCreateRecipe.setOnClickListener(createButtonClickListener);
 
         return view;
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Log.i(TAG, "onContextItemSelected: Context Item Selected here");
+        return super.onContextItemSelected(item);
     }
 
     @Override
@@ -189,6 +197,17 @@ public class CookBookFragment extends Fragment {
                     Log.i(TAG, "onClick: Recipe Item clicked");
                     PlanMealDialogFragment fragment = PlanMealDialogFragment.build(item.getName());
                     fragment.show(getFragmentManager(), "meal-plan");
+                }
+            });
+
+            mView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                @Override
+                public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+                    Log.i(TAG, "onCreateContextMenu: User wants context menu on recipe item");
+                    contextMenu.setHeaderTitle(view.getContext().getString(R.string.title_recipe_context_menu));
+                    contextMenu.add(getAdapterPosition(), R.id.action_view, 0, R.string.action_view);
+                    contextMenu.add(getAdapterPosition(), R.id.action_edit, 0, R.string.action_edit);
+                    contextMenu.add(getAdapterPosition(), R.id.action_delete, 0, R.string.action_delete);
                 }
             });
         }
