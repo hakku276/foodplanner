@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -134,17 +135,8 @@ public class CookBookFragment extends Fragment {
         public void onItemsLoaded(@NonNull List<Recipe> items) {
             Log.i(TAG, "onItemsLoaded: Successfully loaded recipes");
 
-            CookbookRecipeViewAdapter adapter = new CookbookRecipeViewAdapter(items, recipeClickListener);
+            GenericRecyclerViewAdapter<Recipe, DisplayRecipeViewHolder> adapter = new GenericRecyclerViewAdapter<>(R.layout.layout_list_item_recipe, items, DisplayRecipeViewHolder::new);
             recyclerView.setAdapter(adapter);
-        }
-    };
-
-    private CookbookRecipeViewAdapter.RecipeClickListener recipeClickListener = new CookbookRecipeViewAdapter.RecipeClickListener() {
-        @Override
-        public void onRecipeItemClicked(Recipe recipe) {
-            Log.i(TAG, "onRecipeItemClicked: Recipe Item Clicked by user");
-            PlanMealDialogFragment fragment = PlanMealDialogFragment.build(recipe.getName());
-            fragment.show(getFragmentManager(), "meal-plan");
         }
     };
 
@@ -159,5 +151,32 @@ public class CookBookFragment extends Fragment {
             startActivity(intent);
         }
     };
+
+    private class DisplayRecipeViewHolder extends GenericRecyclerViewAdapter.GenericViewHolder<Recipe> {
+
+        private final View mView;
+        private final TextView mContentView;
+        private Recipe item;
+
+        public DisplayRecipeViewHolder(View view) {
+            super(view);
+            mView = view;
+            mContentView = view.findViewById(R.id.content);
+            mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i(TAG, "onClick: Recipe Item clicked");
+                    PlanMealDialogFragment fragment = PlanMealDialogFragment.build(item.getName());
+                    fragment.show(getFragmentManager(), "meal-plan");
+                }
+            });
+        }
+
+        @Override
+        public void bind(Recipe item) {
+            this.item = item;
+            mContentView.setText(item.getName());
+        }
+    }
 
 }
