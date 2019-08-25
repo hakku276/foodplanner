@@ -239,7 +239,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * @return the meal course if available else null
      */
     @Nullable MealCourse getMealCourseAtPosition(int position) {
-        if (items != null) {
+        if (items != null && !items.isEmpty()) {
             MultiLevelViewSupport.Node node = items.get(position);
 
             if (node.getItem() instanceof MealCourse) {
@@ -326,8 +326,8 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Log.i(TAG, "onCreateContextMenu: Context menu requested");
 
             contextMenu.setHeaderTitle(view.getContext().getString(R.string.title_meal_plan_context_menu));
-            contextMenu.add(getAdapterPosition(), R.id.action_edit, 0, R.string.action_edit);
-            contextMenu.add(getAdapterPosition(), R.id.action_delete, 0, R.string.action_delete);
+            contextMenu.add(getAdapterPosition(), R.id.action_meal_edit, 0, R.string.action_edit);
+            contextMenu.add(getAdapterPosition(), R.id.action_meal_delete, 0, R.string.action_delete);
 
         }
     }

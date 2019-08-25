@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="action_edit" type="id"/>
-    <item name="action_delete" type="id"/>
-    <item name="action_view" type="id"/>
+    <!--Actions related to meal courses-->
+    <item name="action_meal_edit" type="id"/>
+    <item name="action_meal_delete" type="id"/>
+    <item name="action_meal_view" type="id"/>
+
+    <!--Actions related to cookbook-->
+    <item name="action_recipe_edit" type="id"/>
+    <item name="action_recipe_delete" type="id"/>
+    <item name="action_recipe_view" type="id"/>
 </resources>

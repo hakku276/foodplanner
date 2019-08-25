@@ -5,12 +5,12 @@ import android.os.Bundle;
 
 import np.com.aanalbasaula.foodplanner.R;
 
-public class ViewRecipeActivity extends AppCompatActivity {
+public class RecipeViewerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_recipe);
+        setContentView(R.layout.activity_recipe_viewer);
     }
 
 }

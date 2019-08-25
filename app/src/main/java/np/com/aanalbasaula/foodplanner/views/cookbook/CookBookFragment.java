@@ -3,7 +3,6 @@ package np.com.aanalbasaula.foodplanner.views.cookbook;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -12,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +40,7 @@ public class CookBookFragment extends Fragment {
 
     // ui related
     private RecyclerView recyclerView;
+    private GenericRecyclerViewAdapter<Recipe, DisplayRecipeViewHolder> recipeAdapter;
     private FloatingActionButton btnCreateRecipe;
 
     // Database related
@@ -95,8 +94,18 @@ public class CookBookFragment extends Fragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Log.i(TAG, "onContextItemSelected: Context Item Selected here");
-        return super.onContextItemSelected(item);
+        Log.i(TAG, "onContextItemSelected: Context Item at position: " + item.getGroupId());
+
+        Recipe recipe = null;
+
+        switch (item.getItemId()) {
+            case R.id.action_recipe_view:
+                recipe = recipeAdapter.getItemAtPosition(item.getGroupId());
+                viewRecipe(recipe);
+                return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -113,6 +122,21 @@ public class CookBookFragment extends Fragment {
 
         // unregister broadcast listener
         BroadcastUtils.unregisterLocalBroadcastListener(getContext(), recipeCreationBroadcastReceiver);
+    }
+
+    /**
+     * View the details of the recipe. Loads another activity to display the details of this recipe
+     *
+     * @param recipe the recipe to view
+     */
+    private void viewRecipe(Recipe recipe) {
+        if (recipe == null) {
+            Log.e(TAG, "viewRecipe: Cannot view recipe, since it is null");
+            return;
+        }
+
+        Intent intent = new Intent(getContext(), RecipeViewerActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -144,8 +168,8 @@ public class CookBookFragment extends Fragment {
         public void onItemsLoaded(@NonNull List<Recipe> items) {
             Log.i(TAG, "onItemsLoaded: Successfully loaded recipes");
 
-            GenericRecyclerViewAdapter<Recipe, DisplayRecipeViewHolder> adapter = new GenericRecyclerViewAdapter<>(items, displayViewHolderFactory);
-            recyclerView.setAdapter(adapter);
+            recipeAdapter = new GenericRecyclerViewAdapter<>(items, displayViewHolderFactory);
+            recyclerView.setAdapter(recipeAdapter);
         }
     };
 
@@ -203,11 +227,11 @@ public class CookBookFragment extends Fragment {
             mView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 @Override
                 public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-                    Log.i(TAG, "onCreateContextMenu: User wants context menu on recipe item");
+                    Log.i(TAG, "onCreateContextMenu: User wants context menu on recipe item: " + item.getName());
                     contextMenu.setHeaderTitle(view.getContext().getString(R.string.title_recipe_context_menu));
-                    contextMenu.add(getAdapterPosition(), R.id.action_view, 0, R.string.action_view);
-                    contextMenu.add(getAdapterPosition(), R.id.action_edit, 0, R.string.action_edit);
-                    contextMenu.add(getAdapterPosition(), R.id.action_delete, 0, R.string.action_delete);
+                    contextMenu.add(getAdapterPosition(), R.id.action_recipe_view, 0, R.string.action_view);
+                    contextMenu.add(getAdapterPosition(), R.id.action_recipe_edit, 0, R.string.action_edit);
+                    contextMenu.add(getAdapterPosition(), R.id.action_recipe_delete, 0, R.string.action_delete);
                 }
             });
         }

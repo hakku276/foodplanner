@@ -100,4 +100,18 @@ public class GenericRecyclerViewAdapter<I, T extends GenericRecyclerViewAdapter.
         return items.size();
     }
 
+    /**
+     * Get an item at the defined position from the adapter.
+     *
+     * @param position The position of the item to retrieve from (absolute position on the list).
+     * @return the item at the defined position else null
+     */
+    public I getItemAtPosition(int position) {
+        if (position >= 0 && position < items.size() ) {
+            return items.get(position);
+        }
+
+        return null;
+    }
+
 }
