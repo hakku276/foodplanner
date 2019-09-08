@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">FoodPlanner</string>
     <string name="title_activity_recipe_creator">Recipe Creator</string>
+    <string name="title_activity_recipe_vewier">Your Recipe</string>
 
     <!--App features-->
     <string name="feature_cookbook">Cookbook</string>
@@ -30,6 +31,7 @@
 
     <!--Screen/Frame Titles-->
     <string name="title_add_ingredient">Add Ingredients</string>
+    <string name="title_display_ingredient">Ingredients</string>
 
     <!--Text Views-->
     <string name="text_date">Date</string>

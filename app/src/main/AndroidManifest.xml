@@ -11,6 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".views.cookbook.RecipeViewerActivity"
+            android:label="@string/title_activity_recipe_vewier"
             android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".views.cookbook.RecipeCreatorActivity"

@@ -111,44 +111,6 @@ public class ShowAllMealCoursesFragment extends Fragment {
         BroadcastUtils.unregisterLocalBroadcastListener(getContext(), mealDBChangedBroadcastListener);
     }
 
-    /**
-     * A callback listener for database load event. This listener is triggered when the async task
-     * completes database load.
-     */
-    DatabaseLoader.DatabaseLoadListener<MealCourse> databaseLoadListener = new DatabaseLoader.DatabaseLoadListener<MealCourse>() {
-        @Override
-        public void onItemsLoaded(@NonNull List<MealCourse> items) {
-            Log.i(TAG, "onItemsLoaded: Meal Courses have been successfully loaded");
-            mealCourseViewAdapter = new MealCourseViewAdapter(items, mListener);
-            recyclerView.setAdapter(mealCourseViewAdapter);
-        }
-    };
-
-    /**
-     * Initiate load for all the items within the database
-     */
-    private void loadItemsFromDatabaseAsync() {
-        Log.i(TAG, "loadItemsFromDatabaseAsync: Loading Items from database");
-        DatabaseLoader<MealCourseDao, MealCourse> asyncTask = new DatabaseLoader<>(db.getMealCourseDao(),
-                MealCourseDao::getAllMealCoursesInFuture,
-                databaseLoadListener);
-        asyncTask.execute();
-    }
-
-    /**
-     * Broadcast listener to any meal creation that has recently happened.
-     * To reload the view as required
-     */
-    BroadcastReceiver mealDBChangedBroadcastListener = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "onReceive: Meal Creation broadcast received. Reloading data");
-            loadItemsFromDatabaseAsync();
-            Log.i(TAG, "onReceive: Started async task to load meal courses");
-        }
-    };
-
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         Log.i(TAG, "onContextItemSelected: A Context Item was selected. At Position: " + item.getGroupId());
@@ -172,6 +134,44 @@ public class ShowAllMealCoursesFragment extends Fragment {
         // the context click was not handled here allow others to process it
         return false;
     }
+
+    /**
+     * Initiate load for all the items within the database
+     */
+    private void loadItemsFromDatabaseAsync() {
+        Log.i(TAG, "loadItemsFromDatabaseAsync: Loading Items from database");
+        DatabaseLoader<MealCourseDao, MealCourse> asyncTask = new DatabaseLoader<>(db.getMealCourseDao(),
+                MealCourseDao::getAllMealCoursesInFuture,
+                databaseLoadListener);
+        asyncTask.execute();
+    }
+
+    /**
+     * A callback listener for database load event. This listener is triggered when the async task
+     * completes database load.
+     */
+    DatabaseLoader.DatabaseLoadListener<MealCourse> databaseLoadListener = new DatabaseLoader.DatabaseLoadListener<MealCourse>() {
+        @Override
+        public void onItemsLoaded(@NonNull List<MealCourse> items) {
+            Log.i(TAG, "onItemsLoaded: Meal Courses have been successfully loaded");
+            mealCourseViewAdapter = new MealCourseViewAdapter(items, mListener);
+            recyclerView.setAdapter(mealCourseViewAdapter);
+        }
+    };
+
+    /**
+     * Broadcast listener to any meal creation that has recently happened.
+     * To reload the view as required
+     */
+    BroadcastReceiver mealDBChangedBroadcastListener = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "onReceive: Meal Creation broadcast received. Reloading data");
+            loadItemsFromDatabaseAsync();
+            Log.i(TAG, "onReceive: Started async task to load meal courses");
+        }
+    };
 
     /**
      * This interface must be implemented by activities that contain this

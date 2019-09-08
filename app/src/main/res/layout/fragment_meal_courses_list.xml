@@ -8,4 +8,4 @@
     android:layout_height="match_parent"
     android:padding="@dimen/padding_screen_to_content"
     tools:context=".views.meal_courses.ShowAllMealCoursesFragment"
-    tools:listitem="@layout/layout_list_item_date_header" />
+    tools:listitem="@layout/layout_list_item_ingredient" />

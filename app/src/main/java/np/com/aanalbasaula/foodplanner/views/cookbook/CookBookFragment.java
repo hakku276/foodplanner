@@ -136,6 +136,7 @@ public class CookBookFragment extends Fragment {
         }
 
         Intent intent = new Intent(getContext(), RecipeViewerActivity.class);
+        intent.putExtra(RecipeViewerActivity.EXTRA_RECIPE, recipe);
         startActivity(intent);
     }
 

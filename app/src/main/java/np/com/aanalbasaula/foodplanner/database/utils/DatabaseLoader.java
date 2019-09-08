@@ -23,25 +23,25 @@ public class DatabaseLoader<D, T> extends AsyncTask<Void, Void, List<T>> {
 
     // database properties
     private D dao;
-    private Function<D, List<T>> loadMethod;
+    private DatabaseLoadMethod<D, List<T>> loadLambda;
 
     // listener
     private DatabaseLoadListener<T> listener;
 
     /**
      * Create a new Async Task that uses the dao object to load the list of items
-     * from the database. The defined load method is used in order to query the database
+     * from the database. The defined load lambda is used in order to query the database
      * and the listener is notified after successful loading.
      *
      * @param dao        the dao object used to access the database
-     * @param loadMethod the method to use when calling the database
+     * @param loadLambda the lambda to be used for loading the items
      * @param listener   the listener to be notified on completion
      */
     public DatabaseLoader(D dao,
-                          Function<D, List<T>> loadMethod,
+                          DatabaseLoadMethod<D, List<T>> loadLambda,
                           DatabaseLoadListener<T> listener) {
         this.dao = dao;
-        this.loadMethod = loadMethod;
+        this.loadLambda = loadLambda;
         this.listener = listener;
     }
 
@@ -49,7 +49,7 @@ public class DatabaseLoader<D, T> extends AsyncTask<Void, Void, List<T>> {
     protected List<T> doInBackground(Void... voids) {
         List<T> items = null;
         try {
-            items = loadMethod.apply(dao);
+            items = loadLambda.loadItems(dao);
         } catch (Exception e) {
             Log.e(TAG, "doInBackground: Could not load the items from the database", e);
         }
@@ -72,5 +72,20 @@ public class DatabaseLoader<D, T> extends AsyncTask<Void, Void, List<T>> {
          * @param items the list of loaded items
          */
         void onItemsLoaded(@NonNull List<T> items);
+    }
+
+    /**
+     * An interface which loads items from the database. The {@linkplain DatabaseLoader} loads
+     * items depending upon the specific implementation of this interface.
+     * @param <D> The type of the DAO to use when loading the items
+     * @param <T> The type of item to be loaded by this specific implementation
+     */
+    public interface DatabaseLoadMethod<D, T> {
+
+        /**
+         * Load the items from the database.
+         * @return the items that were loaded
+         */
+        T loadItems(D dao);
     }
 }
