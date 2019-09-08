@@ -13,6 +13,7 @@ import android.widget.TextView;
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.database.MealType;
+import np.com.aanalbasaula.foodplanner.utils.UIUtils;
 import np.com.aanalbasaula.foodplanner.views.utils.MultiLevelViewSupport;
 
 import java.text.DateFormat;
@@ -326,8 +327,8 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Log.i(TAG, "onCreateContextMenu: Context menu requested");
 
             contextMenu.setHeaderTitle(view.getContext().getString(R.string.title_meal_plan_context_menu));
-            contextMenu.add(getAdapterPosition(), R.id.action_meal_edit, 0, R.string.action_edit);
-            contextMenu.add(getAdapterPosition(), R.id.action_meal_delete, 0, R.string.action_delete);
+            UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_meal_edit, R.string.action_edit);
+            UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_meal_delete, R.string.action_delete);
 
         }
     }

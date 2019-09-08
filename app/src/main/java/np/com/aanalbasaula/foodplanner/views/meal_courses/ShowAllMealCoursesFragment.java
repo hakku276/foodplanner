@@ -22,6 +22,7 @@ import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.database.MealCourseDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
+import np.com.aanalbasaula.foodplanner.utils.UIUtils;
 
 /**
  * A fragment representing a list of Items.
@@ -114,18 +115,18 @@ public class ShowAllMealCoursesFragment extends Fragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         Log.i(TAG, "onContextItemSelected: A Context Item was selected. At Position: " + item.getGroupId());
-        // item group id has been set to position within the adapter
+        // item group id has been set to position within the adapter.
         // DO NOT ACQUIRE MEAL COURSE ITEM OUTSIDE THE SWITCH CASE. SINCE THE CONTEXT ITEM COULD HAVE
         // BEEN CLICKED FOR THA RECIPE ITEM AS WELL. THIS FRAGMENT FIRST RECEIVES A CALLBACK BEFORE
         // IT IS SENT TO THE COOKBOOK FRAGMENT. RETURN FALSE WHEN NOT HANDLING THE ACTION
-        switch (item.getItemId()) {
+        switch (UIUtils.getActionIdForContextMenuItem(item)) {
             case R.id.action_meal_view:
                 return true;
             case R.id.action_meal_delete:
                 return true;
             case R.id.action_meal_edit:
-                Log.d(TAG, "onContextItemSelected: Context Menu Edit selected for item at position: " + item.getGroupId());
-                MealCourse mealCourse = mealCourseViewAdapter.getMealCourseAtPosition(item.getGroupId());
+                Log.d(TAG, "onContextItemSelected: Context Menu Edit selected for item at position: " + UIUtils.getPositionForContextMenuItem(item));
+                MealCourse mealCourse = mealCourseViewAdapter.getMealCourseAtPosition(UIUtils.getPositionForContextMenuItem(item));
                 PlanMealDialogFragment planMealDialog = PlanMealDialogFragment.build(mealCourse);
                 planMealDialog.show(requireFragmentManager(), "plan-meal");
                 return true;

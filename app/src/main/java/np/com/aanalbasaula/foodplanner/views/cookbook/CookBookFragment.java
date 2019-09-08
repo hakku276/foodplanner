@@ -25,6 +25,7 @@ import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
+import np.com.aanalbasaula.foodplanner.utils.UIUtils;
 import np.com.aanalbasaula.foodplanner.views.meal_courses.PlanMealDialogFragment;
 import np.com.aanalbasaula.foodplanner.views.utils.GenericRecyclerViewAdapter;
 
@@ -98,9 +99,9 @@ public class CookBookFragment extends Fragment {
 
         Recipe recipe = null;
 
-        switch (item.getItemId()) {
+        switch (UIUtils.getActionIdForContextMenuItem(item)) {
             case R.id.action_recipe_view:
-                recipe = recipeAdapter.getItemAtPosition(item.getGroupId());
+                recipe = recipeAdapter.getItemAtPosition(UIUtils.getPositionForContextMenuItem(item));
                 viewRecipe(recipe);
                 return true;
         }
@@ -229,10 +230,10 @@ public class CookBookFragment extends Fragment {
                 @Override
                 public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
                     Log.i(TAG, "onCreateContextMenu: User wants context menu on recipe item: " + item.getName());
-                    contextMenu.setHeaderTitle(view.getContext().getString(R.string.title_recipe_context_menu));
-                    contextMenu.add(getAdapterPosition(), R.id.action_recipe_view, 0, R.string.action_view);
-                    contextMenu.add(getAdapterPosition(), R.id.action_recipe_edit, 0, R.string.action_edit);
-                    contextMenu.add(getAdapterPosition(), R.id.action_recipe_delete, 0, R.string.action_delete);
+
+                    UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_recipe_view, R.string.action_view);
+                    UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_recipe_edit, R.string.action_edit);
+                    UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_recipe_delete, R.string.action_delete);
                 }
             });
         }
