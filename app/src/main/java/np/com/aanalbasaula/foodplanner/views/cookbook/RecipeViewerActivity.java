@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import np.com.aanalbasaula.foodplanner.R;
@@ -53,6 +55,26 @@ public class RecipeViewerActivity extends AppCompatActivity {
         } else {
             Log.w(TAG, "onStart: Could not find displayable Recipe");
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu: Creating Options menu");
+        getMenuInflater().inflate(R.menu.activity_recipe_viewer, menu);
+
+        return true; // to display the menu
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.action_recipe_edit && recipe != null) {
+            Log.i(TAG, "onOptionsItemSelected: Editing Recipe: " + recipe.getName());
+            return true; // consume menu processing here
+        }
+
+        Log.d(TAG, "onOptionsItemSelected: Not processing options menu item. Either unknown menu item or null recipe");
+        return super.onOptionsItemSelected(item);
     }
 
     /**
