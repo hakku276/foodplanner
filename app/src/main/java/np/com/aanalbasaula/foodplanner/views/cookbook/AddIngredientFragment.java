@@ -75,8 +75,7 @@ public class AddIngredientFragment extends Fragment {
 
         // setup the recycler view
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ingredientsViewAdapter = new IngredientsViewAdapter(new LinkedList<>(), ingredientsChangedListener);
-        recyclerView.setAdapter(ingredientsViewAdapter);
+        setIngredients(new LinkedList<>());
 
         // setup the add button
         buttonAdd.setOnClickListener(addButtonClickListener);
@@ -102,6 +101,16 @@ public class AddIngredientFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    /**
+     * Set the ingredients that this view will display as added ingredients
+     * @param ingredients the ingredients to display
+     */
+    public void setIngredients(List<Ingredient> ingredients) {
+        Log.i(TAG, "setIngredients: Resetting the list of ingredients to be displayed on screen");
+        ingredientsViewAdapter = new IngredientsViewAdapter(ingredients, ingredientsChangedListener);
+        recyclerView.setAdapter(ingredientsViewAdapter);
     }
 
     /**

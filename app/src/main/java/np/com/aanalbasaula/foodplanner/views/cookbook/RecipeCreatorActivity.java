@@ -1,5 +1,6 @@
 package np.com.aanalbasaula.foodplanner.views.cookbook;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,15 +19,25 @@ import np.com.aanalbasaula.foodplanner.database.Ingredient;
 import np.com.aanalbasaula.foodplanner.database.IngredientDao;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeDao;
+import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreationStrategies;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreator;
 
+/**
+ * An activity that is responsible for creating a Recipe as well as for updating it.
+ */
 public class RecipeCreatorActivity extends AppCompatActivity implements AddIngredientFragment.OnFragmentInteractionListener {
 
     private static final String TAG = RecipeCreatorActivity.class.getSimpleName();
+    public static final String EXTRA_EDIT_RECIPE = "recipe";
 
+    // ui related
     private EditText textRecipeName;
     private AddIngredientFragment fragmentAddIngredient;
+
+    // working properties
+    private boolean isEditMode;
+    private Recipe recipe; // the recipe being currently edited using this view
 
     // database related
     private RecipeDao recipeDao;
@@ -57,6 +68,13 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
 
         recipeDao = AppDatabase.getInstance(this).getRecipeDao();
         ingredientDao = AppDatabase.getInstance(this).getIngredientDao();
+
+        // Extract Recipe from intent before preparing the view, since either edit mode or not
+        // is dependent on configuration sent within the Intent
+        extractRecipeFromIntent();
+
+        // prepare the view for either edit or create mode
+        prepareView();
     }
 
     @Override
@@ -68,12 +86,15 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        Log.i(TAG, "onOptionsItemSelected: Option menu selected");
         // check the action if is required to be handled
         if (item.getItemId() == R.id.action_save_recipe) {
             Log.i(TAG, "onOptionsItemSelected: User Requested save recipe");
             saveRecipe();
             return true;
+        } else if (item.getItemId() == android.R.id.home) {
+            Log.i(TAG, "onOptionsItemSelected: User pressed back button");
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -83,6 +104,35 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
     public void onIngredientsChanged(List<Ingredient> ingredients) {
         Log.i(TAG, "onIngredientsChanged: The ingredients have changed");
         this.ingredients = ingredients;
+    }
+
+    /**
+     * Extracts the recipe provided within the intent while starting the activity. Note:
+     * If the intent has the recipe, it is to be considered that the view has been opened for edit
+     * of this specific recipe.
+     */
+    private void extractRecipeFromIntent() {
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(EXTRA_EDIT_RECIPE)) {
+            Log.i(TAG, "extractRecipeFromIntent: Intent available for recipe extraction");
+            recipe = intent.getParcelableExtra(EXTRA_EDIT_RECIPE);
+            isEditMode = true;
+        }
+    }
+
+    /**
+     * Prepares the view for either Edit or Create.
+     */
+    private void prepareView() {
+        if (isEditMode) {
+            Log.i(TAG, "prepareView: View was opened in edit mode. Populating view for Edit.");
+            textRecipeName.setText(recipe.getName());
+
+            Log.d(TAG, "prepareView: Loading ingredients");
+            // todo begin load of ingredients
+            DatabaseLoader<IngredientDao, Ingredient> loader = new DatabaseLoader<>(ingredientDao, (d) -> d.getIngredientsForRecipe(recipe.getId()), ingredientsLoadListener);
+            loader.execute();
+        }
     }
 
     /**
@@ -154,6 +204,10 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
         }
     };
 
+    /**
+     * A listener to wait for ingredients to be written to the database. The listener is responsible for
+     * closing the view once the writing is done. since the view is no longer needed after this moment.
+     */
     private EntryCreator.EntryCreationListener<Ingredient> ingredientCreationListener = new EntryCreator.EntryCreationListener<Ingredient>() {
         @Override
         public void onEntriesCreated(Ingredient[] items) {
@@ -163,6 +217,16 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
                 finish();
             }
         }
+    };
+
+    /**
+     * A listener to listen for ingredient loads from the database.
+     * NOTE: the ingredients are only loaded when the view is in EDIT mode
+     */
+    private DatabaseLoader.DatabaseLoadListener<Ingredient> ingredientsLoadListener = ingredients -> {
+        Log.i(TAG, "IngredientsLoadListener: The ingredients have been successfully loaded from the database: " + ingredients.size());
+        this.ingredients = ingredients;
+        this.fragmentAddIngredient.setIngredients(ingredients);
     };
 
 }

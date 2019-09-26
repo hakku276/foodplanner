@@ -70,6 +70,7 @@ public class RecipeViewerActivity extends AppCompatActivity {
 
         if (item.getItemId() == R.id.action_recipe_edit && recipe != null) {
             Log.i(TAG, "onOptionsItemSelected: Editing Recipe: " + recipe.getName());
+            showEditRecipeView();
             return true; // consume menu processing here
         }
 
@@ -101,6 +102,17 @@ public class RecipeViewerActivity extends AppCompatActivity {
             recipe = intent.getParcelableExtra(EXTRA_RECIPE);
             Log.i(TAG, "onCreate: Showing Recipe: " + recipe);
         }
+    }
+
+    /**
+     * Displays the Edit Recipe View. For now, a reused version of the {@link RecipeCreatorActivity}
+     * will be used. The Recipe Creator Activity will morph to accommodate the edit functionality.
+     */
+    private void showEditRecipeView() {
+        Log.i(TAG, "showEditRecipeView: Starting recipe edit view");
+        Intent intent = new Intent(this, RecipeCreatorActivity.class);
+        intent.putExtra(RecipeCreatorActivity.EXTRA_EDIT_RECIPE, recipe);
+        startActivity(intent);
     }
 
 }
