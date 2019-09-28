@@ -2,9 +2,12 @@ package np.com.aanalbasaula.foodplanner.database;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.List;
 
 import lombok.Data;
 
@@ -20,6 +23,9 @@ public class Recipe implements Parcelable {
 
     @ColumnInfo(name = "name")
     private String name;
+
+    @Ignore
+    private List<Ingredient> ingredients;
 
     public Recipe() {
         // required empty constructor by the Room Framework

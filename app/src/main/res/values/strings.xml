@@ -30,7 +30,6 @@
     <string name="title_dialog_update_meal">Edit</string>
 
     <!--Screen/Frame Titles-->
-    <string name="title_add_ingredient">Add Ingredients</string>
     <string name="title_display_ingredient">Ingredients</string>
 
     <!--Text Views-->
@@ -43,6 +42,7 @@
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
+    <string name="action_update">Update</string>
     <string name="title_meal_plan_context_menu">Select The Action</string>
     <string name="title_recipe_context_menu">Select The Action</string>
 

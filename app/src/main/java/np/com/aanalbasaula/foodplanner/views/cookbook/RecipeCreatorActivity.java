@@ -2,7 +2,6 @@ package np.com.aanalbasaula.foodplanner.views.cookbook;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +21,7 @@ import np.com.aanalbasaula.foodplanner.database.RecipeDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreationStrategies;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreator;
+import np.com.aanalbasaula.foodplanner.database.utils.RecipeUpdater;
 
 /**
  * An activity that is responsible for creating a Recipe as well as for updating it.
@@ -80,7 +80,13 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "onCreateOptionsMenu: Inflating layout menu");
-        getMenuInflater().inflate(R.menu.activity_recipe_creator, menu);
+        if (!isEditMode) {
+            Log.i(TAG, "onCreateOptionsMenu: Creating Create Mode Menu");
+            getMenuInflater().inflate(R.menu.activity_recipe_creator, menu);
+        } else {
+            Log.i(TAG, "onCreateOptionsMenu: Creating Edit Mode Menu");
+            getMenuInflater().inflate(R.menu.activity_recipe_updator, menu);
+        }
         return true;
     }
 
@@ -88,9 +94,15 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.i(TAG, "onOptionsItemSelected: Option menu selected");
         // check the action if is required to be handled
-        if (item.getItemId() == R.id.action_save_recipe) {
+        // NOTE: when the options menu is created, it is created different for edit mode
+        // NOTE: return true after every handle to avoid parent view to get the save request
+        if (item.getItemId() == R.id.action_recipe_save) {
             Log.i(TAG, "onOptionsItemSelected: User Requested save recipe");
             saveRecipe();
+            return true;
+        } else if (item.getItemId() == R.id.action_recipe_edit) {
+            Log.i(TAG, "onOptionsItemSelected: User requested edit recipe");
+            updateRecipe();
             return true;
         } else if (item.getItemId() == android.R.id.home) {
             Log.i(TAG, "onOptionsItemSelected: User pressed back button");
@@ -129,7 +141,7 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
             textRecipeName.setText(recipe.getName());
 
             Log.d(TAG, "prepareView: Loading ingredients");
-            // todo begin load of ingredients
+            // begin load of ingredients
             DatabaseLoader<IngredientDao, Ingredient> loader = new DatabaseLoader<>(ingredientDao, (d) -> d.getIngredientsForRecipe(recipe.getId()), ingredientsLoadListener);
             loader.execute();
         }
@@ -171,9 +183,22 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
     }
 
     /**
+     * Updates the currently edited recipe into the database
+     */
+    private void updateRecipe() {
+        Log.i(TAG, "updateRecipe: Updating Recipe: " + recipe.getName());
+
+        // collect the list of ingredients
+        recipe.setIngredients(ingredients);
+
+        RecipeUpdater updater = new RecipeUpdater(recipeDao, ingredientDao, recipeUpdateListener);
+        updater.execute(recipe);
+    }
+
+    /**
      * The Recipe entry creation listener
      */
-    private EntryCreator.EntryCreationListener<Recipe> recipeCreationListener = new EntryCreator.EntryCreationListener<Recipe>() {
+    private final EntryCreator.EntryCreationListener<Recipe> recipeCreationListener = new EntryCreator.EntryCreationListener<Recipe>() {
         @Override
         public void onEntriesCreated(Recipe[] items) {
             Log.i(TAG, "onEntriesCreated: Recipe has been successfully saved into database");
@@ -187,7 +212,7 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
             Log.i(TAG, "onEntriesCreated: Saving ingredients into database");
             if (ingredients == null || ingredients.isEmpty()) {
                 Log.i(TAG, "onEntriesCreated: No ingredients to save into database");
-                // TODO end the recipe creation here
+                // end the recipe creation here
                 finish();
                 return;
             }
@@ -204,11 +229,19 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
         }
     };
 
+    private final RecipeUpdater.RecipeUpdateStatusListener recipeUpdateListener = new RecipeUpdater.RecipeUpdateStatusListener() {
+        @Override
+        public void onRecipeUpdated(Recipe[] recipes) {
+            Log.i(TAG, "onRecipeUpdated: The recipe has been updated");
+            finish();
+        }
+    };
+
     /**
      * A listener to wait for ingredients to be written to the database. The listener is responsible for
      * closing the view once the writing is done. since the view is no longer needed after this moment.
      */
-    private EntryCreator.EntryCreationListener<Ingredient> ingredientCreationListener = new EntryCreator.EntryCreationListener<Ingredient>() {
+    private final EntryCreator.EntryCreationListener<Ingredient> ingredientCreationListener = new EntryCreator.EntryCreationListener<Ingredient>() {
         @Override
         public void onEntriesCreated(Ingredient[] items) {
             Log.i(TAG, "onEntriesCreated: Ingredients have been created");
@@ -223,7 +256,7 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
      * A listener to listen for ingredient loads from the database.
      * NOTE: the ingredients are only loaded when the view is in EDIT mode
      */
-    private DatabaseLoader.DatabaseLoadListener<Ingredient> ingredientsLoadListener = ingredients -> {
+    private final DatabaseLoader.DatabaseLoadListener<Ingredient> ingredientsLoadListener = ingredients -> {
         Log.i(TAG, "IngredientsLoadListener: The ingredients have been successfully loaded from the database: " + ingredients.size());
         this.ingredients = ingredients;
         this.fragmentAddIngredient.setIngredients(ingredients);

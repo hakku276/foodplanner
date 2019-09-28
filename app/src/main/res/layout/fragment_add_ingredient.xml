@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/text_add_ingredients_title"
-        android:text="@string/title_add_ingredient"
+        android:text="@string/title_display_ingredient"
         style="?android:textAppearanceMedium"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"/>
