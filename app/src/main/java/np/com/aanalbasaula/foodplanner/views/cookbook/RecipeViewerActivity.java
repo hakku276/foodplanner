@@ -83,6 +83,7 @@ public class RecipeViewerActivity extends AppCompatActivity {
      * The fragment is created if only necessary.
      */
     private void setupIngredientsView() {
+        Log.i(TAG, "setupIngredientsView: Showing Ingredients Fragment");
         if (showIngredientFragment == null) {
             showIngredientFragment = ShowIngredientFragment.newInstance(recipe);
         }

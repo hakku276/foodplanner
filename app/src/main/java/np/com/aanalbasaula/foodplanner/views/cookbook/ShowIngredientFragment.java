@@ -4,6 +4,7 @@ package np.com.aanalbasaula.foodplanner.views.cookbook;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,10 +81,12 @@ public class ShowIngredientFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView: Inflating Fragment View");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_show_ingredient, container, false);
 
         this.recyclerView = view.findViewById(R.id.list_ingredients);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // only load ingredients after view has been setup
         loadIngredientsFromDatabase();
