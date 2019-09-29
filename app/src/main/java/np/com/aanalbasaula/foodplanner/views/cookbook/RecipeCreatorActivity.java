@@ -234,6 +234,9 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
         @Override
         public void onRecipeUpdated(Recipe[] recipes) {
             Log.i(TAG, "onRecipeUpdated: The recipe has been updated");
+            Intent data = new Intent();
+            data.putExtra(EXTRA_EDIT_RECIPE, recipe);
+            setResult(RESULT_OK, data);
             finish();
         }
     };

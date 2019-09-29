@@ -95,6 +95,16 @@ public class ShowIngredientFragment extends Fragment {
     }
 
     /**
+     * Sets the Recipe for which the Fragment is showing the Ingredients.
+     *
+     * @param recipe the ingredients of the recipe to be displayed
+     */
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
+        loadIngredientsFromDatabase();
+    }
+
+    /**
      * Loads all the ingredients for the recipe that is being displayed by this fragment.
      */
     private void loadIngredientsFromDatabase() {

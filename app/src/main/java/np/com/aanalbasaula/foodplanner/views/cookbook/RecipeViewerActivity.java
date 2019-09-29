@@ -16,6 +16,7 @@ import np.com.aanalbasaula.foodplanner.database.Recipe;
 public class RecipeViewerActivity extends AppCompatActivity {
 
     public static final String EXTRA_RECIPE = "recipe";
+    private static final int REQUEST_EDIT_RECIPE = 1;
     private static final String TAG = RecipeViewerActivity.class.getSimpleName();
 
     @Nullable
@@ -50,8 +51,7 @@ public class RecipeViewerActivity extends AppCompatActivity {
 
         if (recipe != null) {
             Log.i(TAG, "onStart: The Recipe is available. Setting up UI");
-            textRecipeName.setText(recipe.getName());
-            setupIngredientsView();
+            prepareView();
         } else {
             Log.w(TAG, "onStart: Could not find displayable Recipe");
         }
@@ -78,14 +78,37 @@ public class RecipeViewerActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i(TAG, "onActivityResult: The Opened Activity has returned a result");
+
+        if (requestCode == REQUEST_EDIT_RECIPE && resultCode == RESULT_OK) {
+            Log.d(TAG, "onActivityResult: Recipe has been edited by the user. Extracting new Recipe Information");
+
+            if (data == null) {
+                Log.e(TAG, "onActivityResult: The Recipe Activity finished without setting data.");
+                finish();
+            } else {
+                Log.d(TAG, "onActivityResult: Recipe information was available in extras");
+                recipe = data.getParcelableExtra(RecipeCreatorActivity.EXTRA_EDIT_RECIPE);
+            }
+        }
+    }
+
     /**
-     * Sets up the ingredients view using the {@link ShowIngredientFragment} fragment.
-     * The fragment is created if only necessary.
+     * Sets up the complete activity view to correctly display the {@linkplain Recipe} as required.
+     * The ingredients are displayed using the {@link ShowIngredientFragment} fragment (The fragment
+     * is created if only necessary.)
      */
-    private void setupIngredientsView() {
-        Log.i(TAG, "setupIngredientsView: Showing Ingredients Fragment");
+    private void prepareView() {
+        Log.i(TAG, "prepareView: Setting up UI to display the recipe: " + recipe.getName());
+        textRecipeName.setText(recipe.getName());
+
+        Log.d(TAG, "prepareView: Showing Ingredients Fragment");
         if (showIngredientFragment == null) {
             showIngredientFragment = ShowIngredientFragment.newInstance(recipe);
+        } else {
+            showIngredientFragment.setRecipe(recipe);
         }
 
         getSupportFragmentManager().beginTransaction().replace(R.id.content, showIngredientFragment).commit();
@@ -113,7 +136,7 @@ public class RecipeViewerActivity extends AppCompatActivity {
         Log.i(TAG, "showEditRecipeView: Starting recipe edit view");
         Intent intent = new Intent(this, RecipeCreatorActivity.class);
         intent.putExtra(RecipeCreatorActivity.EXTRA_EDIT_RECIPE, recipe);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_EDIT_RECIPE);
     }
 
 }
