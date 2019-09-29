@@ -17,8 +17,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import np.com.aanalbasaula.foodplanner.database.AppDatabase;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.views.cookbook.CookBookFragment;
+import np.com.aanalbasaula.foodplanner.views.meal_courses.MealCoursesToShoppingList;
 import np.com.aanalbasaula.foodplanner.views.meal_courses.PlanMealDialogFragment;
 import np.com.aanalbasaula.foodplanner.views.meal_courses.ShowAllMealCoursesFragment;
 import np.com.aanalbasaula.foodplanner.views.shopping_list.ShoppingListFragment;
@@ -82,6 +84,10 @@ public class MainActivity extends AppCompatActivity implements ShowAllMealCourse
                 Log.i(TAG, "onOptionsItemSelected: New meal option menu clicked");
                 startNewMealCreation();
                 break;
+            case R.id.action_populate_shopping_list:
+                Log.i(TAG, "onOptionsItemSelected: Auto Populate of shopping lists requested");
+                autoPopulateShoppingList();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -91,6 +97,14 @@ public class MainActivity extends AppCompatActivity implements ShowAllMealCourse
     private void startNewMealCreation() {
         DialogFragment fragment = new PlanMealDialogFragment();
         fragment.show(getSupportFragmentManager(), "meal");
+    }
+
+    /**
+     * Auto populates the shopping list from the planned meals
+     */
+    private void autoPopulateShoppingList() {
+        MealCoursesToShoppingList populator = new MealCoursesToShoppingList(AppDatabase.getInstance(this));
+        populator.execute();
     }
 
     @Override
