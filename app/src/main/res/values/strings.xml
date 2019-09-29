@@ -21,7 +21,6 @@
     <string name="button_create">Create</string>
     <string name="button_add">Add</string>
     <string name="button_update">Update</string>
-    <string name="menu_new_meal">New Meal</string>
     <string name="button_clear_all_selected">Clear All</string>
 
     <!--Dialog Titles-->
@@ -37,6 +36,8 @@
     <string name="text_meal_type">Meal Type</string>
 
     <!--Menu Related Items-->
+    <string name="menu_new_meal">New Meal</string>
+    <string name="menu_auto_populate_shopping_list">Create Shopping List</string>
     <string name="action_edit">Edit</string>
     <string name="action_view">View</string>
     <string name="action_delete">Delete</string>

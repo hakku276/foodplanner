@@ -22,6 +22,7 @@ import np.com.aanalbasaula.foodplanner.database.AppDatabase;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.database.MealCourseDao;
 import np.com.aanalbasaula.foodplanner.database.MealType;
+import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreationStrategies;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreator;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryUpdater;
@@ -37,6 +38,7 @@ public class PlanMealDialogFragment extends DialogFragment {
     private static final String TAG = PlanMealDialogFragment.class.getSimpleName();
     private static final String ARG_MEAL_COURSE = "meal_course";
     private static final String ARG_MEAL_NAME = "meal_name";
+    private static final String ARG_RECIPE_ID = "recipe_id";
 
     // View related properties
     private EditText textMealName;
@@ -60,11 +62,12 @@ public class PlanMealDialogFragment extends DialogFragment {
         return mealDialogFragment;
     }
 
-    public static PlanMealDialogFragment build(String mealName) {
+    public static PlanMealDialogFragment build(Recipe recipe) {
         PlanMealDialogFragment mealDialogFragment = new PlanMealDialogFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putString(ARG_MEAL_NAME, mealName);
+        bundle.putString(ARG_MEAL_NAME, recipe.getName());
+        bundle.putLong(ARG_RECIPE_ID, recipe.getId());
 
         mealDialogFragment.setArguments(bundle);
 
@@ -116,10 +119,15 @@ public class PlanMealDialogFragment extends DialogFragment {
      */
     private void setupCreateWithArgs(Bundle arguments) {
         Log.i(TAG, "setupCreateWithArgs: Setting up create mode with the provided arguments");
+        mealCourse = new MealCourse();
         if (arguments != null && arguments.containsKey(ARG_MEAL_NAME)) {
             Log.d(TAG, "setupCreateWithArgs: Arguments available for use");
             String mealName = arguments.getString(ARG_MEAL_NAME);
+            long recipeId = arguments.getLong(ARG_RECIPE_ID);
             isEditMode = false;
+
+            mealCourse.setName(mealName);
+            mealCourse.setRecipeId(recipeId);
 
             // set the meal name to the edit text
             textMealName.setText(mealName);
@@ -238,7 +246,6 @@ public class PlanMealDialogFragment extends DialogFragment {
                     EntryUpdater<MealCourseDao, MealCourse> entryUpdater = new EntryUpdater<>(mealCourseDao, MealCourseDao::update, mealCourseUpdateListener);
                     entryUpdater.execute(mealCourse);
                 } else {
-                    mealCourse = new MealCourse();
                     updateMealCourseFromUi(mealCourse);
                     Log.d(TAG, "onClick: Extracted meal information : " + mealCourse.toString());
 

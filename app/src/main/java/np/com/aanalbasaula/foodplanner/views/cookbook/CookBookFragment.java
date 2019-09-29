@@ -221,7 +221,7 @@ public class CookBookFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     Log.i(TAG, "onClick: Recipe Item clicked");
-                    PlanMealDialogFragment fragment = PlanMealDialogFragment.build(item.getName());
+                    PlanMealDialogFragment fragment = PlanMealDialogFragment.build(item);
                     fragment.show(getFragmentManager(), "meal-plan");
                 }
             });

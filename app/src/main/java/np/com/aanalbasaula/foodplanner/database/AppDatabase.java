@@ -11,16 +11,9 @@ import android.support.annotation.NonNull;
 
 import np.com.aanalbasaula.foodplanner.database.utils.Converters;
 
-@Database(entities = {MealCourse.class, Recipe.class, ShoppingListEntry.class, Ingredient.class}, version = 5)
+@Database(entities = {MealCourse.class, Recipe.class, ShoppingListEntry.class, Ingredient.class}, version = 6)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
-
-    private static final Migration MIGRATION_3_4 = new Migration(3,4) {
-        @Override
-        public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE `ShoppingListEntry` ADD COLUMN `selected` INTEGER NOT NULL DEFAULT 0");
-        }
-    };
 
     private static final Migration MIGRATION_4_5 = new Migration(4, 5) {
         @Override
@@ -29,12 +22,19 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    private static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE `MealCourse` ADD COLUMN `recipeId` INTEGER REFERENCES Recipe(id) ON DELETE SET NULL");
+        }
+    };
+
     private static AppDatabase instance;
 
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "recipes.db")
-                    .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
                     .build();
         }
         return instance;
