@@ -119,6 +119,14 @@ public class ShowIngredientFragment extends Fragment {
         this.recyclerView.setAdapter(adapter);
     };
 
+    /**
+     * A View holder specifically for displaying the Ingredients on the Fragment. It uses at present
+     * the same layout as the one to edit the Ingredients (with the Delete button) therefore, it hides
+     * the button on creation.
+     *
+     * NOTE: This class is required by the {@linkplain GenericRecyclerViewAdapter} as a way to display
+     * simple items quickly without adding extra adapters.
+     */
     private class DisplayIngredientViewHolder extends GenericRecyclerViewAdapter.GenericViewHolder<Ingredient> {
 
         private TextView mContentView;
@@ -139,6 +147,10 @@ public class ShowIngredientFragment extends Fragment {
         }
     }
 
+    /**
+     * A View Holder factory instance used by the {@linkplain GenericRecyclerViewAdapter} to create
+     * an instance of the {@linkplain DisplayIngredientViewHolder} as well as the required layout.
+     */
     private class IngredientsViewHolderFactory implements GenericRecyclerViewAdapter.GenericViewHolderFactory<DisplayIngredientViewHolder> {
 
         @Override
