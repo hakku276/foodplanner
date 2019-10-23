@@ -11,7 +11,6 @@ import np.com.aanalbasaula.foodplanner.database.Ingredient;
 import np.com.aanalbasaula.foodplanner.database.IngredientDao;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.database.MealCourseDao;
-import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.ShoppingListDao;
 import np.com.aanalbasaula.foodplanner.database.ShoppingListEntry;
 

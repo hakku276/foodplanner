@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="@dimen/height_meal_plan_course"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:layout_marginTop="@dimen/margin_top_meal_plan_meal">
 
     <TextView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@android:style/TextAppearance.Small"
-        android:layout_marginTop="@dimen/margin_text_text"
-        android:layout_marginBottom="@dimen/margin_text_border"
-        android:paddingStart="@dimen/margin_text_text"
-        android:paddingEnd="@dimen/margin_text_text"/>
+        style="@android:style/TextAppearance.Medium"
+        android:textSize="@dimen/text_size_meal_plan_meal"
+        android:textColor="@android:color/black"
+        android:layout_marginStart="@dimen/margin_content_to_content"
+        android:layout_centerVertical="true"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/background_dark"/>
-</LinearLayout>
+</RelativeLayout>

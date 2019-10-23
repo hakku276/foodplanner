@@ -293,7 +293,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         MealTypeViewHolder(View view) {
             super(view);
             mView = view;
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mContentView = view.findViewById(R.id.content);
         }
 
         @Override
