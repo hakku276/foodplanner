@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -81,7 +82,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * @param meals the list of meals to be displayed in the view
      */
     private void prepareDataset(List<MealCourse> meals) {
-        DateFormat dateFormat = SimpleDateFormat.getDateInstance();
+        DateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
         Map<String, Map<MealType, List<MealCourse>>> dataset = new HashMap<>();
         List<String> sortedKeys = new LinkedList<>();
 
