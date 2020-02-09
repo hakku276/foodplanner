@@ -12,11 +12,17 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.scalified.tree.TraversalAction;
+import com.scalified.tree.TreeNode;
+import com.scalified.tree.multinode.ArrayMultiTreeNode;
+import com.scalified.tree.multinode.LinkedMultiTreeNode;
+import com.scalified.tree.multinode.MultiTreeNode;
+
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.database.MealType;
 import np.com.aanalbasaula.foodplanner.utils.UIUtils;
-import np.com.aanalbasaula.foodplanner.views.utils.MultiLevelViewSupport;
+import np.com.aanalbasaula.foodplanner.views.utils.MultiLevelViewNode;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link np.com.aanalbasaula.foodplanner.database.MealCourse} and makes a call to the
@@ -57,7 +64,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     // ordered list of items to show in the view
     @Nullable
-    private List<MultiLevelViewSupport.Node> items;
+    private List<MultiLevelViewNode> items;
 
     // listener to events within the recycler view
     private final ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener mListener;
@@ -89,76 +96,67 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     private void prepareDataset(List<MealCourse> meals) {
         DateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
-        Map<String, Map<MealType, List<MealCourse>>> dataset = new HashMap<>();
-        List<String> sortedKeys = new LinkedList<>();
+        TreeNode<MultiLevelViewNode> dataset = new LinkedMultiTreeNode<>(null);
 
-        // convert all the meal courses into a map of day -> (meal types), (meal type) -> meals
-        for (MealCourse meal :
-                meals) {
+        Log.i(TAG, "prepareDataset: Constructing Tree from Meal Courses");
+        // convert all the meal courses into a tree of root-> days -> meal types -> meals
+        for (MealCourse meal : meals) {
             String dateString = dateFormat.format(meal.getDate());
 
-            if (!dataset.containsKey(dateString)) {
-                sortedKeys.add(dateString);
-                dataset.put(dateString, new HashMap<>());
+            TreeNode<MultiLevelViewNode> dateNode = dataset.find(new MultiLevelViewNode(ITEM_TYPE_DATE, dateString));
+
+            if (dateNode == null) {
+                Log.d(TAG, "prepareDataset: Date Node not found in dataset: dateString: " + dateString);
+                dateNode = new LinkedMultiTreeNode<>(new MultiLevelViewNode(ITEM_TYPE_DATE, dateString));
+                dataset.add(dateNode);
             }
 
-            Map<MealType, List<MealCourse>> mealTypesPerDay = dataset.get(dateString);
+            TreeNode<MultiLevelViewNode> mealTypeNode = dateNode.find(new MultiLevelViewNode(ITEM_TYPE_MEAL_TYPE, meal.getType()));
 
-            if (!mealTypesPerDay.containsKey(meal.getType())) {
-                mealTypesPerDay.put(meal.getType(), new ArrayList<>());
+            if (mealTypeNode == null) {
+                Log.d(TAG, "prepareDataset: Meal Type node not found in dataset: dateString: " + dateString + " mealType: " + meal.getType());
+                mealTypeNode = new LinkedMultiTreeNode<>(new MultiLevelViewNode(ITEM_TYPE_MEAL_TYPE, meal.getType()));
+                dateNode.add(mealTypeNode);
             }
 
-            List<MealCourse> mealsPerDayPerType = mealTypesPerDay.get(meal.getType());
-            mealsPerDayPerType.add(meal);
+            TreeNode<MultiLevelViewNode> mealNode = new LinkedMultiTreeNode<>(new MultiLevelViewNode(ITEM_TYPE_MEAL_COURSE, meal));
+            mealTypeNode.add(mealNode);
+
         }
+        Log.i(TAG, "prepareDataset: Done Creating tree");
 
-        items = convertToFlattenedTree(sortedKeys, dataset);
+        items = convertToFlattenedTree(dataset);
+
     }
 
     /**
-     * Provided a Tree structure using maps, converts it into a flat list in ready to be displayed.
-     * Utilizes the {@link MultiLevelViewSupport} to create the tree structure and then later flatten
-     * it out as a list.
+     * Convert the provided Tree into a flattened List. The Tree is traversed in Pre-Order and the root element
+     * is left out of the traversal.
      *
-     * @param sortedKeys The sorted list of keys for the root map in which order the view should be shown
-     * @param dataset    the tree represented as a map. date -> meal type -> meal
-     * @return the flat list of items to be shown on the UI
+     * @param rootNode the node from where the tree should be flattened
+     * @return the list of pre-order traversed items.
      */
-    private List<MultiLevelViewSupport.Node> convertToFlattenedTree(List<String> sortedKeys, Map<String, Map<MealType, List<MealCourse>>> dataset) {
-        MultiLevelViewSupport.RootElement root = new MultiLevelViewSupport.RootElement();
+    private List<MultiLevelViewNode> convertToFlattenedTree(TreeNode<MultiLevelViewNode> rootNode) {
+        Log.i(TAG, "convertToFlattenedTree: Flattening provided tree");
+        List<MultiLevelViewNode> viewNodes = new LinkedList<>();
 
-        // for all date entries in the map create nodes
-        for (String date :
-                sortedKeys) {
-
-            MultiLevelViewSupport.Node dateNode = new MultiLevelViewSupport.Node(ITEM_TYPE_DATE, date);
-            Map<MealType, List<MealCourse>> mealTypePerDate = dataset.get(date);
-
-            // add all the meal courses as nodes within the date
-            // using MealType.values() since the order of the Meal type should be defined
-            for (MealType mealType :
-                    MealType.values()) {
-
-                // the day does not contain the meal type, continue with another type
-                if (!mealTypePerDate.containsKey(mealType)) {
-                    continue;
+        TraversalAction<TreeNode<MultiLevelViewNode>> flatten = new TraversalAction<TreeNode<MultiLevelViewNode>>() {
+            @Override
+            public void perform(TreeNode<MultiLevelViewNode> node) {
+                if(!node.isRoot()) {
+                    viewNodes.add(node.data());
                 }
-                MultiLevelViewSupport.Node mealTypeNode = new MultiLevelViewSupport.Node(ITEM_TYPE_MEAL_TYPE, mealType);
-                List<MealCourse> mealsPerTypePerDate = mealTypePerDate.get(mealType);
-
-                // add all meals into the course
-                for (MealCourse mealCourse :
-                        mealsPerTypePerDate) {
-                    MultiLevelViewSupport.Node mealCourseNode = new MultiLevelViewSupport.Node(ITEM_TYPE_MEAL_COURSE, mealCourse);
-                    mealTypeNode.addChild(mealCourseNode);
-                }
-
-                dateNode.addChild(mealTypeNode);
             }
 
-            root.addChildNode(dateNode);
-        }
-        return root.getChildElementsInOrder();
+            @Override
+            public boolean isCompleted() {
+                return false;
+            }
+        };
+
+        rootNode.traversePreOrder(flatten);
+        Log.i(TAG, "convertToFlattenedTree: Done flattening tree");
+        return viewNodes;
     }
 
     /**
@@ -202,7 +200,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         if (items != null) {
 
-            MultiLevelViewSupport.Node item = items.get(position);
+            MultiLevelViewNode item = items.get(position);
 
             switch (holder.getItemViewType()) {
                 case ITEM_TYPE_DATE:
@@ -250,7 +248,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     @Nullable MealCourse getMealCourseAtPosition(int position) {
         if (items != null && !items.isEmpty()) {
-            MultiLevelViewSupport.Node node = items.get(position);
+            MultiLevelViewNode node = items.get(position);
 
             if (node.getItem() instanceof MealCourse) {
                 return (MealCourse) node.getItem();
