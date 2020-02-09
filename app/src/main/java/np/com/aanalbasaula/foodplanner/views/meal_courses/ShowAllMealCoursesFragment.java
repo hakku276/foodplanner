@@ -21,6 +21,7 @@ import np.com.aanalbasaula.foodplanner.database.AppDatabase;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.database.MealCourseDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
+import np.com.aanalbasaula.foodplanner.database.utils.EntryDeleter;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 import np.com.aanalbasaula.foodplanner.utils.UIUtils;
 
@@ -103,6 +104,11 @@ public class ShowAllMealCoursesFragment extends Fragment {
             BroadcastUtils.registerLocalBroadcastListener(context,
                     mealItemEditRequestListener,
                     BroadcastUtils.ACTION_MEAL_REQUEST_EDIT);
+
+            // register for meal delete listeners
+            BroadcastUtils.registerLocalBroadcastListener(context,
+                    mealItemDeleteRequestListener,
+                    BroadcastUtils.ACTION_MEAL_REQUEST_DELETE);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement ShowAllMealCoursesFragmentListener");
@@ -115,6 +121,8 @@ public class ShowAllMealCoursesFragment extends Fragment {
         mListener = null;
 
         BroadcastUtils.unregisterLocalBroadcastListener(getContext(), mealDBChangedBroadcastListener);
+        BroadcastUtils.unregisterLocalBroadcastListener(getContext(), mealItemEditRequestListener);
+        BroadcastUtils.unregisterLocalBroadcastListener(getContext(), mealItemDeleteRequestListener);
     }
 
     /**
@@ -138,6 +146,14 @@ public class ShowAllMealCoursesFragment extends Fragment {
             Log.i(TAG, "onItemsLoaded: Meal Courses have been successfully loaded");
             mealCourseViewAdapter = new MealCourseViewAdapter(items, getContext(), mListener);
             recyclerView.setAdapter(mealCourseViewAdapter);
+        }
+    };
+
+    private final EntryDeleter.DatabaseDeletionListener<MealCourse> databaseDeletionListener = new EntryDeleter.DatabaseDeletionListener<MealCourse>() {
+        @Override
+        public void onItemsDeleted() {
+            Log.i(TAG, "onItemsDeleted: Item has been deleted from database");
+            loadItemsFromDatabaseAsync();
         }
     };
 
@@ -169,6 +185,24 @@ public class ShowAllMealCoursesFragment extends Fragment {
             } else {
                 Log.w(TAG, "onReceive: The broadcast contained no information for meal. Cannot edit meal");
             }
+        }
+    };
+    /**
+     * Broadcast receiver to any request made by user for meal item delete.
+     */
+    private final BroadcastReceiver mealItemDeleteRequestListener = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MealCourse mealCourse = BroadcastUtils.extractPayload(intent);
+            if (mealCourse != null) {
+                Log.i(TAG, "onReceive: Broadcast received for meal item delete: " + mealCourse.getName());
+                MealCourseDao dao = AppDatabase.getInstance(getContext()).getMealCourseDao();
+                EntryDeleter<MealCourseDao, MealCourse> entryDeleter = new EntryDeleter<>(dao, MealCourseDao::delete, databaseDeletionListener);
+                entryDeleter.execute(mealCourse);
+            } else {
+                Log.w(TAG, "onReceive: The broadcast contained no information for meal. Cannot delete meal");
+            }
+
         }
     };
 
