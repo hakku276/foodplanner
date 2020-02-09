@@ -114,9 +114,9 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             TreeNode<MultiLevelViewNode> mealNode = new LinkedMultiTreeNode<>(new MultiLevelViewNode(ITEM_TYPE_MEAL_COURSE, meal));
             dateNode.add(mealNode);
-
         }
-        Log.i(TAG, "prepareDataset: Done Creating tree");
+
+        Log.i(TAG, "prepareDataset: Done Creating tree. Sorting meals with respect to types");
 
         items = convertToFlattenedTree(dataset);
 

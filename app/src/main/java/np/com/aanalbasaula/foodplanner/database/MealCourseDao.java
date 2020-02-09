@@ -25,6 +25,6 @@ public interface MealCourseDao {
 
     // cast((julianday('now') - 2440587.5)*86400000 as integer) provides current epoch time
     // The date should be greater than yesterday therefore the extra -1
-    @Query("SELECT * FROM MealCourse WHERE date > cast((julianday('now') - 2440587.5 - 1)*86400000 as integer) order by date asc")
+    @Query("SELECT * FROM MealCourse WHERE date > cast((julianday('now') - 2440587.5 - 1)*86400000 as integer) order by type asc, date asc")
     List<MealCourse> getAllMealCoursesInFuture();
 }
