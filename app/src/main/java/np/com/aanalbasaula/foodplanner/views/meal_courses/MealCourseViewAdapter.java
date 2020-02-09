@@ -138,11 +138,41 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             private TreeNode<MultiLevelViewNode> lastNode;
 
+            /**
+             * Checks whether the provided node is a First Child. ie. In the view, they are sectioned separately.
+             * A Node is also said to be first child, if this node is of different meal type.
+             *
+             * @param node the node to check
+             * @return true if the node is supposed
+             */
+            private boolean isFirstChild(TreeNode<MultiLevelViewNode> node) {
+                if (lastNode == null || !lastNode.isSiblingOf(node)){
+                    return true;
+                }
+
+                Object lastNodeItem = lastNode.data().getItem();
+                Object nodeItem = node.data().getItem();
+
+                if (lastNodeItem instanceof MealCourse && nodeItem instanceof MealCourse) {
+                    Log.d(TAG, "isFirstChild: Both nodes are of type MealCourse");
+                    MealCourse lastNodeMeal = (MealCourse) lastNodeItem;
+                    MealCourse nodeMeal = (MealCourse) nodeItem;
+
+                    if (lastNode.isSiblingOf(node) && lastNodeMeal.getType() != nodeMeal.getType()) {
+                        Log.d(TAG, "isFirstChild: Node sibling but of different type");
+                        return true;
+                    }
+
+                }
+
+                return false;
+            }
+
             @Override
             public void perform(TreeNode<MultiLevelViewNode> node) {
                 if(!node.isRoot()) {
                     Log.d(TAG, "perform: Traversing node: " + node.data().getItem());
-                    if (lastNode == null || !lastNode.isSiblingOf(node)){
+                    if (isFirstChild(node)){
                         Log.d(TAG, "perform: Found First Child: " + node.data().getItem());
                         node.data().setFirstChild(true);
                         lastNode = node;
@@ -162,22 +192,10 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return viewNodes;
     }
 
-    /**
-     * Converts the Meal Type enum to a String displayable to the user
-     *
-     * @param type the type of meal
-     * @return a string displayable to the user
-     */
-    private String mealTypeToDisplayString(MealType type) {
-        String mealType = type.name();
-        mealType = mealType.substring(0, 1) + mealType.substring(1).toLowerCase();
-        return mealType;
-    }
-
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = null;
+        View view;
         RecyclerView.ViewHolder holder = null;
         switch (viewType) {
             case ITEM_TYPE_DATE:
@@ -203,8 +221,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             switch (holder.getItemViewType()) {
                 case ITEM_TYPE_DATE:
                     DateViewHolder dateViewHolder = (DateViewHolder) holder;
-                    dateViewHolder.mItem = (String) item.getItem();
-                    dateViewHolder.mContentView.setText(dateViewHolder.mItem);
+                    dateViewHolder.bind(item);
                     break;
                 case ITEM_TYPE_MEAL_COURSE:
                     MealCourseViewHolder mealCourseViewHolder = (MealCourseViewHolder) holder;
@@ -277,25 +294,10 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
         }
-    }
 
-    /**
-     * A View holder class to handle the list Item showing the Meal Type
-     */
-    class MealTypeViewHolder extends RecyclerView.ViewHolder {
-        final View mView;
-        final TextView mContentView;
-        MealType mItem;
-
-        MealTypeViewHolder(View view) {
-            super(view);
-            mView = view;
-            mContentView = view.findViewById(R.id.content);
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+        private void bind(MultiLevelViewNode node) {
+            mItem = (String) node.getItem();
+            mContentView.setText(mItem);
         }
     }
 

@@ -17,5 +17,5 @@
     <dimen name="text_size_meal_plan_meal">15sp</dimen>
     <dimen name="margin_top_meal_plan_meal">8dp</dimen>
     <dimen name="margin_top_meal_plan_meal_type">2dp</dimen>
-    <dimen name="margin_top_meal_plan_date_header">4dp</dimen>
+    <dimen name="margin_top_meal_plan_date_header">8dp</dimen>
 </resources>
