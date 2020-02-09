@@ -155,7 +155,7 @@ public class ShowAllMealCoursesFragment extends Fragment {
         @Override
         public void onItemsLoaded(@NonNull List<MealCourse> items) {
             Log.i(TAG, "onItemsLoaded: Meal Courses have been successfully loaded");
-            mealCourseViewAdapter = new MealCourseViewAdapter(items, mListener);
+            mealCourseViewAdapter = new MealCourseViewAdapter(items, getContext(), mListener);
             recyclerView.setAdapter(mealCourseViewAdapter);
         }
     };

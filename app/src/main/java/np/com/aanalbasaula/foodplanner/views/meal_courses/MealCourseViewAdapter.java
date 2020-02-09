@@ -1,5 +1,6 @@
 package np.com.aanalbasaula.foodplanner.views.meal_courses;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +9,7 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import np.com.aanalbasaula.foodplanner.R;
@@ -60,15 +62,19 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     // listener to events within the recycler view
     private final ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener mListener;
 
+    private final Context context;
+
     /**
      * Create a view adapter, provided the items to display and the listener to the events
      * within the recycler view.
      *
      * @param items    the items to be displayed
+     * @param context  the context of the application
      * @param listener the listener to events
      */
-    MealCourseViewAdapter(@NonNull List<MealCourse> items, ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener listener) {
+    MealCourseViewAdapter(@NonNull List<MealCourse> items, Context context,ShowAllMealCoursesFragment.ShowAllMealCoursesFragmentListener listener) {
         mListener = listener;
+        this.context = context;
 
         // prepare the tree structure and order them as lists to be able to display
         prepareDataset(items);
@@ -213,6 +219,8 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     MealCourseViewHolder mealCourseViewHolder = (MealCourseViewHolder) holder;
                     mealCourseViewHolder.mItem = (MealCourse) item.getItem();
                     mealCourseViewHolder.mContentView.setText(mealCourseViewHolder.mItem.getName());
+                    int mealType = mealCourseViewHolder.mItem.getType().ordinal();
+                    mealCourseViewHolder.mMealTypeMarker.setBackgroundColor(context.getResources().getIntArray(R.array.mealTypePalette)[mealType]);
                     break;
             }
         }
@@ -309,12 +317,14 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     class MealCourseViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         final View mView;
         final TextView mContentView;
+        final LinearLayout mMealTypeMarker;
         MealCourse mItem;
 
         MealCourseViewHolder(View view) {
             super(view);
             mView = view;
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mContentView = view.findViewById(R.id.content);
+            mMealTypeMarker = view.findViewById(R.id.meal_type_marker);
             view.setOnCreateContextMenuListener(this);
         }
 

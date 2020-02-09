@@ -4,4 +4,33 @@
     <color name="colorPrimaryLight">#48A999</color>
     <color name="colorPrimaryDark">#004C40</color>
     <color name="colorAccent">#A4A4A4</color>
+
+    <!-- Meal Type Marker Colors -->
+    <color name="colorPalette1">#1abc9c</color>
+    <color name="colorPalette2">#2980b9</color>
+    <color name="colorPalette3">#e74c3c</color>
+    <color name="colorPalette4">#d35400</color>
+    <color name="colorPalette5">#9b59b6</color>
+    <color name="colorPalette6">#34495e</color>
+    <color name="colorPalette7">#95a5a6</color>
+    <color name="colorPalette8">#d63031</color>
+    <color name="colorPalette9">#a29bfe</color>
+    <color name="colorPalette10">#6ab04c</color>
+    <color name="colorPalette11">#192a56</color>
+    <color name="colorPalette12">#01a3a4</color>
+
+    <array name="mealTypePalette">
+        <item>@color/colorPalette1</item>
+        <item>@color/colorPalette2</item>
+        <item>@color/colorPalette3</item>
+        <item>@color/colorPalette4</item>
+        <item>@color/colorPalette5</item>
+        <item>@color/colorPalette6</item>
+        <item>@color/colorPalette7</item>
+        <item>@color/colorPalette8</item>
+        <item>@color/colorPalette9</item>
+        <item>@color/colorPalette10</item>
+        <item>@color/colorPalette11</item>
+        <item>@color/colorPalette12</item>
+    </array>
 </resources>
