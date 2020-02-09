@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.scalified.tree.TraversalAction;
@@ -54,6 +55,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * The Item type that determines a specific Item in the total list is of type Meal Type.
      * Used only to show multi-level recycler view
      */
+    @Deprecated
     private static final int ITEM_TYPE_MEAL_TYPE = 1;
 
     /**
@@ -88,7 +90,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     /**
-     * Prepare the list of Items provided, by first organizing them in a Tree structure (Date -> Meal Type -> Meal).
+     * Prepare the list of Items provided, by first organizing them in a Tree structure (Date -> Meal).
      * Then flattening it out into the class property {@linkplain #items} to be able to display them
      * in order later.
      *
@@ -111,16 +113,8 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 dataset.add(dateNode);
             }
 
-            TreeNode<MultiLevelViewNode> mealTypeNode = dateNode.find(new MultiLevelViewNode(ITEM_TYPE_MEAL_TYPE, meal.getType()));
-
-            if (mealTypeNode == null) {
-                Log.d(TAG, "prepareDataset: Meal Type node not found in dataset: dateString: " + dateString + " mealType: " + meal.getType());
-                mealTypeNode = new LinkedMultiTreeNode<>(new MultiLevelViewNode(ITEM_TYPE_MEAL_TYPE, meal.getType()));
-                dateNode.add(mealTypeNode);
-            }
-
             TreeNode<MultiLevelViewNode> mealNode = new LinkedMultiTreeNode<>(new MultiLevelViewNode(ITEM_TYPE_MEAL_COURSE, meal));
-            mealTypeNode.add(mealNode);
+            dateNode.add(mealNode);
 
         }
         Log.i(TAG, "prepareDataset: Done Creating tree");
@@ -141,9 +135,18 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         List<MultiLevelViewNode> viewNodes = new LinkedList<>();
 
         TraversalAction<TreeNode<MultiLevelViewNode>> flatten = new TraversalAction<TreeNode<MultiLevelViewNode>>() {
+
+            private TreeNode<MultiLevelViewNode> lastNode;
+
             @Override
             public void perform(TreeNode<MultiLevelViewNode> node) {
                 if(!node.isRoot()) {
+                    Log.d(TAG, "perform: Traversing node: " + node.data().getItem());
+                    if (lastNode == null || !lastNode.isSiblingOf(node)){
+                        Log.d(TAG, "perform: Found First Child: " + node.data().getItem());
+                        node.data().setFirstChild(true);
+                        lastNode = node;
+                    }
                     viewNodes.add(node.data());
                 }
             }
@@ -182,11 +185,6 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         .inflate(R.layout.layout_list_item_date_header, parent, false);
                 holder = new DateViewHolder(view);
                 break;
-            case ITEM_TYPE_MEAL_TYPE:
-                view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.layout_list_item_meal_type_sub_header, parent, false);
-                holder = new MealTypeViewHolder(view);
-                break;
             case ITEM_TYPE_MEAL_COURSE:
                 view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.layout_list_item_meal_course, parent, false);
@@ -208,17 +206,9 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     dateViewHolder.mItem = (String) item.getItem();
                     dateViewHolder.mContentView.setText(dateViewHolder.mItem);
                     break;
-                case ITEM_TYPE_MEAL_TYPE:
-                    MealTypeViewHolder mealTypeViewHolder = (MealTypeViewHolder) holder;
-                    mealTypeViewHolder.mItem = (MealType) item.getItem();
-                    mealTypeViewHolder.mContentView.setText(mealTypeToDisplayString(mealTypeViewHolder.mItem));
-                    break;
                 case ITEM_TYPE_MEAL_COURSE:
                     MealCourseViewHolder mealCourseViewHolder = (MealCourseViewHolder) holder;
-                    mealCourseViewHolder.mItem = (MealCourse) item.getItem();
-                    mealCourseViewHolder.mContentView.setText(mealCourseViewHolder.mItem.getName());
-                    int mealType = mealCourseViewHolder.mItem.getType().ordinal();
-                    mealCourseViewHolder.mMealTypeMarker.setBackgroundColor(context.getResources().getIntArray(R.array.mealTypePalette)[mealType]);
+                    mealCourseViewHolder.bind(item);
                     break;
             }
         }
@@ -316,6 +306,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         final View mView;
         final TextView mContentView;
         final LinearLayout mMealTypeMarker;
+        final RelativeLayout mMealCourseLayout;
         MealCourse mItem;
 
         MealCourseViewHolder(View view) {
@@ -323,6 +314,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             mView = view;
             mContentView = view.findViewById(R.id.content);
             mMealTypeMarker = view.findViewById(R.id.meal_type_marker);
+            mMealCourseLayout = view.findViewById(R.id.layout_meal_course);
             view.setOnCreateContextMenuListener(this);
         }
 
@@ -339,6 +331,30 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_meal_edit, R.string.action_edit);
             UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_meal_delete, R.string.action_delete);
 
+        }
+
+        /**
+         * Bind with the defined node value.
+         * @param node the node with which this view holder should be bound to
+         */
+        private void bind(MultiLevelViewNode node) {
+            mItem = (MealCourse) node.getItem();
+
+            // setup the text
+            mContentView.setText(mItem.getName());
+
+            // setup the meal type marker (side banner)
+            int mealType = mItem.getType().ordinal();
+            mMealTypeMarker.setBackgroundColor(context.getResources().getIntArray(R.array.mealTypePalette)[mealType]);
+
+            // setup the margin for the first child
+            if (node.isFirstChild()) {
+                RelativeLayout.MarginLayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        context.getResources().getDimensionPixelSize(R.dimen.height_meal_plan_course));
+                layoutParams.topMargin = context.getResources().getDimensionPixelSize(R.dimen.margin_top_meal_plan_meal);
+
+                mMealCourseLayout.setLayoutParams(layoutParams);
+            }
         }
     }
 }

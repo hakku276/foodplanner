@@ -8,7 +8,6 @@
     <dimen name="text_to_border">8dp</dimen>
     <dimen name="margin_fab">16dp</dimen>
     <dimen name="margin_content_to_content">8dp</dimen>
-    <dimen name="margin_top_meal_plan_date_header">4dp</dimen>
     <dimen name="height_meal_plan_date_header">16dp</dimen>
     <dimen name="text_size_meal_plan_date_header">12sp</dimen>
     <dimen name="margin_line_to_title_meal_plan_date_header">5dp</dimen>
@@ -18,4 +17,5 @@
     <dimen name="text_size_meal_plan_meal">15sp</dimen>
     <dimen name="margin_top_meal_plan_meal">8dp</dimen>
     <dimen name="margin_top_meal_plan_meal_type">2dp</dimen>
+    <dimen name="margin_top_meal_plan_date_header">4dp</dimen>
 </resources>

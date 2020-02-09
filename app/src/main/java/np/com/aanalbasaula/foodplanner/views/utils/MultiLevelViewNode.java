@@ -21,6 +21,13 @@ public class MultiLevelViewNode {
     @Getter
     private final int type;
 
+    /**
+     * Denotes whether the view node is the first child on the view.
+     */
+    @Setter
+    @Getter
+    private boolean firstChild;
+
     // The item this node holds
     @Getter
     private final Object item;
