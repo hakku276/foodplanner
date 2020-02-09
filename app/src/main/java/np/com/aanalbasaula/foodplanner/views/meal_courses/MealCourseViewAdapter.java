@@ -3,37 +3,36 @@ package np.com.aanalbasaula.foodplanner.views.meal_courses;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.scalified.tree.TraversalAction;
 import com.scalified.tree.TreeNode;
-import com.scalified.tree.multinode.ArrayMultiTreeNode;
 import com.scalified.tree.multinode.LinkedMultiTreeNode;
-import com.scalified.tree.multinode.MultiTreeNode;
 
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
-import np.com.aanalbasaula.foodplanner.database.MealType;
+import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 import np.com.aanalbasaula.foodplanner.utils.UIUtils;
 import np.com.aanalbasaula.foodplanner.views.utils.MultiLevelViewNode;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link np.com.aanalbasaula.foodplanner.database.MealCourse} and makes a call to the
@@ -304,11 +303,12 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     /**
      * A View holder class to handle the list Item showing the Meal information
      */
-    class MealCourseViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+    class MealCourseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
         final View mView;
         final TextView mContentView;
         final LinearLayout mMealTypeMarker;
         final RelativeLayout mMealCourseLayout;
+        final ImageButton mButtonMore;
         MealCourse mItem;
 
         MealCourseViewHolder(View view) {
@@ -317,22 +317,13 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             mContentView = view.findViewById(R.id.content);
             mMealTypeMarker = view.findViewById(R.id.meal_type_marker);
             mMealCourseLayout = view.findViewById(R.id.layout_meal_course);
-            view.setOnCreateContextMenuListener(this);
+            mButtonMore = view.findViewById(R.id.btn_meal_action_more);
+            mButtonMore.setOnClickListener(this);
         }
 
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
-        }
-
-        @Override
-        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-            Log.i(TAG, "onCreateContextMenu: Context menu requested");
-
-            contextMenu.setHeaderTitle(view.getContext().getString(R.string.title_meal_plan_context_menu));
-            UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_meal_edit, R.string.action_edit);
-            UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_meal_delete, R.string.action_delete);
-
         }
 
         /**
@@ -357,6 +348,35 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 mMealCourseLayout.setLayoutParams(layoutParams);
             }
+
+        }
+
+        @Override
+        public void onClick(View view) {
+            PopupMenu popup = new PopupMenu(context, mButtonMore);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.popup_meal_course, popup.getMenu());
+            popup.show();
+            popup.setOnMenuItemClickListener(this);
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            Log.i(TAG, "onMenuItemClick: User Requested Action: " + item.getItemId());
+
+            switch (item.getItemId()) {
+                case R.id.action_meal_edit:
+                    Log.i(TAG, "onMenuItemClick: User requested edit for item: " + mItem.getName());
+                    BroadcastUtils.sendLocalBroadcast(context, BroadcastUtils.ACTION_MEAL_REQUEST_EDIT, mItem);
+                    break;
+
+                case R.id.action_meal_delete:
+                    Log.i(TAG, "onMenuItemClick: User requested delete for item: " + mItem.getName());
+                    BroadcastUtils.sendLocalBroadcast(context, BroadcastUtils.ACTION_MEAL_REQUEST_DELETE, mItem);
+                    break;
+            }
+
+            return false;
         }
     }
 }

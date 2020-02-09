@@ -98,6 +98,11 @@ public class ShowAllMealCoursesFragment extends Fragment {
                     mealDBChangedBroadcastListener,
                     BroadcastUtils.ACTION_MEAL_CREATED,
                     BroadcastUtils.ACTION_MEAL_UPDATED);
+
+            // register for meal edit listeners
+            BroadcastUtils.registerLocalBroadcastListener(context,
+                    mealItemEditRequestListener,
+                    BroadcastUtils.ACTION_MEAL_REQUEST_EDIT);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement ShowAllMealCoursesFragmentListener");
@@ -110,30 +115,6 @@ public class ShowAllMealCoursesFragment extends Fragment {
         mListener = null;
 
         BroadcastUtils.unregisterLocalBroadcastListener(getContext(), mealDBChangedBroadcastListener);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        Log.i(TAG, "onContextItemSelected: A Context Item was selected. At Position: " + item.getGroupId());
-        // item group id has been set to position within the adapter.
-        // DO NOT ACQUIRE MEAL COURSE ITEM OUTSIDE THE SWITCH CASE. SINCE THE CONTEXT ITEM COULD HAVE
-        // BEEN CLICKED FOR THA RECIPE ITEM AS WELL. THIS FRAGMENT FIRST RECEIVES A CALLBACK BEFORE
-        // IT IS SENT TO THE COOKBOOK FRAGMENT. RETURN FALSE WHEN NOT HANDLING THE ACTION
-        switch (UIUtils.getActionIdForContextMenuItem(item)) {
-            case R.id.action_meal_view:
-                return true;
-            case R.id.action_meal_delete:
-                return true;
-            case R.id.action_meal_edit:
-                Log.d(TAG, "onContextItemSelected: Context Menu Edit selected for item at position: " + UIUtils.getPositionForContextMenuItem(item));
-                MealCourse mealCourse = mealCourseViewAdapter.getMealCourseAtPosition(UIUtils.getPositionForContextMenuItem(item));
-                PlanMealDialogFragment planMealDialog = PlanMealDialogFragment.build(mealCourse);
-                planMealDialog.show(requireFragmentManager(), "plan-meal");
-                return true;
-        }
-
-        // the context click was not handled here allow others to process it
-        return false;
     }
 
     /**
@@ -151,7 +132,7 @@ public class ShowAllMealCoursesFragment extends Fragment {
      * A callback listener for database load event. This listener is triggered when the async task
      * completes database load.
      */
-    DatabaseLoader.DatabaseLoadListener<MealCourse> databaseLoadListener = new DatabaseLoader.DatabaseLoadListener<MealCourse>() {
+    private final DatabaseLoader.DatabaseLoadListener<MealCourse> databaseLoadListener = new DatabaseLoader.DatabaseLoadListener<MealCourse>() {
         @Override
         public void onItemsLoaded(@NonNull List<MealCourse> items) {
             Log.i(TAG, "onItemsLoaded: Meal Courses have been successfully loaded");
@@ -164,13 +145,30 @@ public class ShowAllMealCoursesFragment extends Fragment {
      * Broadcast listener to any meal creation that has recently happened.
      * To reload the view as required
      */
-    BroadcastReceiver mealDBChangedBroadcastListener = new BroadcastReceiver() {
+    private final BroadcastReceiver mealDBChangedBroadcastListener = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "onReceive: Meal Creation broadcast received. Reloading data");
             loadItemsFromDatabaseAsync();
             Log.i(TAG, "onReceive: Started async task to load meal courses");
+        }
+    };
+
+    /**
+     * Broadcast receiver to any request made by user for meal item edit.
+     */
+    private final BroadcastReceiver mealItemEditRequestListener = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MealCourse mealCourse = BroadcastUtils.extractPayload(intent);
+            if (mealCourse != null) {
+                Log.i(TAG, "onReceive: Broadcast received for meal item edit: " + mealCourse.getName());
+                PlanMealDialogFragment planMealDialog = PlanMealDialogFragment.build(mealCourse);
+                planMealDialog.show(requireFragmentManager(), "plan-meal");
+            } else {
+                Log.w(TAG, "onReceive: The broadcast contained no information for meal. Cannot edit meal");
+            }
         }
     };
 

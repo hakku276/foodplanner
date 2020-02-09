@@ -4,15 +4,30 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
 public class BroadcastUtils {
 
+    // payload related constants
+    private static final String KEY_PAYLOAD = "payload";
+
+    // actions related constants
     private static final String ACTION_PREFIX = "np.com.aanalbasaula.foodplanner.";
+
+    // meal requests
+    public static final String ACTION_MEAL_REQUEST_EDIT = ACTION_PREFIX + "request.MealEdit";
+    public static final String ACTION_MEAL_REQUEST_DELETE = ACTION_PREFIX + "request.MealDelete";
+
+    // meal updates
     public static final String ACTION_MEAL_UPDATED = ACTION_PREFIX + "MealUpdated";
     public static final String ACTION_MEAL_CREATED = ACTION_PREFIX + "MealCreated";
+
+    // recipe updates
     public static final String ACTION_RECIPE_CREATED = ACTION_PREFIX + "RecipeCreated";
+
+    // shopping list item updates
     public static final String ACTION_SHOPPING_LIST_ENTRY_CREATED = ACTION_PREFIX + "ShoppingListEntryCreated";
     public static final String ACTION_SHOPPING_LIST_ENTRY_DELETED = ACTION_PREFIX + "ShoppingListEntryDeleted";
 
@@ -29,6 +44,38 @@ public class BroadcastUtils {
         LocalBroadcastManager manager = LocalBroadcastManager.getInstance(context);
         Intent intent = new Intent(action);
         manager.sendBroadcast(intent);
+    }
+
+    /**
+     * Send a local broadcast using the provided context for the defined action, along with a specific payload.
+     * The payload should be {@linkplain Parcelable} inorder to be delivered with the intent.
+     *
+     * @param context the application context, Not Null
+     * @param action  the String action defining the broadcast, Not Null Not Empty
+     * @param payload the payload sent with the broadcast, Not null
+     * @param <T>     the payload type which must be parcelable
+     */
+    public static <T extends Parcelable> void sendLocalBroadcast(@NonNull final Context context, @NonNull final String action, @NonNull T payload) {
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(context);
+        Intent intent = new Intent(action);
+        intent.putExtra(KEY_PAYLOAD, payload);
+        manager.sendBroadcast(intent);
+    }
+
+    /**
+     * Extract the payload from the intent if available.
+     *
+     * @param intent the intent for which the payload should be extracted
+     * @param <T>    the type of the payload which is expected
+     * @return the payload if available, else null
+     */
+    public static <T extends Parcelable> T extractPayload(Intent intent) {
+
+        if (!intent.hasExtra(KEY_PAYLOAD)) {
+            return null;
+        }
+
+        return intent.getParcelableExtra(KEY_PAYLOAD);
     }
 
     /**
