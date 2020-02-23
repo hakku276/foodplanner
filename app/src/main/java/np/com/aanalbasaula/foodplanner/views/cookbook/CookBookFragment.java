@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -192,6 +193,7 @@ public class CookBookFragment extends Fragment {
      */
     private final GenericRecyclerViewAdapter.GenericViewHolderFactory<DisplayRecipeViewHolder> displayViewHolderFactory =
             new GenericRecyclerViewAdapter.GenericViewHolderFactory<DisplayRecipeViewHolder>() {
+
                 @Override
                 public DisplayRecipeViewHolder newInstance(View view) {
                     return new DisplayRecipeViewHolder(view);
@@ -201,6 +203,7 @@ public class CookBookFragment extends Fragment {
                 public View createView(LayoutInflater inflater, ViewGroup parent) {
                     return inflater.inflate(R.layout.layout_list_item_recipe, parent, false);
                 }
+
             };
 
     /**
@@ -210,21 +213,17 @@ public class CookBookFragment extends Fragment {
     private class DisplayRecipeViewHolder extends GenericRecyclerViewAdapter.GenericViewHolder<Recipe> {
 
         private final View mView;
-        private final TextView mContentView;
+        private final TextView mRecipeName;
+        private final TextView mTags;
+        private final RelativeLayout mRecipeLayout;
         private Recipe item;
 
         public DisplayRecipeViewHolder(View view) {
             super(view);
             mView = view;
-            mContentView = view.findViewById(R.id.content);
-            mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.i(TAG, "onClick: Recipe Item clicked");
-                    PlanMealDialogFragment fragment = PlanMealDialogFragment.build(item);
-                    fragment.show(getFragmentManager(), "meal-plan");
-                }
-            });
+            mRecipeName = view.findViewById(R.id.text_recipe_name);
+            mTags = view.findViewById(R.id.text_recipe_tags);
+            mRecipeLayout = view.findViewById(R.id.layout_recipe);
 
             mView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 @Override
@@ -241,7 +240,7 @@ public class CookBookFragment extends Fragment {
         @Override
         public void bind(Recipe item) {
             this.item = item;
-            mContentView.setText(item.getName());
+            mRecipeName.setText(item.getName());
         }
     }
 

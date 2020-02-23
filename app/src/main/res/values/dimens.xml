@@ -13,9 +13,11 @@
     <dimen name="margin_line_to_title_meal_plan_date_header">5dp</dimen>
     <dimen name="text_size_meal_plan_meal_type">12sp</dimen>
     <dimen name="height_meal_plan_meal_type">16dp</dimen>
-    <dimen name="height_meal_plan_course">36dp</dimen>
+    <dimen name="height_meal_plan_course">42dp</dimen>
     <dimen name="text_size_meal_plan_meal">15sp</dimen>
     <dimen name="margin_top_meal_plan_meal">8dp</dimen>
     <dimen name="margin_top_meal_plan_meal_type">2dp</dimen>
     <dimen name="margin_top_meal_plan_date_header">8dp</dimen>
+    <dimen name="size_cookbook_recipe_thumbnail">78dp</dimen>
+    <dimen name="margin_header_top">16dp</dimen>
 </resources>

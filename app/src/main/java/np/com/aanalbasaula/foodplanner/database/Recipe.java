@@ -5,9 +5,11 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
+import android.os.ParcelUuid;
 import android.os.Parcelable;
 
 import java.util.List;
+import java.util.UUID;
 
 import lombok.Data;
 
@@ -24,6 +26,12 @@ public class Recipe implements Parcelable {
     @ColumnInfo(name = "name")
     private String name;
 
+    /**
+     *  The name of the image file for this recipe
+     */
+    @ColumnInfo(name = "imageName")
+    private ParcelUuid imageName;
+
     @Ignore
     private List<Ingredient> ingredients;
 
@@ -34,6 +42,7 @@ public class Recipe implements Parcelable {
     protected Recipe(Parcel in) {
         id = in.readLong();
         name = in.readString();
+        imageName = in.readParcelable(ParcelUuid.class.getClassLoader());
     }
 
     public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
@@ -57,5 +66,6 @@ public class Recipe implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(id);
         dest.writeString(name);
+        dest.writeParcelable(imageName, flags);
     }
 }

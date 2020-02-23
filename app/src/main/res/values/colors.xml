@@ -18,6 +18,7 @@
     <color name="colorPalette10">#6ab04c</color>
     <color name="colorPalette11">#192a56</color>
     <color name="colorPalette12">#01a3a4</color>
+    <color name="background">#EEEEEE</color>
 
     <array name="mealTypePalette">
         <item>@color/colorPalette1</item>

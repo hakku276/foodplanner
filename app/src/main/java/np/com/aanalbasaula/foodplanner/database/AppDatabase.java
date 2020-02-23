@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
 
 import np.com.aanalbasaula.foodplanner.database.utils.Converters;
 
-@Database(entities = {MealCourse.class, Recipe.class, ShoppingListEntry.class, Ingredient.class}, version = 6)
+@Database(entities = {MealCourse.class, Recipe.class, ShoppingListEntry.class, Ingredient.class}, version = 7)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -29,12 +29,19 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    private static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE `Recipe` ADD COLUMN `imageName` TEXT");
+        }
+    };
+
     private static AppDatabase instance;
 
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "recipes.db")
-                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
+                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                     .build();
         }
         return instance;

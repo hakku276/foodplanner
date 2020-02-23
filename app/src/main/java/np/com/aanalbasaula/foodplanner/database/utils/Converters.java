@@ -2,6 +2,8 @@ package np.com.aanalbasaula.foodplanner.database.utils;
 
 import android.arch.persistence.room.TypeConverter;
 import android.arch.persistence.room.TypeConverters;
+import android.os.Parcel;
+import android.os.ParcelUuid;
 
 import java.util.Date;
 
@@ -30,6 +32,24 @@ public class Converters {
     @TypeConverter
     public static MealType toMealType(String mealType) {
         return mealType == null ? null: MealType.valueOf(mealType);
+    }
+
+    @TypeConverter
+    public static ParcelUuid toUUID(String UUID) {
+        if (UUID == null || UUID.isEmpty()) {
+            return null;
+        }
+
+        return ParcelUuid.fromString(UUID);
+    }
+
+    @TypeConverter
+    public static String fromUUID(ParcelUuid uuid) {
+        if (uuid == null) {
+            return null;
+        }
+
+        return uuid.toString();
     }
 
 }
