@@ -13,4 +13,9 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="RecipeInfoTagsText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
 </resources>

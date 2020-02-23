@@ -67,6 +67,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="more_action">More Action</string>
+    <string name="img_desc_cooking_time">Cooking Time</string>
+    <string name="img_desc_portion_size">Portion Size</string>
+    <string name="recipe_portion_size">1 person</string>
+    <string name="recipe_cooking_time">15 mins</string>
 
 
 </resources>
