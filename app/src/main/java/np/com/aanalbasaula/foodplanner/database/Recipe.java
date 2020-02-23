@@ -33,7 +33,12 @@ public class Recipe implements Parcelable {
     private ParcelUuid imageName;
 
     @Ignore
+    // NOTE: will not be loaded eagerly, try loading using IngredientsDAO, a Foreign key reference is available in ingredients
     private List<Ingredient> ingredients;
+
+    @Ignore
+    // NOTE: will not be loaded eagerly, try loading using RecipeStepsDAO, a Foreign key reference is available in recipeSteps
+    private List<RecipeStep> recipeSteps;
 
     public Recipe() {
         // required empty constructor by the Room Framework

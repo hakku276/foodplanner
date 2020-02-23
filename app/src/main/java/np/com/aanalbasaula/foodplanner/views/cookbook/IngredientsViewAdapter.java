@@ -3,11 +3,16 @@ package np.com.aanalbasaula.foodplanner.views.cookbook;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.LinkedList;
@@ -31,17 +36,25 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Nullable
     private IngredientListChangedListener listener;
 
+    private final boolean isEditMode;
+
     /**
      * Create a view adapter, provided the items to be displayed
      *
      * @param items the items to be displayed
      */
-    IngredientsViewAdapter(@Nullable List<Ingredient> items, @Nullable IngredientListChangedListener listener) {
+    IngredientsViewAdapter(@Nullable List<Ingredient> items, boolean isEditMode, @Nullable IngredientListChangedListener listener) {
         if (items == null) {
             items = new LinkedList<>();
         }
+        this.isEditMode = isEditMode;
         this.items = items;
         this.listener = listener;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
     }
 
     @NonNull
@@ -54,15 +67,18 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
-        Ingredient item = items.get(position);
+        Ingredient item = null;
+        if (position < items.size()) {
+            item = items.get(position);
+        }
         IngredientViewHolder ingredientViewHolder = (IngredientViewHolder) holder;
-        ingredientViewHolder.mItem = item;
-        ingredientViewHolder.mContentView.setText(ingredientViewHolder.mItem.getName());
+        ingredientViewHolder.bind(item);
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        int count = items.size();
+        return isEditMode ? (count + 1) : count; // edit mode shows 1 extra
     }
 
     /**
@@ -102,7 +118,10 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
      */
     class IngredientViewHolder extends RecyclerView.ViewHolder {
         final View mView;
+        final RelativeLayout mDisplayLayout;
+        final RelativeLayout mEditLayout;
         final TextView mContentView;
+        final EditText mEditableContent;
         final ImageButton mDeleteButton;
         Ingredient mItem;
 
@@ -111,6 +130,14 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             mView = view;
             mContentView = view.findViewById(R.id.content);
             mDeleteButton = view.findViewById(R.id.btn_remove);
+            mDisplayLayout = view.findViewById(R.id.layout_display_ingredient);
+            mEditLayout = view.findViewById(R.id.layout_edit_ingredient);
+            mEditableContent = view.findViewById(R.id.editable_content);
+
+            mView.setOnClickListener(this::onIngredientViewClicked);
+            mEditableContent.setOnEditorActionListener(this::onEditorAction);
+            mEditableContent.setOnFocusChangeListener(this::onEditorFocusChange);
+
             mDeleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -125,6 +152,90 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     }
                 }
             });
+        }
+
+        /**
+         * The Editor Action handler for the editable content.
+         */
+        private boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent){
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                Log.i(TAG, "onEditorAction: User pressed Editor Action Next");
+                String text = mEditableContent.getText().toString().trim();
+                // next should create item only when this is the last entry on the list ie. mItem = null
+                if (!text.isEmpty() && mItem == null) {
+                    Ingredient ingredient = new Ingredient();
+                    ingredient.setName(text);
+                    items.add(ingredient);
+                    notifyDataSetChanged();
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Listen to clicks on the view, if the view is clicked, then display the edit mode.
+         */
+        private void onIngredientViewClicked(View view) {
+            if (mItem != null) {
+                Log.i(TAG, "onIngredientViewClicked: The user clicked for edit: ingredient: " + mItem.getName());
+                mDisplayLayout.setVisibility(View.GONE);
+                mEditLayout.setVisibility(View.VISIBLE);
+                mEditableContent.requestFocus();
+                mEditableContent.setSelection(mItem.getName().length());
+            }
+        }
+
+        /**
+         * Handle Editor Focus changes: To make the Edit Text into a Text View on Focus lost
+         */
+        private void onEditorFocusChange(View view, boolean b) {
+            if (mItem != null) {
+                Log.i(TAG, "onEditorFocusChange: Editor Focus Changed: " + mItem.getName());
+            }
+        }
+
+        /**
+         * Bind the view to the ingredient
+         *
+         * @param ingredient the ingredient value to bind to, null would mean there is no ingredient available
+         */
+        private void bind(Ingredient ingredient) {
+            mItem = ingredient;
+            if (mItem != null) {
+                mDisplayLayout.setVisibility(View.VISIBLE);
+                mEditLayout.setVisibility(View.GONE);
+                mContentView.setText(mItem.getName());
+                mEditableContent.setText(mItem.getName());
+            } else {
+                mDisplayLayout.setVisibility(View.GONE);
+                mEditLayout.setVisibility(View.VISIBLE);
+                mContentView.setText("");
+                mEditableContent.setText("");
+                if (items.size() != 0) {
+                    mEditableContent.requestFocus();
+                }
+            }
+        }
+
+        /**
+         * Model as a display field
+         */
+        private void enableDisplayMode() {
+            mDisplayLayout.setVisibility(View.VISIBLE);
+            mEditLayout.setVisibility(View.GONE);
+            mContentView.setText(mItem.getName());
+            mEditableContent.setText(mItem.getName());
+        }
+
+        /**
+         * Model as an edit field
+         */
+        private void enableEditMode() {
+            mDisplayLayout.setVisibility(View.GONE);
+            mEditLayout.setVisibility(View.VISIBLE);
+            mContentView.setText("");
+            mEditableContent.setText("");
         }
 
         @Override

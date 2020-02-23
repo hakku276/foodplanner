@@ -21,4 +21,6 @@
     <dimen name="size_cookbook_recipe_thumbnail">78dp</dimen>
     <dimen name="margin_header_top">16dp</dimen>
     <dimen name="height_recipe_info_tag">22dp</dimen>
+    <dimen name="margin_screen_to_content">8dp</dimen>
+    <dimen name="shadow_elevation">6dp</dimen>
 </resources>

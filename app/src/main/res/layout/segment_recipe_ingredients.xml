@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="@dimen/shadow_elevation"
+    android:layout_margin="@dimen/margin_screen_to_content"
+    android:background="@android:color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/RecipeEditorSectionHeader"
+        android:layout_marginStart="@dimen/margin_content_to_content"
+        android:layout_marginEnd="@dimen/margin_content_to_content"
+        android:layout_marginTop="@dimen/margin_content_to_content"
+        android:text="@string/title_recipe_creation_ingredients"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/title_recipe_creation_ingredients"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_ingredients"
+        android:layout_marginBottom="@dimen/margin_screen_to_content"
+        app:layout_constraintTop_toBottomOf="@+id/title_recipe_creation_ingredients"/>
+
+</android.support.constraint.ConstraintLayout>

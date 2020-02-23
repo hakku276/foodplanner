@@ -71,6 +71,9 @@
     <string name="img_desc_portion_size">Portion Size</string>
     <string name="recipe_portion_size">1 person</string>
     <string name="recipe_cooking_time">15 mins</string>
+    <string name="title_recipe_creation_ingredients">We need...</string>
+    <string name="title_recipe_creation_steps">We do...</string>
+    <string name="bullet">•</string>
 
 
 </resources>

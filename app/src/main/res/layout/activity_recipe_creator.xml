@@ -28,7 +28,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="@dimen/padding_screen_to_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appbar">
 
@@ -36,6 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/layout_recipe_info"
+            android:layout_margin="@dimen/margin_screen_to_content"
             android:background="@android:color/white">
 
             <ImageButton
@@ -53,8 +53,10 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_recipe_name"
                 android:imeOptions="actionDone"
-                android:inputType="textCapWords"
+                android:inputType="text|textCapWords"
                 android:maxLines="1"
+                android:lines="1"
+                android:singleLine="true"
                 android:layout_toEndOf="@+id/btn_recipe_thumbnail" />
 
             <LinearLayout
@@ -112,8 +114,7 @@
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/layout_recipe_info"
-            android:layout_marginTop="@dimen/margin_content_to_content"/>
+            android:layout_below="@+id/layout_recipe_info" />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

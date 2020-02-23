@@ -29,14 +29,14 @@ import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 /**
  * An activity that is responsible for creating a Recipe as well as for updating it.
  */
-public class RecipeCreatorActivity extends AppCompatActivity implements AddIngredientFragment.OnFragmentInteractionListener {
+public class RecipeCreatorActivity extends AppCompatActivity {
 
     private static final String TAG = RecipeCreatorActivity.class.getSimpleName();
     public static final String EXTRA_EDIT_RECIPE = "recipe";
 
     // ui related
     private EditText textRecipeName;
-    private AddIngredientFragment fragmentAddIngredient;
+    private EditRecipeFragment fragmentEditRecipe;
 
     // working properties
     private boolean isEditMode;
@@ -64,9 +64,9 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
         textRecipeName = findViewById(R.id.text_recipe_name);
 
         // add the ingredients fragment to view
-        fragmentAddIngredient = AddIngredientFragment.newInstance();
+        fragmentEditRecipe = EditRecipeFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.content, fragmentAddIngredient, "fragment-add-ingredient")
+                .add(R.id.content, fragmentEditRecipe, "fragment-edit-recipe")
                 .commit();
 
         recipeDao = AppDatabase.getInstance(this).getRecipeDao();
@@ -113,12 +113,6 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onIngredientsChanged(List<Ingredient> ingredients) {
-        Log.i(TAG, "onIngredientsChanged: The ingredients have changed");
-        this.ingredients = ingredients;
     }
 
     /**
@@ -265,7 +259,7 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
     private final DatabaseLoader.DatabaseLoadListener<Ingredient> ingredientsLoadListener = ingredients -> {
         Log.i(TAG, "IngredientsLoadListener: The ingredients have been successfully loaded from the database: " + ingredients.size());
         this.ingredients = ingredients;
-        this.fragmentAddIngredient.setIngredients(ingredients);
+        this.fragmentEditRecipe.setIngredients(ingredients);
     };
 
     /**

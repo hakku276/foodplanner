@@ -109,7 +109,7 @@ public class AddIngredientFragment extends Fragment {
      */
     public void setIngredients(List<Ingredient> ingredients) {
         Log.i(TAG, "setIngredients: Resetting the list of ingredients to be displayed on screen");
-        ingredientsViewAdapter = new IngredientsViewAdapter(ingredients, ingredientsChangedListener);
+        ingredientsViewAdapter = new IngredientsViewAdapter(ingredients, false, ingredientsChangedListener);
         recyclerView.setAdapter(ingredientsViewAdapter);
     }
 
