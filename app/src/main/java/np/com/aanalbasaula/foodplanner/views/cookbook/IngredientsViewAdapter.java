@@ -167,6 +167,9 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     ingredient.setName(text);
                     items.add(ingredient);
                     notifyDataSetChanged();
+                } else if (mItem != null){
+                    mItem.setName(text);
+                    enableDisplayMode();
                 }
                 return true;
             }
@@ -179,8 +182,7 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         private void onIngredientViewClicked(View view) {
             if (mItem != null) {
                 Log.i(TAG, "onIngredientViewClicked: The user clicked for edit: ingredient: " + mItem.getName());
-                mDisplayLayout.setVisibility(View.GONE);
-                mEditLayout.setVisibility(View.VISIBLE);
+                enableEditMode(mItem.getName());
                 mEditableContent.requestFocus();
                 mEditableContent.setSelection(mItem.getName().length());
             }
@@ -189,9 +191,10 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         /**
          * Handle Editor Focus changes: To make the Edit Text into a Text View on Focus lost
          */
-        private void onEditorFocusChange(View view, boolean b) {
-            if (mItem != null) {
-                Log.i(TAG, "onEditorFocusChange: Editor Focus Changed: " + mItem.getName());
+        private void onEditorFocusChange(View view, boolean hasFocus) {
+            if (mItem != null && !hasFocus) {
+                Log.i(TAG, "onEditorFocusChange: Editor Focus has been lost: " + mItem.getName());
+                enableDisplayMode();
             }
         }
 
@@ -203,15 +206,9 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         private void bind(Ingredient ingredient) {
             mItem = ingredient;
             if (mItem != null) {
-                mDisplayLayout.setVisibility(View.VISIBLE);
-                mEditLayout.setVisibility(View.GONE);
-                mContentView.setText(mItem.getName());
-                mEditableContent.setText(mItem.getName());
+                enableDisplayMode();
             } else {
-                mDisplayLayout.setVisibility(View.GONE);
-                mEditLayout.setVisibility(View.VISIBLE);
-                mContentView.setText("");
-                mEditableContent.setText("");
+                enableEditMode("");
                 if (items.size() != 0) {
                     mEditableContent.requestFocus();
                 }
@@ -231,11 +228,11 @@ public class IngredientsViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         /**
          * Model as an edit field
          */
-        private void enableEditMode() {
+        private void enableEditMode(String value) {
             mDisplayLayout.setVisibility(View.GONE);
             mEditLayout.setVisibility(View.VISIBLE);
-            mContentView.setText("");
-            mEditableContent.setText("");
+            mContentView.setText(value);
+            mEditableContent.setText(value);
         }
 
         @Override
