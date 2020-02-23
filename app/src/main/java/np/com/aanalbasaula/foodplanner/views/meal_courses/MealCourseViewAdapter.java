@@ -25,6 +25,7 @@ import com.scalified.tree.multinode.LinkedMultiTreeNode;
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
+import np.com.aanalbasaula.foodplanner.utils.PopupMenuUtils;
 import np.com.aanalbasaula.foodplanner.utils.UIUtils;
 import np.com.aanalbasaula.foodplanner.views.utils.MultiLevelViewNode;
 
@@ -353,11 +354,7 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onClick(View view) {
-            PopupMenu popup = new PopupMenu(context, mButtonMore);
-            MenuInflater inflater = popup.getMenuInflater();
-            inflater.inflate(R.menu.popup_meal_course, popup.getMenu());
-            popup.show();
-            popup.setOnMenuItemClickListener(this);
+            PopupMenuUtils.show(context, mButtonMore, R.menu.popup_meal_course, this);
         }
 
         @Override
@@ -366,12 +363,12 @@ class MealCourseViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             switch (item.getItemId()) {
                 case R.id.action_meal_edit:
-                    Log.i(TAG, "onMenuItemClick: User requested edit for item: " + mItem.getName());
+                    Log.i(TAG, "onMenuItemClick: User requested: EDIT for item: " + mItem.getName());
                     BroadcastUtils.sendLocalBroadcast(context, BroadcastUtils.ACTION_MEAL_REQUEST_EDIT, mItem);
                     break;
 
                 case R.id.action_meal_delete:
-                    Log.i(TAG, "onMenuItemClick: User requested delete for item: " + mItem.getName());
+                    Log.i(TAG, "onMenuItemClick: User requested: DELETE for item: " + mItem.getName());
                     BroadcastUtils.sendLocalBroadcast(context, BroadcastUtils.ACTION_MEAL_REQUEST_DELETE, mItem);
                     break;
             }

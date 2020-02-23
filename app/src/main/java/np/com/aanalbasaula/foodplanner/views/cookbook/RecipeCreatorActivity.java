@@ -1,5 +1,7 @@
 package np.com.aanalbasaula.foodplanner.views.cookbook;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -265,5 +267,25 @@ public class RecipeCreatorActivity extends AppCompatActivity implements AddIngre
         this.ingredients = ingredients;
         this.fragmentAddIngredient.setIngredients(ingredients);
     };
+
+    /**
+     * Show this activity using the provided configuration. If the recipe is provided, the activity
+     * opens in edit mode.
+     *
+     * @param activity  the activity that wants to start this activity with result
+     * @param recipe    the recipe to edit if available
+     * @param requestId the request id to be used by the activity to monitor result
+     */
+    public static void showActivity(Activity activity, Recipe recipe, int requestId) {
+        Log.i(TAG, "showActivity: Starting recipe edit view");
+        Intent intent = new Intent(activity, RecipeCreatorActivity.class);
+
+        // if the recipe is provided, should be opened in edit mode
+        if (recipe != null) {
+            intent.putExtra(RecipeCreatorActivity.EXTRA_EDIT_RECIPE, recipe);
+        }
+
+        activity.startActivityForResult(intent, requestId);
+    }
 
 }

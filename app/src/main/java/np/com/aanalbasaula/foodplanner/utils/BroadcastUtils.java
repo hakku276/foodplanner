@@ -24,8 +24,15 @@ public class BroadcastUtils {
     public static final String ACTION_MEAL_UPDATED = ACTION_PREFIX + "MealUpdated";
     public static final String ACTION_MEAL_CREATED = ACTION_PREFIX + "MealCreated";
 
+    // recipe requests
+    public static final String ACTION_RECIPE_REQUEST_PLAN = ACTION_PREFIX + "request.RecipePlan";
+    public static final String ACTION_RECIPE_REQUEST_EDIT = ACTION_PREFIX + "request.RecipeEdit";
+    public static final String ACTION_RECIPE_REQUEST_DELETE = ACTION_PREFIX + "request.RecipeDelete";
+
     // recipe updates
     public static final String ACTION_RECIPE_CREATED = ACTION_PREFIX + "RecipeCreated";
+    public static final String ACTION_RECIPE_UPDATED = ACTION_PREFIX + "RecipeUpdated";
+    public static final String ACTION_RECIPE_DELETED = ACTION_PREFIX + "RecipeDeleted";
 
     // shopping list item updates
     public static final String ACTION_SHOPPING_LIST_ENTRY_CREATED = ACTION_PREFIX + "ShoppingListEntryCreated";

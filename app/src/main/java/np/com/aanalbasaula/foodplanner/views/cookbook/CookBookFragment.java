@@ -8,13 +8,14 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,7 +26,9 @@ import np.com.aanalbasaula.foodplanner.database.AppDatabase;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
+import np.com.aanalbasaula.foodplanner.database.utils.EntryDeleter;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
+import np.com.aanalbasaula.foodplanner.utils.PopupMenuUtils;
 import np.com.aanalbasaula.foodplanner.utils.UIUtils;
 import np.com.aanalbasaula.foodplanner.views.meal_courses.PlanMealDialogFragment;
 import np.com.aanalbasaula.foodplanner.views.utils.GenericRecyclerViewAdapter;
@@ -39,6 +42,7 @@ import np.com.aanalbasaula.foodplanner.views.utils.GenericRecyclerViewAdapter;
 public class CookBookFragment extends Fragment {
 
     private static final String TAG = CookBookFragment.class.getSimpleName();
+    private static final int REQUEST_EDIT_RECIPE = 1;
 
     // ui related
     private RecyclerView recyclerView;
@@ -115,7 +119,15 @@ public class CookBookFragment extends Fragment {
         super.onAttach(context);
 
         // register recipe creation broadcast listener
-        BroadcastUtils.registerLocalBroadcastListener(context, recipeCreationBroadcastReceiver, BroadcastUtils.ACTION_RECIPE_CREATED);
+        BroadcastUtils.registerLocalBroadcastListener(context, recipeDataSourceUpdatesBroadcastReceiver,
+                BroadcastUtils.ACTION_RECIPE_CREATED,
+                BroadcastUtils.ACTION_RECIPE_UPDATED,
+                BroadcastUtils.ACTION_RECIPE_DELETED);
+        BroadcastUtils.registerLocalBroadcastListener(context, moreActionBroadcastReceiver,
+                BroadcastUtils.ACTION_RECIPE_REQUEST_PLAN,
+                BroadcastUtils.ACTION_RECIPE_REQUEST_EDIT,
+                BroadcastUtils.ACTION_RECIPE_REQUEST_DELETE);
+
     }
 
     @Override
@@ -123,7 +135,8 @@ public class CookBookFragment extends Fragment {
         super.onDetach();
 
         // unregister broadcast listener
-        BroadcastUtils.unregisterLocalBroadcastListener(getContext(), recipeCreationBroadcastReceiver);
+        BroadcastUtils.unregisterLocalBroadcastListener(getContext(), recipeDataSourceUpdatesBroadcastReceiver);
+        BroadcastUtils.unregisterLocalBroadcastListener(getContext(), moreActionBroadcastReceiver);
     }
 
     /**
@@ -152,14 +165,46 @@ public class CookBookFragment extends Fragment {
     }
 
     /**
-     * A broadcast listener that listens to events on creation of new recipes. This is generally used
+     * A broadcast listener that listens to events on datasource changes. This is generally used
      * to reload the database once items have been inserted into the database
      */
-    private final BroadcastReceiver recipeCreationBroadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver recipeDataSourceUpdatesBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "onReceive: New recipe has been created");
             loadItemsFromDatabaseAsync();
+        }
+    };
+
+    /**
+     * A broadcast listener that listens to events on user requests on the UI.
+     */
+    private final BroadcastReceiver moreActionBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Recipe recipe = BroadcastUtils.extractPayload(intent);
+            if (recipe == null) {
+                Log.e(TAG, "onReceive: Could not extract recipe from more actions request");
+                return;
+            }
+
+            switch (intent.getAction()) {
+                case BroadcastUtils.ACTION_RECIPE_REQUEST_PLAN:
+                    Log.i(TAG, "onReceive: Planning Recipe: " + recipe.getName());
+                    PlanMealDialogFragment fragment = PlanMealDialogFragment.build(recipe);
+                    fragment.show(getFragmentManager(), "meal-plan");
+                    break;
+                case BroadcastUtils.ACTION_RECIPE_REQUEST_EDIT:
+                    Log.i(TAG, "onReceive: Editing recipe: " + recipe.getName());
+                    RecipeCreatorActivity.showActivity(getActivity(), recipe, REQUEST_EDIT_RECIPE);
+                    break;
+                case BroadcastUtils.ACTION_RECIPE_REQUEST_DELETE:
+                    Log.i(TAG, "onReceive: Deleting recipe: " + recipe.getName());
+                    EntryDeleter<RecipeDao, Recipe> deleter = new EntryDeleter<>(recipeDao, RecipeDao::delete,
+                            () -> BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_RECIPE_DELETED));
+                    deleter.execute(recipe);
+                    break;
+            }
         }
     };
 
@@ -210,13 +255,14 @@ public class CookBookFragment extends Fragment {
      * A view holder that can be used to display Recipes on a Recycler View. Depends on the
      * {@link GenericRecyclerViewAdapter} and a layout that contains the
      */
-    private class DisplayRecipeViewHolder extends GenericRecyclerViewAdapter.GenericViewHolder<Recipe> {
+    private class DisplayRecipeViewHolder extends GenericRecyclerViewAdapter.GenericViewHolder<Recipe> implements PopupMenu.OnMenuItemClickListener {
 
         private final View mView;
         private final TextView mRecipeName;
         private final TextView mTags;
         private final RelativeLayout mRecipeLayout;
-        private Recipe item;
+        private final ImageButton mBtnMore;
+        private Recipe recipe;
 
         public DisplayRecipeViewHolder(View view) {
             super(view);
@@ -224,23 +270,47 @@ public class CookBookFragment extends Fragment {
             mRecipeName = view.findViewById(R.id.text_recipe_name);
             mTags = view.findViewById(R.id.text_recipe_tags);
             mRecipeLayout = view.findViewById(R.id.layout_recipe);
+            mBtnMore = view.findViewById(R.id.btn_recipe_more);
 
-            mView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-                @Override
-                public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-                    Log.i(TAG, "onCreateContextMenu: User wants context menu on recipe item: " + item.getName());
+            mBtnMore.setOnClickListener(this::moreActionsRequested);
+            view.setOnClickListener(e -> viewRecipe(recipe));
+        }
 
-                    UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_recipe_view, R.string.action_view);
-                    UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_recipe_edit, R.string.action_edit);
-                    UIUtils.addContextMenuEntryForListItem(contextMenu, getAdapterPosition(), R.id.action_recipe_delete, R.string.action_delete);
-                }
-            });
+        /**
+         * A click handler for more actions on more buttons clicked on a single recipe.
+         * @param view
+         */
+        private void moreActionsRequested(View view) {
+            Log.i(TAG, "moreActionsRequested: Recipe actions requested for recipe: " + recipe.getName());
+            PopupMenuUtils.show(getContext(), mBtnMore, R.menu.popup_recipe, this);
         }
 
         @Override
         public void bind(Recipe item) {
-            this.item = item;
+            this.recipe = item;
             mRecipeName.setText(item.getName());
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            Log.i(TAG, "onMenuItemClick: User Requested Action: " + item.getItemId());
+
+            switch (item.getItemId()) {
+                case R.id.action_recipe_plan:
+                    Log.i(TAG, "onMenuItemClick: User requested: PLAN recipe: " + recipe.getName());
+                    BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_RECIPE_REQUEST_PLAN, recipe);
+                    break;
+                case R.id.action_recipe_edit:
+                    Log.i(TAG, "onMenuItemClick: User requested: EDIT recipe: " + recipe.getName());
+                    BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_RECIPE_REQUEST_EDIT, recipe);
+                    break;
+                case R.id.action_recipe_delete:
+                    Log.i(TAG, "onMenuItemClick: User requested: DELETE recipe: " + recipe.getName());
+                    BroadcastUtils.sendLocalBroadcast(getContext(), BroadcastUtils.ACTION_RECIPE_REQUEST_DELETE, recipe);
+                    break;
+            }
+
+            return false;
         }
     }
 

@@ -44,6 +44,7 @@
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
     <string name="action_update">Update</string>
+    <string name="action_plan">Plan</string>
     <string name="title_meal_plan_context_menu">Select The Action</string>
     <string name="title_recipe_context_menu">Select The Action</string>
 
@@ -66,5 +67,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="more_action">More Action</string>
+
 
 </resources>

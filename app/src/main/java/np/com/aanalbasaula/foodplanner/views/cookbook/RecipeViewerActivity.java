@@ -134,9 +134,7 @@ public class RecipeViewerActivity extends AppCompatActivity {
      */
     private void showEditRecipeView() {
         Log.i(TAG, "showEditRecipeView: Starting recipe edit view");
-        Intent intent = new Intent(this, RecipeCreatorActivity.class);
-        intent.putExtra(RecipeCreatorActivity.EXTRA_EDIT_RECIPE, recipe);
-        startActivityForResult(intent, REQUEST_EDIT_RECIPE);
+        RecipeCreatorActivity.showActivity(this, recipe, REQUEST_EDIT_RECIPE);
     }
 
 }
