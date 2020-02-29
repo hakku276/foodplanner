@@ -20,6 +20,7 @@ import java.util.List;
 
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.Ingredient;
+import np.com.aanalbasaula.foodplanner.database.RecipeStep;
 
 /**
  * {@link RecyclerView.Adapter} that can display, edit and delete any item on a list that can be
@@ -377,6 +378,35 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
                 item.setName(description);
             }
         };
+
+        /**
+         * The Item Factory for Ingredients
+         */
+        public static final ItemFactory<RecipeStep> RECIPE_STEPS = new ItemFactory<RecipeStep>() {
+
+            @Override
+            public String id(RecipeStep item) {
+                return item.getDescription();
+            }
+
+            @Override
+            public String describe(RecipeStep item) {
+                return item.getDescription();
+            }
+
+            @Override
+            public RecipeStep create(String description) {
+                RecipeStep item = new RecipeStep();
+                item.setDescription(description);
+                return item;
+            }
+
+            @Override
+            public void update(RecipeStep item, String description) {
+                item.setDescription(description);
+            }
+        };
+
 
     }
 

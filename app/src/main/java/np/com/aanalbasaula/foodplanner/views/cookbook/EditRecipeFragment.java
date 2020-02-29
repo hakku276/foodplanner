@@ -61,9 +61,14 @@ public class EditRecipeFragment extends Fragment {
         Log.i(TAG, "onCreate: Creating Edit Recipe Fragment");
         ingredients = new LinkedList<>();
         steps = new LinkedList<>();
+
         mIngredientsAdapter = new GenericEditableListAdapter<>(ingredients, true,
                 GenericEditableListAdapter.ItemFactories.INGREDIENTS,
                 (inflater, parent) -> inflater.inflate(R.layout.layout_list_item_ingredient, parent, false));
+
+        mRecipeStepAdapter = new GenericEditableListAdapter<>(steps, true,
+                GenericEditableListAdapter.ItemFactories.RECIPE_STEPS,
+                (inflater, parent) -> inflater.inflate(R.layout.layout_list_item_recipe_step, parent, false));
     }
 
     @Override
