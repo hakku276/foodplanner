@@ -8,6 +8,8 @@ import np.com.aanalbasaula.foodplanner.database.MealCourse;
 import np.com.aanalbasaula.foodplanner.database.MealCourseDao;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeDao;
+import np.com.aanalbasaula.foodplanner.database.RecipeStep;
+import np.com.aanalbasaula.foodplanner.database.RecipeStepDao;
 import np.com.aanalbasaula.foodplanner.database.ShoppingListDao;
 import np.com.aanalbasaula.foodplanner.database.ShoppingListEntry;
 
@@ -56,6 +58,16 @@ public class EntryCreationStrategies {
      * Entry creation Strategy to insert Ingredient entry using a Ingredient DAO
      */
     public static EntryCreator.CreationStrategy<IngredientDao, Ingredient> ingredientEntryCreationStrategy = (dao, entries) -> {
+        long[] ids = dao.insert(entries);
+        for (int i = 0; i < ids.length; i++) {
+            entries[i].setId(ids[i]);
+        }
+    };
+
+    /**
+     * Entry creation Strategy to insert Ingredient entry using a Ingredient DAO
+     */
+    public static EntryCreator.CreationStrategy<RecipeStepDao, RecipeStep> recipeStepEntryCreationStrategy = (dao, entries) -> {
         long[] ids = dao.insert(entries);
         for (int i = 0; i < ids.length; i++) {
             entries[i].setId(ids[i]);

@@ -10,7 +10,7 @@
         android:layout_marginTop="@dimen/margin_screen_to_content"
         android:layout_marginStart="@dimen/margin_screen_to_content"
         android:layout_marginEnd="@dimen/margin_screen_to_content"
-        android:id="@+id/layout_display_ingredient">
+        android:id="@+id/layout_display">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/layout_edit_ingredient"
+        android:id="@+id/layout_edit"
         android:layout_marginTop="@dimen/margin_screen_to_content"
         android:layout_marginStart="@dimen/margin_screen_to_content"
         android:layout_marginEnd="@dimen/margin_screen_to_content"

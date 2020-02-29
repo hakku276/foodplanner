@@ -22,20 +22,34 @@ import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.Ingredient;
 
 /**
- * {@link RecyclerView.Adapter} that can display any Object that can be convert to and from and String description.
- * The To and from conversion will be performed using the supplied {@linkplain ItemFactory}
+ * {@link RecyclerView.Adapter} that can display, edit and delete any item on a list that can be
+ * convert to and from and String description.
+ * The To and from conversion will be performed using the supplied {@linkplain ItemFactory}. New Views
+ * will be created using the {@linkplain ViewFactory}, but the view should follow certain requirements on ID conventions.
+ * <ul>
+ *     <li>There should exist a Root Layout with Two Child Relative Layouts. One for Edit mode ({@linkplain R.id#layout_edit}) and another for View mode ({@linkplain R.id#layout_display}).</li>
+ *     <li>The Display Content is presented on a TextView with the id {@linkplain R.id#content}</li>
+ *     <li>The Editable contect is presented on an EditText with the id {@linkplain R.id#editable_content}</li>
+ *     <li>The bottom border is a LinerLayout and has the id {@linkplain R.id#bottom_border}</li>
+ * </ul>
  *
- * @param <T> The Type of item which should be
+ * Note: It is possible to leave out components, leaving out components will result in some features being unavailable, eg: Leaving Delete out will result in the delete function to be
+ * unavailable (as expected).
+ *
+ * At Present only allows Edit Mode
+ *
+ * @param <T> The Type of item which should be displayed on screen
  */
-public class GenericItemDisplayViewAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = GenericItemDisplayViewAdapter.class.getSimpleName();
+    private static final String TAG = GenericEditableListAdapter.class.getSimpleName();
 
     // the items to be shown on the view
     @NonNull
     private List<T> items;
 
     private final ItemFactory<T> itemFactory;
+    private final ViewFactory viewFactory;
 
     private final boolean isEditMode;
 
@@ -44,13 +58,14 @@ public class GenericItemDisplayViewAdapter<T> extends RecyclerView.Adapter<Recyc
      *
      * @param items the items to be displayed
      */
-    GenericItemDisplayViewAdapter(@Nullable List<T> items, boolean isEditMode, ItemFactory<T> itemFactory) {
+    GenericEditableListAdapter(@Nullable List<T> items, boolean isEditMode, ItemFactory<T> itemFactory, ViewFactory viewFactory) {
         if (items == null) {
             items = new LinkedList<>();
         }
         this.isEditMode = isEditMode;
         this.items = items;
         this.itemFactory = itemFactory;
+        this.viewFactory = viewFactory;
     }
 
     @Override
@@ -61,9 +76,11 @@ public class GenericItemDisplayViewAdapter<T> extends RecyclerView.Adapter<Recyc
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_list_item_ingredient, parent, false);
-        return new GenericItemViewHolder(view);
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+//        View view = LayoutInflater.from(parent.getContext())
+//                .inflate(R.layout.layout_list_item_ingredient, parent, false);
+        View view = viewFactory.create(layoutInflater, parent);
+        return new EditableItemViewHolder(view);
     }
 
     @Override
@@ -72,8 +89,8 @@ public class GenericItemDisplayViewAdapter<T> extends RecyclerView.Adapter<Recyc
         if (position < items.size()) {
             item = items.get(position);
         }
-        GenericItemViewHolder genericItemViewHolder = (GenericItemViewHolder) holder;
-        genericItemViewHolder.bind(item);
+        EditableItemViewHolder editableItemViewHolder = (EditableItemViewHolder) holder;
+        editableItemViewHolder.bind(item);
     }
 
     @Override
@@ -98,6 +115,8 @@ public class GenericItemDisplayViewAdapter<T> extends RecyclerView.Adapter<Recyc
     /**
      * The item factory that is necessary to create objects or descriptions of objects to allow
      * generic editing and display on the adapter.
+     *
+     * @param <I> The of Item being handled by this factory
      *
      */
     public interface ItemFactory<I> {
@@ -136,41 +155,77 @@ public class GenericItemDisplayViewAdapter<T> extends RecyclerView.Adapter<Recyc
     }
 
     /**
+     * The view factory that will create views and provides other convenience methods for handling
+     * UI Situations.
+     */
+    public interface ViewFactory {
+
+        /**
+         * Create a view that can be used to display and edit the list item.
+         *
+         * @param layoutInflater the layout inflater to be used to create new views.
+         * @return the newly created view to be displayed on screen
+         */
+        View create(LayoutInflater layoutInflater, ViewGroup parent);
+    }
+
+    /**
      * A View holder class to handle the list Item showing the Ingredients
      */
-    class GenericItemViewHolder extends RecyclerView.ViewHolder {
+    class EditableItemViewHolder extends RecyclerView.ViewHolder {
+
+        @NonNull
         final View mView;
+
+        @Nullable
         final RelativeLayout mDisplayLayout;
+
+        @Nullable
         final RelativeLayout mEditLayout;
+
+        @Nullable
         final TextView mContentView;
+
+        @Nullable
         final EditText mEditableContent;
+
+        @Nullable
         final ImageButton mDeleteButton;
+
+        @Nullable
         final LinearLayout mBottomBorder;
+
+        @Nullable
         T mItem;
 
-        GenericItemViewHolder(View view) {
+        EditableItemViewHolder(@NonNull View view) {
             super(view);
             mView = view;
             mContentView = view.findViewById(R.id.content);
             mDeleteButton = view.findViewById(R.id.btn_remove);
-            mDisplayLayout = view.findViewById(R.id.layout_display_ingredient);
-            mEditLayout = view.findViewById(R.id.layout_edit_ingredient);
+            mDisplayLayout = view.findViewById(R.id.layout_display);
+            mEditLayout = view.findViewById(R.id.layout_edit);
             mEditableContent = view.findViewById(R.id.editable_content);
             mBottomBorder = view.findViewById(R.id.bottom_border);
 
             mView.setOnClickListener(this::onIngredientViewClicked);
-            mEditableContent.setOnEditorActionListener(this::onEditorAction);
-            mEditableContent.setOnFocusChangeListener(this::onEditorFocusChange);
 
-            mDeleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.i(TAG, "onClick: Remove button clicked by user for ingredient: " + itemFactory.id(mItem));
-                    items.remove(getAdapterPosition());
-                    Log.i(TAG, "onClick: Notifying data set changed for view refresh");
-                    notifyDataSetChanged();
-                }
-            });
+            if (mEditableContent != null) {
+                mEditableContent.setOnEditorActionListener(this::onEditorAction);
+                mEditableContent.setOnFocusChangeListener(this::onEditorFocusChange);
+            }
+
+            if (mDeleteButton != null) {
+                mDeleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.i(TAG, "onClick: Remove button clicked by user for ingredient: " + itemFactory.id(mItem));
+                        items.remove(getAdapterPosition());
+                        Log.i(TAG, "onClick: Notifying data set changed for view refresh");
+                        notifyDataSetChanged();
+                    }
+                });
+            }
         }
 
         /**
@@ -179,7 +234,7 @@ public class GenericItemDisplayViewAdapter<T> extends RecyclerView.Adapter<Recyc
         private boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 Log.i(TAG, "onEditorAction: User pressed Editor Action Next");
-                String text = mEditableContent.getText().toString().trim();
+                String text = textView.getText().toString().trim();
                 // next should create item only when this is the last entry on the list ie. mItem = null
                 if (!text.isEmpty() && mItem == null) {
                     T item = itemFactory.create(text);
@@ -198,7 +253,7 @@ public class GenericItemDisplayViewAdapter<T> extends RecyclerView.Adapter<Recyc
          * Listen to clicks on the view, if the view is clicked, then display the edit mode.
          */
         private void onIngredientViewClicked(View view) {
-            if (mItem != null) {
+            if (mItem != null && mEditableContent != null) {
                 Log.i(TAG, "onIngredientViewClicked: The user clicked for edit: ingredient: " + itemFactory.id(mItem));
                 String description = itemFactory.describe(mItem);
                 enableEditMode(description);
@@ -226,13 +281,17 @@ public class GenericItemDisplayViewAdapter<T> extends RecyclerView.Adapter<Recyc
             mItem = ingredient;
             if (mItem != null) {
                 // display mode is always in between the views, therefore; show the bottom border
-                mBottomBorder.setVisibility(View.VISIBLE);
+                if (mBottomBorder != null) {
+                    mBottomBorder.setVisibility(View.VISIBLE);
+                }
                 enableDisplayMode();
             } else {
                 // edit mode is the last item on the list; therefore hide the bottom border
-                mBottomBorder.setVisibility(View.GONE);
+                if (mBottomBorder != null) {
+                    mBottomBorder.setVisibility(View.GONE);
+                }
                 enableEditMode("");
-                if (items.size() != 0) {
+                if (items.size() != 0 && mEditableContent != null) {
                     mEditableContent.requestFocus();
                 }
             }
@@ -242,25 +301,47 @@ public class GenericItemDisplayViewAdapter<T> extends RecyclerView.Adapter<Recyc
          * Model as a display field
          */
         private void enableDisplayMode() {
-            mDisplayLayout.setVisibility(View.VISIBLE);
-            mEditLayout.setVisibility(View.GONE);
-            mContentView.setText(itemFactory.describe(mItem));
-            mEditableContent.setText(itemFactory.describe(mItem));
+            if (mDisplayLayout != null) {
+                mDisplayLayout.setVisibility(View.VISIBLE);
+            }
+
+            if (mEditLayout != null) {
+                mEditLayout.setVisibility(View.GONE);
+            }
+
+            if (mContentView != null) {
+                mContentView.setText(itemFactory.describe(mItem));
+            }
+
+            if (mEditableContent != null) {
+                mEditableContent.setText(itemFactory.describe(mItem));
+            }
         }
 
         /**
          * Model as an edit field
          */
         private void enableEditMode(String value) {
-            mDisplayLayout.setVisibility(View.GONE);
-            mEditLayout.setVisibility(View.VISIBLE);
-            mContentView.setText(value);
-            mEditableContent.setText(value);
+            if (mDisplayLayout != null) {
+                mDisplayLayout.setVisibility(View.GONE);
+            }
+
+            if (mEditLayout != null) {
+                mEditLayout.setVisibility(View.VISIBLE);
+            }
+
+            if (mContentView != null) {
+                mContentView.setText(value);
+            }
+
+            if (mEditableContent != null) {
+                mEditableContent.setText(value);
+            }
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + itemFactory.describe(mItem) + "'";
         }
     }
 

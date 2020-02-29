@@ -30,8 +30,8 @@ public class EditRecipeFragment extends Fragment {
     // UI
     private RecyclerView mIngredientsList;
     private RecyclerView mRecipeStepsList;
-    private GenericItemDisplayViewAdapter<Ingredient> mIngredientsAdapter;
-    private GenericItemDisplayViewAdapter<RecipeStep> mRecipeStepAdapter;
+    private GenericEditableListAdapter<Ingredient> mIngredientsAdapter;
+    private GenericEditableListAdapter<RecipeStep> mRecipeStepAdapter;
 
 
     // Data
@@ -61,7 +61,9 @@ public class EditRecipeFragment extends Fragment {
         Log.i(TAG, "onCreate: Creating Edit Recipe Fragment");
         ingredients = new LinkedList<>();
         steps = new LinkedList<>();
-        mIngredientsAdapter = new GenericItemDisplayViewAdapter<>(ingredients, true, GenericItemDisplayViewAdapter.ItemFactories.INGREDIENTS);
+        mIngredientsAdapter = new GenericEditableListAdapter<>(ingredients, true,
+                GenericEditableListAdapter.ItemFactories.INGREDIENTS,
+                (inflater, parent) -> inflater.inflate(R.layout.layout_list_item_ingredient, parent, false));
     }
 
     @Override

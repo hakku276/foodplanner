@@ -62,4 +62,6 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract  IngredientDao getIngredientDao();
 
+    public abstract RecipeStepDao getRecipeStepDao();
+
 }

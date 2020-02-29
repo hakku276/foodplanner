@@ -20,9 +20,11 @@ import np.com.aanalbasaula.foodplanner.database.Ingredient;
 import np.com.aanalbasaula.foodplanner.database.IngredientDao;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeDao;
+import np.com.aanalbasaula.foodplanner.database.RecipeStepDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreationStrategies;
 import np.com.aanalbasaula.foodplanner.database.utils.EntryCreator;
+import np.com.aanalbasaula.foodplanner.database.utils.RecipeCreator;
 import np.com.aanalbasaula.foodplanner.database.utils.RecipeUpdater;
 import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 
@@ -45,6 +47,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
     // database related
     private RecipeDao recipeDao;
     private IngredientDao ingredientDao;
+    private RecipeStepDao recipeStepDao;
     @Nullable
     private List<Ingredient> ingredients;
 
@@ -71,6 +74,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
 
         recipeDao = AppDatabase.getInstance(this).getRecipeDao();
         ingredientDao = AppDatabase.getInstance(this).getIngredientDao();
+        recipeStepDao = AppDatabase.getInstance(this).getRecipeStepDao();
 
         // Extract Recipe from intent before preparing the view, since either edit mode or not
         // is dependent on configuration sent within the Intent
@@ -174,9 +178,14 @@ public class RecipeCreatorActivity extends AppCompatActivity {
         Log.i(TAG, "saveRecipe: Input is valid. Creating recipe in database");
         Recipe recipe = new Recipe();
         recipe.setName(textRecipeName.getText().toString());
+        recipe.setIngredients(fragmentEditRecipe.getIngredients());
+        recipe.setRecipeSteps(fragmentEditRecipe.getSteps());
 
-        EntryCreator<RecipeDao, Recipe> entryCreator = new EntryCreator<>(recipeDao, EntryCreationStrategies.recipeCreationStrategy, recipeCreationListener);
-        entryCreator.execute(recipe);
+        Log.d(TAG, "saveRecipe: Recipe has ingredients: " + recipe.getIngredients().size());
+        Log.d(TAG, "saveRecipe: Recipe has steps: " + recipe.getIngredients().size());
+
+        RecipeCreator recipeCreator = new RecipeCreator(recipeDao, ingredientDao, recipeStepDao, recipeCreationListener);
+        recipeCreator.execute(recipe);
     }
 
     /**
@@ -192,63 +201,27 @@ public class RecipeCreatorActivity extends AppCompatActivity {
         updater.execute(recipe);
     }
 
-    /**
-     * The Recipe entry creation listener
-     */
-    private final EntryCreator.EntryCreationListener<Recipe> recipeCreationListener = new EntryCreator.EntryCreationListener<Recipe>() {
+    private final RecipeCreator.RecipeCreationStatusListener recipeCreationListener = new RecipeCreator.RecipeCreationStatusListener() {
         @Override
-        public void onEntriesCreated(Recipe[] items) {
-            Log.i(TAG, "onEntriesCreated: Recipe has been successfully saved into database");
-            if (items == null || items.length < 1){
-                Log.e(TAG, "onEntriesCreated: Could not save recipe into database");
+        public void onRecipeCreated(Recipe[] recipes) {
+            Log.i(TAG, "onRecipeCreated: Recipe has been successfully saved into database");
+            if (recipes == null || recipes.length < 1){
+                Log.e(TAG, "onRecipeCreated: Could not save recipe into database");
                 return;
             }
 
-            Recipe recipe = items[0];
-
-            Log.i(TAG, "onEntriesCreated: Saving ingredients into database");
-            if (ingredients == null || ingredients.isEmpty()) {
-                Log.i(TAG, "onEntriesCreated: No ingredients to save into database");
-                // end the recipe creation here
-                finish();
-                return;
-            }
-
-            // set the recipe id
-            for (Ingredient ingredient :
-                    ingredients) {
-                ingredient.setRecipeId(recipe.getId());
-            }
-
-            // save the ingredients now
-            EntryCreator<IngredientDao, Ingredient> entryCreator = new EntryCreator<>(ingredientDao, EntryCreationStrategies.ingredientEntryCreationStrategy, ingredientCreationListener);
-            entryCreator.execute(ingredients.toArray(new Ingredient[0]));
+            finish();
         }
     };
 
     private final RecipeUpdater.RecipeUpdateStatusListener recipeUpdateListener = new RecipeUpdater.RecipeUpdateStatusListener() {
         @Override
         public void onRecipeUpdated(Recipe[] recipes) {
-            Log.i(TAG, "onRecipeUpdated: The recipe has been updated");
+            Log.i(TAG, "onRecipeCreated: The recipe has been updated");
             Intent data = new Intent();
             data.putExtra(EXTRA_EDIT_RECIPE, recipe);
             setResult(RESULT_OK, data);
             finish();
-        }
-    };
-
-    /**
-     * A listener to wait for ingredients to be written to the database. The listener is responsible for
-     * closing the view once the writing is done. since the view is no longer needed after this moment.
-     */
-    private final EntryCreator.EntryCreationListener<Ingredient> ingredientCreationListener = new EntryCreator.EntryCreationListener<Ingredient>() {
-        @Override
-        public void onEntriesCreated(Ingredient[] items) {
-            Log.i(TAG, "onEntriesCreated: Ingredients have been created");
-            if (items != null) {
-                Log.i(TAG, "onEntriesCreated: Newly created ingredients: " + items.length);
-                finish();
-            }
         }
     };
 
