@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/list_ingredients"
-        android:layout_marginBottom="@dimen/margin_screen_to_content"
+        android:paddingBottom="@dimen/padding_screen_to_content"
         app:layout_constraintTop_toBottomOf="@+id/title_recipe_creation_ingredients"/>
 
 </android.support.constraint.ConstraintLayout>

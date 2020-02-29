@@ -1,7 +1,6 @@
 package np.com.aanalbasaula.foodplanner.views.cookbook;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,9 +16,7 @@ import java.util.List;
 
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.Ingredient;
-import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeStep;
-import np.com.aanalbasaula.foodplanner.views.utils.GenericRecyclerViewAdapter;
 
 /**
  * A simple {@link Fragment} subclass that allows Editing of a Recipe Steps and Ingredients.
@@ -30,9 +27,12 @@ public class EditRecipeFragment extends Fragment {
 
     private static final String TAG = EditRecipeFragment.class.getSimpleName();
 
-    //UI
+    // UI
     private RecyclerView mIngredientsList;
-    private IngredientsViewAdapter adapter;
+    private RecyclerView mRecipeStepsList;
+    private GenericItemDisplayViewAdapter<Ingredient> mIngredientsAdapter;
+    private GenericItemDisplayViewAdapter<RecipeStep> mRecipeStepAdapter;
+
 
     // Data
     private List<Ingredient> ingredients;
@@ -61,7 +61,7 @@ public class EditRecipeFragment extends Fragment {
         Log.i(TAG, "onCreate: Creating Edit Recipe Fragment");
         ingredients = new LinkedList<>();
         steps = new LinkedList<>();
-        adapter = new IngredientsViewAdapter(ingredients, true, null);
+        mIngredientsAdapter = new GenericItemDisplayViewAdapter<>(ingredients, true, GenericItemDisplayViewAdapter.ItemFactories.INGREDIENTS);
     }
 
     @Override
@@ -70,9 +70,15 @@ public class EditRecipeFragment extends Fragment {
         Log.i(TAG, "onCreateView: Creating Edit Recipe Fragment View");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_recipe, container, false);
+
         mIngredientsList = view.findViewById(R.id.list_ingredients);
         mIngredientsList.setLayoutManager(new LinearLayoutManager(getContext()));
-        mIngredientsList.setAdapter(adapter);
+        mIngredientsList.setAdapter(mIngredientsAdapter);
+
+        mRecipeStepsList = view.findViewById(R.id.list_steps);
+        mRecipeStepsList.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecipeStepsList.setAdapter(mRecipeStepAdapter);
+
         return view;
     }
 

@@ -67,7 +67,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginBottom="4dp"
             android:lines="1"
-            android:maxLines="1"
+            android:maxLines="3"
             android:singleLine="true"
             android:background="@null"
             android:imeOptions="actionNext"
