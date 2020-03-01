@@ -1,7 +1,6 @@
 package np.com.aanalbasaula.foodplanner.views.cookbook;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,11 +21,8 @@ import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeDao;
 import np.com.aanalbasaula.foodplanner.database.RecipeStepDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
-import np.com.aanalbasaula.foodplanner.database.utils.EntryCreationStrategies;
-import np.com.aanalbasaula.foodplanner.database.utils.EntryCreator;
 import np.com.aanalbasaula.foodplanner.database.utils.RecipeCreator;
 import np.com.aanalbasaula.foodplanner.database.utils.RecipeUpdater;
-import np.com.aanalbasaula.foodplanner.utils.BroadcastUtils;
 
 /**
  * An activity that is responsible for creating a Recipe as well as for updating it.
@@ -38,7 +34,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
 
     // ui related
     private EditText textRecipeName;
-    private EditRecipeFragment fragmentEditRecipe;
+    private RecipeFragment fragmentEditRecipe;
 
     // working properties
     private boolean isEditMode;
@@ -67,7 +63,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
         textRecipeName = findViewById(R.id.text_recipe_name);
 
         // add the ingredients fragment to view
-        fragmentEditRecipe = EditRecipeFragment.newInstance();
+        fragmentEditRecipe = RecipeFragment.newInstance(true);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.content, fragmentEditRecipe, "fragment-edit-recipe")
                 .commit();

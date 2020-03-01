@@ -59,7 +59,10 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
      *
      * @param items the items to be displayed
      */
-    GenericEditableListAdapter(@Nullable List<T> items, boolean isEditMode, ItemFactory<T> itemFactory, ViewFactory viewFactory) {
+    GenericEditableListAdapter(@Nullable List<T> items,
+                               boolean isEditMode,
+                               ItemFactory<T> itemFactory,
+                               ViewFactory viewFactory) {
         if (items == null) {
             items = new LinkedList<>();
         }
@@ -78,8 +81,6 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-//        View view = LayoutInflater.from(parent.getContext())
-//                .inflate(R.layout.layout_list_item_ingredient, parent, false);
         View view = viewFactory.create(layoutInflater, parent);
         return new EditableItemViewHolder(view);
     }
@@ -91,7 +92,7 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
             item = items.get(position);
         }
         EditableItemViewHolder editableItemViewHolder = (EditableItemViewHolder) holder;
-        editableItemViewHolder.bind(item);
+        editableItemViewHolder.bind(item, position);
     }
 
     @Override
@@ -101,15 +102,23 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
     }
 
     /**
-     * Add ingredient to be displayed on the list to the user.
-     *
-     * @param ingredient the new ingredient to be added into the list
+     * Set the items to be displayed
+     * @param items
      */
-    void addIngredient(T ingredient) {
-        items.add(ingredient);
+    public void setItems(List<T> items) {
+        if (items == null) {
+            items = new LinkedList<>();
+        }
+        this.items = items;
+        notifyDataSetChanged();
     }
 
-    public List<T> getIngredients() {
+    /**
+     * Get the ingredients that is being edited or displayed by this adapter.
+     *
+     * @return the list of ingredients
+     */
+    public List<T> getItems() {
         return items;
     }
 
@@ -254,7 +263,8 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
          * Listen to clicks on the view, if the view is clicked, then display the edit mode.
          */
         private void onIngredientViewClicked(View view) {
-            if (mItem != null && mEditableContent != null) {
+            // only display editable content on edit mode
+            if (mItem != null && mEditableContent != null && isEditMode) {
                 Log.i(TAG, "onIngredientViewClicked: The user clicked for edit: ingredient: " + itemFactory.id(mItem));
                 String description = itemFactory.describe(mItem);
                 enableEditMode(description);
@@ -278,22 +288,37 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
          *
          * @param ingredient the ingredient value to bind to, null would mean there is no ingredient available
          */
-        private void bind(T ingredient) {
+        private void bind(T ingredient, int position) {
             mItem = ingredient;
+            hideOrShowBottomBorderIfNecessary(position);
+
             if (mItem != null) {
-                // display mode is always in between the views, therefore; show the bottom border
-                if (mBottomBorder != null) {
-                    mBottomBorder.setVisibility(View.VISIBLE);
-                }
+                // when an item is provided it is in display mode.
                 enableDisplayMode();
             } else {
-                // edit mode is the last item on the list; therefore hide the bottom border
-                if (mBottomBorder != null) {
-                    mBottomBorder.setVisibility(View.GONE);
-                }
+                // edit mode is when there is no item provided; happens for the new entry
                 enableEditMode("");
                 if (items.size() != 0 && mEditableContent != null) {
                     mEditableContent.requestFocus();
+                }
+            }
+        }
+
+        /**
+         * Hides bottom border only for the last item on the list.
+         */
+        private void hideOrShowBottomBorderIfNecessary(int position) {
+            if (mBottomBorder != null) {
+                if (getItemCount() == 1) {
+                    // single item hide the border
+                    mBottomBorder.setVisibility(View.GONE);
+                    return;
+                }
+                // multiple items; everything except the last item gets the border
+                if (position < items.size()) {
+                    mBottomBorder.setVisibility(View.VISIBLE);
+                } else {
+                    mBottomBorder.setVisibility(View.GONE);
                 }
             }
         }
@@ -303,19 +328,28 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
          */
         private void enableDisplayMode() {
             if (mDisplayLayout != null) {
+                // show the display layout
                 mDisplayLayout.setVisibility(View.VISIBLE);
             }
 
             if (mEditLayout != null) {
+                // hide the edit layout
                 mEditLayout.setVisibility(View.GONE);
             }
 
             if (mContentView != null) {
+                // setup the display layout
                 mContentView.setText(itemFactory.describe(mItem));
             }
 
             if (mEditableContent != null) {
+                // duplicate setup to editable content, in case of edit request
                 mEditableContent.setText(itemFactory.describe(mItem));
+            }
+
+            if (mDeleteButton != null && !isEditMode) {
+                // hide delete button in view mode
+                mDeleteButton.setVisibility(View.GONE);
             }
         }
 

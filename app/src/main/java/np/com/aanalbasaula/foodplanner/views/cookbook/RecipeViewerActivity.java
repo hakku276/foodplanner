@@ -11,7 +11,13 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import np.com.aanalbasaula.foodplanner.R;
+import np.com.aanalbasaula.foodplanner.database.AppDatabase;
+import np.com.aanalbasaula.foodplanner.database.Ingredient;
+import np.com.aanalbasaula.foodplanner.database.IngredientDao;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
+import np.com.aanalbasaula.foodplanner.database.RecipeStep;
+import np.com.aanalbasaula.foodplanner.database.RecipeStepDao;
+import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 
 public class RecipeViewerActivity extends AppCompatActivity {
 
@@ -25,7 +31,7 @@ public class RecipeViewerActivity extends AppCompatActivity {
     // UI related properties
     private TextView textRecipeName;
     private Toolbar toolbar;
-    private ShowIngredientFragment showIngredientFragment;
+    private RecipeFragment recipeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +49,19 @@ public class RecipeViewerActivity extends AppCompatActivity {
         // gather UI elements
         textRecipeName = findViewById(R.id.text_recipe_name);
 
+        if (recipe != null) {
+            IngredientDao ingredientDao = AppDatabase.getInstance(this).getIngredientDao();
+            DatabaseLoader<IngredientDao, Ingredient> ingredientsLoader = new DatabaseLoader<>(ingredientDao,
+                    d -> d.getIngredientsForRecipe(recipe.getId()),
+                    items -> recipeFragment.setIngredients(items));
+            ingredientsLoader.execute();
+
+            RecipeStepDao recipeStepDao = AppDatabase.getInstance(this).getRecipeStepDao();
+            DatabaseLoader<RecipeStepDao, RecipeStep> stepsLoader = new DatabaseLoader<>(recipeStepDao,
+                    d -> d.getRecipeSteps(recipe.getId()),
+                    items -> recipeFragment.setSteps(items));
+            stepsLoader.execute();
+        }
     }
 
     @Override
@@ -105,13 +124,14 @@ public class RecipeViewerActivity extends AppCompatActivity {
         textRecipeName.setText(recipe.getName());
 
         Log.d(TAG, "prepareView: Showing Ingredients Fragment");
-        if (showIngredientFragment == null) {
-            showIngredientFragment = ShowIngredientFragment.newInstance(recipe);
-        } else {
-            showIngredientFragment.setRecipe(recipe);
+        if (recipeFragment == null) {
+            recipeFragment = RecipeFragment.newInstance(false);
         }
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.content, showIngredientFragment).commit();
+        recipeFragment.setIngredients(recipe.getIngredients());
+        recipeFragment.setSteps(recipe.getRecipeSteps());
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.content, recipeFragment).commit();
     }
 
     /**

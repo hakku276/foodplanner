@@ -99,6 +99,7 @@ public class RecipeCreator extends AsyncTask<Recipe, Void, Recipe[]> {
         for (RecipeStep recipeStep :
                 recipe.getRecipeSteps()) {
             recipeStep.setRecipeId(recipe.getId());
+            recipeStep.setOrder(i);
             recipeSteps[i] = recipeStep;
             i++;
         }

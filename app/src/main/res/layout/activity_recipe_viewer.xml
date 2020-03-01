@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".views.cookbook.RecipeViewerActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -27,25 +28,92 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="@dimen/padding_screen_to_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appbar">
 
-        <TextView
-            android:id="@+id/text_recipe_name"
-            style="?android:textAppearanceLarge"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_recipe_name"
-            android:maxLines="1"
-            android:textStyle="bold"/>
+            android:id="@+id/layout_recipe_info"
+            android:layout_margin="@dimen/margin_screen_to_content"
+            android:background="@android:color/white">
+
+            <ImageButton
+                android:layout_width="@dimen/size_cookbook_recipe_thumbnail"
+                android:layout_height="@dimen/size_cookbook_recipe_thumbnail"
+                android:layout_margin="@dimen/margin_content_to_content"
+                android:src="@drawable/placeholder"
+                android:id="@+id/btn_recipe_thumbnail"
+                android:scaleType="fitCenter"/>
+
+            <TextView
+                android:id="@+id/text_recipe_name"
+                style="@style/RecipeListTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_recipe_name"
+                android:maxLines="1"
+                android:lines="1"
+                android:singleLine="true"
+                android:layout_marginTop="@dimen/padding_screen_to_content"
+                android:layout_toEndOf="@+id/btn_recipe_thumbnail" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_recipe_info_tag"
+                android:layout_below="@+id/text_recipe_name"
+                android:layout_toEndOf="@+id/btn_recipe_thumbnail"
+                android:id="@+id/layout_cooking_time"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/background_recipe_info_edit_button">
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="@string/img_desc_cooking_time"
+                    android:src="@drawable/icon_cooking_time_white"
+                    android:layout_marginStart="@dimen/margin_content_to_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/RecipeInfoTagsText"
+                    android:text="@string/recipe_cooking_time"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginStart="6dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_recipe_info_tag"
+                android:layout_below="@+id/text_recipe_name"
+                android:layout_toEndOf="@+id/layout_cooking_time"
+                android:id="@+id/layout_portion_size"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginStart="@dimen/margin_content_to_content"
+                android:background="@drawable/background_recipe_info_edit_button">
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:contentDescription="@string/img_desc_portion_size"
+                    android:src="@drawable/icon_recipe_portion_white"
+                    android:layout_marginStart="@dimen/margin_content_to_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/RecipeInfoTagsText"
+                    android:text="@string/recipe_portion_size"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginStart="6dp"/>
+            </LinearLayout>
+
+        </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/text_recipe_name"
-            android:layout_marginTop="@dimen/margin_content_to_content"/>
+            android:layout_below="@+id/layout_recipe_info" />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
