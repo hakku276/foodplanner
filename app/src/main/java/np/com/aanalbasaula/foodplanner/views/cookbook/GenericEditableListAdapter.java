@@ -45,6 +45,11 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
 
     private static final String TAG = GenericEditableListAdapter.class.getSimpleName();
 
+    // UI
+    @Nullable
+    private EditableItemViewHolder currentFocusedViewHolder;
+
+    // Data
     // the items to be shown on the view
     @NonNull
     private List<T> items;
@@ -119,6 +124,12 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
      * @return the list of ingredients
      */
     public List<T> getItems() {
+
+        // before getting items, update the latest editing view data
+        if (currentFocusedViewHolder != null) {
+            itemFactory.update(currentFocusedViewHolder.mItem, currentFocusedViewHolder.mEditableContent.getText().toString());
+        }
+
         return items;
     }
 
@@ -372,6 +383,9 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
             if (mEditableContent != null) {
                 mEditableContent.setText(value);
             }
+
+            // this view will be the latest view holder to be edited
+            currentFocusedViewHolder = this;
         }
 
         @Override
@@ -409,7 +423,9 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
 
             @Override
             public void update(Ingredient item, String description) {
-                item.setName(description);
+                if (item != null) {
+                    item.setName(description);
+                }
             }
         };
 
@@ -437,7 +453,9 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
 
             @Override
             public void update(RecipeStep item, String description) {
-                item.setDescription(description);
+                if (item != null) {
+                    item.setDescription(description);
+                }
             }
         };
 

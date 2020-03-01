@@ -19,6 +19,7 @@ import np.com.aanalbasaula.foodplanner.database.Ingredient;
 import np.com.aanalbasaula.foodplanner.database.IngredientDao;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeDao;
+import np.com.aanalbasaula.foodplanner.database.RecipeStep;
 import np.com.aanalbasaula.foodplanner.database.RecipeStepDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.database.utils.RecipeCreator;
@@ -139,8 +140,16 @@ public class RecipeCreatorActivity extends AppCompatActivity {
 
             Log.d(TAG, "prepareView: Loading ingredients");
             // begin load of ingredients
-            DatabaseLoader<IngredientDao, Ingredient> loader = new DatabaseLoader<>(ingredientDao, (d) -> d.getIngredientsForRecipe(recipe.getId()), ingredientsLoadListener);
-            loader.execute();
+            DatabaseLoader<IngredientDao, Ingredient> ingredientLoader = new DatabaseLoader<>(ingredientDao,
+                    d -> d.getIngredientsForRecipe(recipe.getId()),
+                    items -> fragmentEditRecipe.setIngredients(items));
+            ingredientLoader.execute();
+
+            // begin load of ingredients
+            DatabaseLoader<RecipeStepDao, RecipeStep> recipeLoader = new DatabaseLoader<>(recipeStepDao,
+                    d -> d.getRecipeSteps(recipe.getId()),
+                    items -> fragmentEditRecipe.setSteps(items));
+            recipeLoader.execute();
         }
     }
 
@@ -190,10 +199,17 @@ public class RecipeCreatorActivity extends AppCompatActivity {
     private void updateRecipe() {
         Log.i(TAG, "updateRecipe: Updating Recipe: " + recipe.getName());
 
-        // collect the list of ingredients
-        recipe.setIngredients(ingredients);
+        if (!isRecipeValid()) {
+            Log.i(TAG, "updateRecipe: User provided input is not valid.");
+            return;
+        }
 
-        RecipeUpdater updater = new RecipeUpdater(recipeDao, ingredientDao, recipeUpdateListener);
+        // collect the list of ingredients
+        recipe.setName(textRecipeName.getText().toString());
+        recipe.setIngredients(fragmentEditRecipe.getIngredients());
+        recipe.setRecipeSteps(fragmentEditRecipe.getSteps());
+
+        RecipeUpdater updater = new RecipeUpdater(recipeDao, ingredientDao, recipeStepDao, recipeUpdateListener);
         updater.execute(recipe);
     }
 
@@ -219,16 +235,6 @@ public class RecipeCreatorActivity extends AppCompatActivity {
             setResult(RESULT_OK, data);
             finish();
         }
-    };
-
-    /**
-     * A listener to listen for ingredient loads from the database.
-     * NOTE: the ingredients are only loaded when the view is in EDIT mode
-     */
-    private final DatabaseLoader.DatabaseLoadListener<Ingredient> ingredientsLoadListener = ingredients -> {
-        Log.i(TAG, "IngredientsLoadListener: The ingredients have been successfully loaded from the database: " + ingredients.size());
-        this.ingredients = ingredients;
-        this.fragmentEditRecipe.setIngredients(ingredients);
     };
 
     /**

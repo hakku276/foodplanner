@@ -118,7 +118,11 @@ public class RecipeFragment extends Fragment {
      * @return the list of ingredients that the user input, never null
      */
     public List<Ingredient> getIngredients() {
-        return ingredients;
+        if (mIngredientsAdapter == null) {
+            return new LinkedList<>();
+        }
+
+        return mIngredientsAdapter.getItems();
     }
 
     /**
@@ -146,7 +150,11 @@ public class RecipeFragment extends Fragment {
      * @return the list of recipes that the user input, never null
      */
     public List<RecipeStep> getSteps() {
-        return steps;
+        if (mRecipeStepAdapter == null) {
+            return mRecipeStepAdapter.getItems();
+        }
+
+        return mRecipeStepAdapter.getItems();
     }
 
     /**

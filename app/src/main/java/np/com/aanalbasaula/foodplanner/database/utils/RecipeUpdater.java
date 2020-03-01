@@ -7,6 +7,7 @@ import np.com.aanalbasaula.foodplanner.database.Ingredient;
 import np.com.aanalbasaula.foodplanner.database.IngredientDao;
 import np.com.aanalbasaula.foodplanner.database.Recipe;
 import np.com.aanalbasaula.foodplanner.database.RecipeDao;
+import np.com.aanalbasaula.foodplanner.database.RecipeStepDao;
 
 /**
  * A Database utility asynchronous task which can be used to only update the Recipe.
@@ -14,7 +15,7 @@ import np.com.aanalbasaula.foodplanner.database.RecipeDao;
  * the recipe to clear all the ingredients along with it and finally inserts it into
  * the database to get an updated feeling.
  */
-public class RecipeUpdater extends AsyncTask<Recipe, Void, Recipe[]> {
+public class RecipeUpdater extends RecipeCreator {
 
     /**
      * The Status Listener interface for callbacks interested in the status of the updater.
@@ -32,13 +33,16 @@ public class RecipeUpdater extends AsyncTask<Recipe, Void, Recipe[]> {
     private static final String TAG = RecipeUpdater.class.getSimpleName();
 
     private final RecipeDao recipeDao;
-    private final IngredientDao ingredientDao;
     private final RecipeUpdateStatusListener listener;
 
-    public RecipeUpdater(RecipeDao recipeDao, IngredientDao ingredientDao, RecipeUpdateStatusListener listener) {
+    public RecipeUpdater(RecipeDao recipeDao,
+                         IngredientDao ingredientDao,
+                         RecipeStepDao recipeStepDao,
+                         RecipeUpdateStatusListener listener) {
+        super(recipeDao, ingredientDao, recipeStepDao, null);
         this.recipeDao = recipeDao;
-        this.ingredientDao = ingredientDao;
         this.listener = listener;
+
     }
 
     @Override
@@ -49,30 +53,10 @@ public class RecipeUpdater extends AsyncTask<Recipe, Void, Recipe[]> {
                 recipes) {
             Log.d(TAG, "doInBackground: Deleting Recipe: Id: " + recipe.getId());
             recipeDao.delete(recipe);
-
-            // create the recipe
-            long[] ids = recipeDao.insert(recipe);
-            recipe.setId(ids[0]);
-            Log.d(TAG, "doInBackground: New Recipe Object created: " + recipe.getId());
-
-            if (recipe.getIngredients() != null) {
-                Log.d(TAG, "doInBackground: Creating the list of ingredients");
-
-                Ingredient[] ingredients = new Ingredient[recipe.getIngredients().size()];
-
-                int i = 0;
-                for (Ingredient ingredient :
-                        recipe.getIngredients()) {
-                    ingredient.setRecipeId(recipe.getId());
-                    ingredients[i] = ingredient;
-                    i++;
-                }
-
-                EntryCreationStrategies.ingredientEntryCreationStrategy.createEntries(ingredientDao, ingredients);
-            }
         }
 
-        return recipes;
+        // create new recipes
+        return super.doInBackground(recipes);
     }
 
     @Override
