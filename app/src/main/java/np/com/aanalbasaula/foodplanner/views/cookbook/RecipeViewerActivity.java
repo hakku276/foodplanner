@@ -116,7 +116,7 @@ public class RecipeViewerActivity extends AppCompatActivity {
 
     /**
      * Sets up the complete activity view to correctly display the {@linkplain Recipe} as required.
-     * The ingredients are displayed using the {@link ShowIngredientFragment} fragment (The fragment
+     * The ingredients are displayed using the {@link RecipeFragment} fragment (The fragment
      * is created if only necessary.)
      */
     private void prepareView() {

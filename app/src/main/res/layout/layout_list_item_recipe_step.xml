@@ -71,7 +71,7 @@
             android:singleLine="true"
             android:background="@null"
             android:imeOptions="actionNext"
-            android:inputType="text|textCapWords"
+            android:inputType="text|textCapSentences|textAutoCorrect"
             android:layout_toEndOf="@id/bullet_1"
             android:layout_alignParentEnd="true"/>
 
