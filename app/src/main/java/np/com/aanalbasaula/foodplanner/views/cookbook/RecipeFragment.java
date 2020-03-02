@@ -151,7 +151,7 @@ public class RecipeFragment extends Fragment {
      */
     public List<RecipeStep> getSteps() {
         if (mRecipeStepAdapter == null) {
-            return mRecipeStepAdapter.getItems();
+            return new LinkedList<>();
         }
 
         return mRecipeStepAdapter.getItems();

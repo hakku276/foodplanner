@@ -46,6 +46,8 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
     private static final String TAG = GenericEditableListAdapter.class.getSimpleName();
 
     // UI
+
+    // the view holder that is currently being edited (to save state when the user does not commit text on the edit view)
     @Nullable
     private EditableItemViewHolder currentFocusedViewHolder;
 
@@ -127,7 +129,18 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
 
         // before getting items, update the latest editing view data
         if (currentFocusedViewHolder != null) {
-            itemFactory.update(currentFocusedViewHolder.mItem, currentFocusedViewHolder.mEditableContent.getText().toString());
+            if (currentFocusedViewHolder.mItem == null) {
+                // was the last item on the list... no mItem on view holder; create entry
+                String description = currentFocusedViewHolder.mEditableContent.getText().toString();
+                if (!description.isEmpty()) {
+                    // only process if the description is not empty
+                    T item = itemFactory.create(description);
+                    items.add(item);
+                    currentFocusedViewHolder.mItem = item;
+                }
+            } else {
+                itemFactory.update(currentFocusedViewHolder.mItem, currentFocusedViewHolder.mEditableContent.getText().toString());
+            }
         }
 
         return items;
@@ -301,7 +314,6 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
          */
         private void bind(T ingredient, int position) {
             mItem = ingredient;
-            hideOrShowBottomBorderIfNecessary(position);
 
             if (mItem != null) {
                 // when an item is provided it is in display mode.
@@ -311,25 +323,6 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
                 enableEditMode("");
                 if (items.size() != 0 && mEditableContent != null) {
                     mEditableContent.requestFocus();
-                }
-            }
-        }
-
-        /**
-         * Hides bottom border only for the last item on the list.
-         */
-        private void hideOrShowBottomBorderIfNecessary(int position) {
-            if (mBottomBorder != null) {
-                if (getItemCount() == 1) {
-                    // single item hide the border
-                    mBottomBorder.setVisibility(View.GONE);
-                    return;
-                }
-                // multiple items; everything except the last item gets the border
-                if (position < items.size()) {
-                    mBottomBorder.setVisibility(View.VISIBLE);
-                } else {
-                    mBottomBorder.setVisibility(View.GONE);
                 }
             }
         }
