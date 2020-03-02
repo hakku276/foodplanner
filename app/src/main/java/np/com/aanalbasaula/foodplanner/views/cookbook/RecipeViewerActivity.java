@@ -48,28 +48,19 @@ public class RecipeViewerActivity extends AppCompatActivity {
 
         // gather UI elements
         textRecipeName = findViewById(R.id.text_recipe_name);
-
-        if (recipe != null) {
-            IngredientDao ingredientDao = AppDatabase.getInstance(this).getIngredientDao();
-            DatabaseLoader<IngredientDao, Ingredient> ingredientsLoader = new DatabaseLoader<>(ingredientDao,
-                    d -> d.getIngredientsForRecipe(recipe.getId()),
-                    items -> recipeFragment.setIngredients(items));
-            ingredientsLoader.execute();
-
-            RecipeStepDao recipeStepDao = AppDatabase.getInstance(this).getRecipeStepDao();
-            DatabaseLoader<RecipeStepDao, RecipeStep> stepsLoader = new DatabaseLoader<>(recipeStepDao,
-                    d -> d.getRecipeSteps(recipe.getId()),
-                    items -> recipeFragment.setSteps(items));
-            stepsLoader.execute();
-        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
+        if (recipeFragment == null) {
+            recipeFragment = RecipeFragment.newInstance(false);
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.content, recipeFragment).commit();
+
         if (recipe != null) {
-            Log.i(TAG, "onStart: The Recipe is available. Setting up UI");
+            Log.i(TAG, "onStart: The Recipe is available. Loading Content");
             prepareView();
         } else {
             Log.w(TAG, "onStart: Could not find displayable Recipe");
@@ -123,15 +114,19 @@ public class RecipeViewerActivity extends AppCompatActivity {
         Log.i(TAG, "prepareView: Setting up UI to display the recipe: " + recipe.getName());
         textRecipeName.setText(recipe.getName());
 
-        Log.d(TAG, "prepareView: Showing Ingredients Fragment");
-        if (recipeFragment == null) {
-            recipeFragment = RecipeFragment.newInstance(false);
-        }
+        Log.d(TAG, "prepareView: Loading Recipe Information");
+        IngredientDao ingredientDao = AppDatabase.getInstance(this).getIngredientDao();
+        DatabaseLoader<IngredientDao, Ingredient> ingredientsLoader = new DatabaseLoader<>(ingredientDao,
+                d -> d.getIngredientsForRecipe(recipe.getId()),
+                items -> recipeFragment.setIngredients(items));
+        ingredientsLoader.execute();
 
-        recipeFragment.setIngredients(recipe.getIngredients());
-        recipeFragment.setSteps(recipe.getRecipeSteps());
+        RecipeStepDao recipeStepDao = AppDatabase.getInstance(this).getRecipeStepDao();
+        DatabaseLoader<RecipeStepDao, RecipeStep> stepsLoader = new DatabaseLoader<>(recipeStepDao,
+                d -> d.getRecipeSteps(recipe.getId()),
+                items -> recipeFragment.setSteps(items));
+        stepsLoader.execute();
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.content, recipeFragment).commit();
     }
 
     /**
