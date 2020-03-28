@@ -410,14 +410,14 @@ public class GenericEditableListItemAdapter<T> extends RecyclerView.Adapter<Recy
             @Override
             public Ingredient create(String description) {
                 Ingredient item = new Ingredient();
-                item.setName(description);
+                item.setName(description.trim());
                 return item;
             }
 
             @Override
             public void update(Ingredient item, String description) {
                 if (item != null) {
-                    item.setName(description);
+                    item.setName(description.trim());
                 }
             }
         };
@@ -440,14 +440,14 @@ public class GenericEditableListItemAdapter<T> extends RecyclerView.Adapter<Recy
             @Override
             public RecipeStep create(String description) {
                 RecipeStep item = new RecipeStep();
-                item.setDescription(description);
+                item.setDescription(description.trim());
                 return item;
             }
 
             @Override
             public void update(RecipeStep item, String description) {
                 if (item != null) {
-                    item.setDescription(description);
+                    item.setDescription(description.trim());
                 }
             }
         };

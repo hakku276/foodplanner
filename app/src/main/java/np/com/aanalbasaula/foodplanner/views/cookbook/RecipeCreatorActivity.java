@@ -193,7 +193,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
 
         Log.i(TAG, "saveRecipe: Input is valid. Creating recipe in database");
         Recipe recipe = new Recipe();
-        recipe.setName(textRecipeName.getText().toString());
+        recipe.setName(textRecipeName.getText().toString().trim());
         recipe.setIngredients(fragmentEditRecipe.getIngredients());
         recipe.setRecipeSteps(fragmentEditRecipe.getSteps());
         recipe.setPreparationTime(preparationTimeView.getSelectedValue());
@@ -318,6 +318,9 @@ class PreparationTimeView {
 
 }
 
+/**
+ * The portion size view controller
+ */
 class PortionSizeView {
     private static final String TAG = PortionSizeView.class.getSimpleName();
 
