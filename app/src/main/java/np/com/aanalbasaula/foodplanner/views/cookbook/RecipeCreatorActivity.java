@@ -2,9 +2,7 @@ package np.com.aanalbasaula.foodplanner.views.cookbook;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.icu.util.TimeUnit;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,11 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import java.util.List;
 
 import np.com.aanalbasaula.foodplanner.R;
 import np.com.aanalbasaula.foodplanner.database.AppDatabase;
@@ -46,6 +40,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
     private EditText textRecipeName;
     private RecipeFragment fragmentEditRecipe;
     private PreparationTimeView preparationTimeView;
+    private PortionSizeView portionSizeView;
 
     // configuration
     private boolean isEditMode;
@@ -71,6 +66,8 @@ public class RecipeCreatorActivity extends AppCompatActivity {
         // create required views
         LinearLayout layoutPrepTime = findViewById(R.id.layout_cooking_time);
         preparationTimeView = new PreparationTimeView(getSupportFragmentManager(), layoutPrepTime);
+        LinearLayout layoutPortionSize = findViewById(R.id.layout_portion_size);
+        portionSizeView = new PortionSizeView(getSupportFragmentManager(), layoutPortionSize);
 
         // gather required views
         textRecipeName = findViewById(R.id.text_recipe_name);
@@ -150,6 +147,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
             Log.i(TAG, "prepareView: View was opened in edit mode. Populating view for Edit.");
             textRecipeName.setText(recipe.getName());
             preparationTimeView.setValue(recipe.getPreparationTime());
+            portionSizeView.setValue(recipe.getPortionSize());
 
             Log.d(TAG, "prepareView: Loading ingredients");
             // begin load of ingredients
@@ -199,6 +197,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
         recipe.setIngredients(fragmentEditRecipe.getIngredients());
         recipe.setRecipeSteps(fragmentEditRecipe.getSteps());
         recipe.setPreparationTime(preparationTimeView.getSelectedValue());
+        recipe.setPortionSize(portionSizeView.getSelectedValue());
 
         Log.d(TAG, "saveRecipe: Recipe has ingredients: " + recipe.getIngredients().size());
         Log.d(TAG, "saveRecipe: Recipe has steps: " + recipe.getIngredients().size());
@@ -221,6 +220,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
         // collect the list of ingredients
         recipe.setName(textRecipeName.getText().toString());
         recipe.setPreparationTime(preparationTimeView.getSelectedValue());
+        recipe.setPortionSize(portionSizeView.getSelectedValue());
         recipe.setIngredients(fragmentEditRecipe.getIngredients());
         recipe.setRecipeSteps(fragmentEditRecipe.getSteps());
 
@@ -312,7 +312,48 @@ class PreparationTimeView {
     }
 
     void setValue(int value) {
+        textPrepTime.setText(value + " mins");
         prepTimeDialog.setSelectedValue(value);
+    }
+
+}
+
+class PortionSizeView {
+    private static final String TAG = PortionSizeView.class.getSimpleName();
+
+    // ui related
+    private TextView textPortionSize;
+    private NumberPickerDialog portionSizeDialog;
+    private FragmentManager fragmentManager;
+
+    PortionSizeView(FragmentManager fragmentManager, LinearLayout layoutPrepTime) {
+        // create or retrieve required views
+        textPortionSize = layoutPrepTime.findViewById(R.id.text_portion_size);
+        portionSizeDialog = NumberPickerDialog.getInstance(1, 20, R.string.text_people);
+        this.fragmentManager = fragmentManager;
+
+        layoutPrepTime.setOnClickListener(this::onEditRequested);
+    }
+
+    private void onEditRequested(View v) {
+        Log.i(TAG, "onEditRequested: User requested edit for Portion Size");
+        portionSizeDialog.setListener(this::onSelectionChanged);
+        portionSizeDialog.setUnitString(R.string.text_people);
+        portionSizeDialog.show(fragmentManager, RecipeCreatorActivity.TAG_NUMBER_PICKER);
+    }
+
+    private void onSelectionChanged(NumberPickerDialog dialog) {
+        Log.i(TAG, "onPreparationTimeChanged: Value Changed: " + dialog.getSelectedValue());
+        textPortionSize.setText(dialog.getSelectedValue() + " people");
+    }
+
+    int getSelectedValue() {
+        return portionSizeDialog.getSelectedValue();
+    }
+
+    void setValue(int value) {
+        textPortionSize.setText(value + " people");
+        portionSizeDialog.setSelectedValue(value);
     }
 
 }

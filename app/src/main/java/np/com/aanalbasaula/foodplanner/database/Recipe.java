@@ -33,6 +33,12 @@ public class Recipe implements Parcelable {
     private int preparationTime;
 
     /**
+     * The total portion size in people
+     */
+    @ColumnInfo(name = "portion_size")
+    private int portionSize;
+
+    /**
      *  The name of the image file for this recipe
      */
     @ColumnInfo(name = "imageName")

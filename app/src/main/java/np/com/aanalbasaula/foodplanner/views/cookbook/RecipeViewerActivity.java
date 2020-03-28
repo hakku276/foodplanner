@@ -33,6 +33,7 @@ public class RecipeViewerActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private RecipeFragment recipeFragment;
     private TextView textPreparationTime;
+    private TextView textPortionSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,7 @@ public class RecipeViewerActivity extends AppCompatActivity {
         // gather UI elements
         textRecipeName = findViewById(R.id.text_recipe_name);
         textPreparationTime = findViewById(R.id.text_cooking_time);
+        textPortionSize = findViewById(R.id.text_portion_size);
     }
 
     @Override
@@ -116,6 +118,7 @@ public class RecipeViewerActivity extends AppCompatActivity {
         Log.i(TAG, "prepareView: Setting up UI to display the recipe: " + recipe.getName());
         textRecipeName.setText(recipe.getName());
         textPreparationTime.setText(recipe.getPreparationTime() + " mins");
+        textPortionSize.setText(recipe.getPortionSize() + " people");
 
         Log.d(TAG, "prepareView: Loading Recipe Information");
         IngredientDao ingredientDao = AppDatabase.getInstance(this).getIngredientDao();

@@ -102,6 +102,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/text_portion_size"
                     style="@style/RecipeInfoTagsText"
                     android:text="@string/recipe_portion_size"
                     android:layout_marginEnd="12dp"

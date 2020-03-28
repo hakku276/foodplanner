@@ -104,6 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/RecipeInfoTagsText"
+                    android:id="@+id/text_portion_size"
                     android:text="@string/recipe_portion_size"
                     android:layout_marginEnd="12dp"
                     android:layout_marginStart="6dp"/>
