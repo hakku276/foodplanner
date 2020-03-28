@@ -5,6 +5,8 @@ import android.arch.persistence.room.TypeConverters;
 import android.os.Parcel;
 import android.os.ParcelUuid;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Date;
 
 import np.com.aanalbasaula.foodplanner.database.MealType;
@@ -31,7 +33,7 @@ public class Converters {
 
     @TypeConverter
     public static MealType toMealType(String mealType) {
-        return mealType == null ? null: MealType.valueOf(mealType);
+        return StringUtils.isBlank(mealType) ? null: MealType.valueOf(mealType);
     }
 
     @TypeConverter
