@@ -41,9 +41,9 @@ import np.com.aanalbasaula.foodplanner.database.RecipeStep;
  *
  * @param <T> The Type of item which should be displayed on screen
  */
-public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class GenericEditableListItemAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = GenericEditableListAdapter.class.getSimpleName();
+    private static final String TAG = GenericEditableListItemAdapter.class.getSimpleName();
 
     // UI
 
@@ -66,10 +66,10 @@ public class GenericEditableListAdapter<T> extends RecyclerView.Adapter<Recycler
      *
      * @param items the items to be displayed
      */
-    GenericEditableListAdapter(@Nullable List<T> items,
-                               boolean isEditMode,
-                               ItemFactory<T> itemFactory,
-                               ViewFactory viewFactory) {
+    GenericEditableListItemAdapter(@Nullable List<T> items,
+                                   boolean isEditMode,
+                                   ItemFactory<T> itemFactory,
+                                   ViewFactory viewFactory) {
         if (items == null) {
             items = new LinkedList<>();
         }

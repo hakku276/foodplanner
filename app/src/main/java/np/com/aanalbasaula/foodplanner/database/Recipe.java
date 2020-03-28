@@ -27,6 +27,12 @@ public class Recipe implements Parcelable {
     private String name;
 
     /**
+     * The total preparation time in minutes
+     */
+    @ColumnInfo(name = "prep_time")
+    private int preparationTime;
+
+    /**
      *  The name of the image file for this recipe
      */
     @ColumnInfo(name = "imageName")
@@ -48,6 +54,7 @@ public class Recipe implements Parcelable {
         id = in.readLong();
         name = in.readString();
         imageName = in.readParcelable(ParcelUuid.class.getClassLoader());
+        preparationTime = in.readInt();
     }
 
     public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
@@ -72,5 +79,6 @@ public class Recipe implements Parcelable {
         dest.writeLong(id);
         dest.writeString(name);
         dest.writeParcelable(imageName, flags);
+        dest.writeInt(preparationTime);
     }
 }

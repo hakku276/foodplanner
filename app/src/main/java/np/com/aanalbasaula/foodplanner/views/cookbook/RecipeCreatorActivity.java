@@ -2,14 +2,21 @@ package np.com.aanalbasaula.foodplanner.views.cookbook;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.icu.util.TimeUnit;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.NumberPicker;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -24,6 +31,7 @@ import np.com.aanalbasaula.foodplanner.database.RecipeStepDao;
 import np.com.aanalbasaula.foodplanner.database.utils.DatabaseLoader;
 import np.com.aanalbasaula.foodplanner.database.utils.RecipeCreator;
 import np.com.aanalbasaula.foodplanner.database.utils.RecipeUpdater;
+import np.com.aanalbasaula.foodplanner.views.utils.NumberPickerDialog;
 
 /**
  * An activity that is responsible for creating a Recipe as well as for updating it.
@@ -32,12 +40,14 @@ public class RecipeCreatorActivity extends AppCompatActivity {
 
     private static final String TAG = RecipeCreatorActivity.class.getSimpleName();
     public static final String EXTRA_EDIT_RECIPE = "recipe";
+    static final String TAG_NUMBER_PICKER = "number-picker";
 
     // ui related
     private EditText textRecipeName;
     private RecipeFragment fragmentEditRecipe;
+    private PreparationTimeView preparationTimeView;
 
-    // working properties
+    // configuration
     private boolean isEditMode;
     private Recipe recipe; // the recipe being currently edited using this view
 
@@ -45,8 +55,6 @@ public class RecipeCreatorActivity extends AppCompatActivity {
     private RecipeDao recipeDao;
     private IngredientDao ingredientDao;
     private RecipeStepDao recipeStepDao;
-    @Nullable
-    private List<Ingredient> ingredients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,10 @@ public class RecipeCreatorActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // enable back button on the toolbar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // create required views
+        LinearLayout layoutPrepTime = findViewById(R.id.layout_cooking_time);
+        preparationTimeView = new PreparationTimeView(getSupportFragmentManager(), layoutPrepTime);
 
         // gather required views
         textRecipeName = findViewById(R.id.text_recipe_name);
@@ -137,6 +149,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
         if (isEditMode) {
             Log.i(TAG, "prepareView: View was opened in edit mode. Populating view for Edit.");
             textRecipeName.setText(recipe.getName());
+            preparationTimeView.setValue(recipe.getPreparationTime());
 
             Log.d(TAG, "prepareView: Loading ingredients");
             // begin load of ingredients
@@ -185,6 +198,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
         recipe.setName(textRecipeName.getText().toString());
         recipe.setIngredients(fragmentEditRecipe.getIngredients());
         recipe.setRecipeSteps(fragmentEditRecipe.getSteps());
+        recipe.setPreparationTime(preparationTimeView.getSelectedValue());
 
         Log.d(TAG, "saveRecipe: Recipe has ingredients: " + recipe.getIngredients().size());
         Log.d(TAG, "saveRecipe: Recipe has steps: " + recipe.getIngredients().size());
@@ -206,6 +220,7 @@ public class RecipeCreatorActivity extends AppCompatActivity {
 
         // collect the list of ingredients
         recipe.setName(textRecipeName.getText().toString());
+        recipe.setPreparationTime(preparationTimeView.getSelectedValue());
         recipe.setIngredients(fragmentEditRecipe.getIngredients());
         recipe.setRecipeSteps(fragmentEditRecipe.getSteps());
 
@@ -255,6 +270,49 @@ public class RecipeCreatorActivity extends AppCompatActivity {
         }
 
         activity.startActivityForResult(intent, requestId);
+    }
+
+}
+
+/**
+ * The Cooking Time display view Controller
+ */
+class PreparationTimeView {
+
+    private static final String TAG = PreparationTimeView.class.getSimpleName();
+
+    // ui related
+    private TextView textPrepTime;
+    private NumberPickerDialog prepTimeDialog;
+    private FragmentManager fragmentManager;
+
+    PreparationTimeView(FragmentManager fragmentManager, LinearLayout layoutPrepTime) {
+        // create or retrieve required views
+        textPrepTime = layoutPrepTime.findViewById(R.id.text_cooking_time);
+        prepTimeDialog = NumberPickerDialog.getInstance(1, 120, R.string.text_minutes);
+        this.fragmentManager = fragmentManager;
+
+        layoutPrepTime.setOnClickListener(this::onEditRequested);
+    }
+
+    private void onEditRequested(View v) {
+        Log.i(TAG, "onEditRequested: User requested edit for Preparation Time");
+        prepTimeDialog.setListener(this::onSelectionChanged);
+        prepTimeDialog.setUnitString(R.string.text_minutes);
+        prepTimeDialog.show(fragmentManager, RecipeCreatorActivity.TAG_NUMBER_PICKER);
+    }
+
+    private void onSelectionChanged(NumberPickerDialog dialog) {
+        Log.i(TAG, "onPreparationTimeChanged: Value Changed: " + dialog.getSelectedValue());
+        textPrepTime.setText(dialog.getSelectedValue() + " mins");
+    }
+
+    int getSelectedValue() {
+        return prepTimeDialog.getSelectedValue();
+    }
+
+    void setValue(int value) {
+        prepTimeDialog.setSelectedValue(value);
     }
 
 }

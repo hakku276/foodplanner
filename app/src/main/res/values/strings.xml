@@ -74,6 +74,9 @@
     <string name="title_recipe_creation_ingredients">We need...</string>
     <string name="title_recipe_creation_steps">We do...</string>
     <string name="bullet">•</string>
+    <string name="text_minutes">Minutes</string>
+    <string name="text_okay">Okay</string>
+    <string name="text_cancel">Cancel</string>
 
 
 </resources>

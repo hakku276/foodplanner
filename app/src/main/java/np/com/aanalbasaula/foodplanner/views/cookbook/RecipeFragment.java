@@ -34,10 +34,10 @@ public class RecipeFragment extends Fragment {
     private RecyclerView mRecipeStepsList;
 
     @Nullable
-    private GenericEditableListAdapter<Ingredient> mIngredientsAdapter;
+    private GenericEditableListItemAdapter<Ingredient> mIngredientsAdapter;
 
     @Nullable
-    private GenericEditableListAdapter<RecipeStep> mRecipeStepAdapter;
+    private GenericEditableListItemAdapter<RecipeStep> mRecipeStepAdapter;
 
 
     // Data
@@ -75,12 +75,12 @@ public class RecipeFragment extends Fragment {
         ingredients = new LinkedList<>();
         steps = new LinkedList<>();
 
-        mIngredientsAdapter = new GenericEditableListAdapter<>(ingredients, editMode,
-                GenericEditableListAdapter.ItemFactories.INGREDIENTS,
+        mIngredientsAdapter = new GenericEditableListItemAdapter<>(ingredients, editMode,
+                GenericEditableListItemAdapter.ItemFactories.INGREDIENTS,
                 (inflater, parent) -> inflater.inflate(R.layout.layout_list_item_ingredient, parent, false));
 
-        mRecipeStepAdapter = new GenericEditableListAdapter<>(steps, editMode,
-                GenericEditableListAdapter.ItemFactories.RECIPE_STEPS,
+        mRecipeStepAdapter = new GenericEditableListItemAdapter<>(steps, editMode,
+                GenericEditableListItemAdapter.ItemFactories.RECIPE_STEPS,
                 (inflater, parent) -> inflater.inflate(R.layout.layout_list_item_recipe_step, parent, false));
     }
 

@@ -77,6 +77,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/RecipeInfoTagsText"
+                    android:id="@+id/text_cooking_time"
                     android:text="@string/recipe_cooking_time"
                     android:layout_marginEnd="12dp"
                     android:layout_marginStart="6dp"/>
